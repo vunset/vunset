@@ -2,6 +2,13 @@
 
 All four packages are released together under one version.
 
+## 1.0.0-rc.2
+
+### @vunset/vue
+
+- No longer depends on `d3-shape`. A smooth line or area draws the same curve
+  as before, with its own.
+
 ## 1.0.0-rc.1
 
 Hello World!

@@ -18,7 +18,7 @@ export default defineConfig({
       formats: ['es']
     },
     rolldownOptions: {
-      external: [/^vue($|\/)/, /^@vunset\//, /^@floating-ui\//, /^@tanstack\//, /^d3-/],
+      external: [/^vue($|\/)/, /^@vunset\//, /^@floating-ui\//, /^@tanstack\//],
       output: {
         preserveModules: true,
         preserveModulesRoot: 'src',

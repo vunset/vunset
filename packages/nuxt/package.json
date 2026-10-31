@@ -1,6 +1,6 @@
 {
   "name": "@vunset/nuxt",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0-rc.2",
   "description": "Nuxt module for Vunset: every component, composable and helper auto-imported, styles loaded.",
   "keywords": [
     "nuxt",
@@ -34,9 +34,9 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@vunset/ui": "1.0.0-rc.1",
-    "@vunset/utils": "1.0.0-rc.1",
-    "@vunset/vue": "1.0.0-rc.1",
+    "@vunset/ui": "1.0.0-rc.2",
+    "@vunset/utils": "1.0.0-rc.2",
+    "@vunset/vue": "1.0.0-rc.2",
     "@nuxt/kit": "^4.6.1",
     "defu": "^6.1.7"
   },

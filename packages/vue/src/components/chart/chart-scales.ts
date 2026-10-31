@@ -1,6 +1,6 @@
-import { d3Curve } from '@tanstack/charts';
-import { curveMonotoneX } from 'd3-shape';
+import type { ChartCurve } from '@tanstack/charts';
 import { formatNumber } from '@vunset/utils';
+import { monotoneAreaPath, monotonePath } from './chart-curve';
 
 /**
  * An evenly spaced few of a row axis' positions, for `numTicks`. The axis
@@ -46,7 +46,7 @@ export const chartName = (categories: string[], labelFormat: ((category: string)
   categories.map((category) => (labelFormat ? labelFormat(category) : category)).join(', ') || fallback;
 
 // Monotone: it bends through the points but never past them, so a peak is drawn at its value.
-const SMOOTH = d3Curve(curveMonotoneX);
+const SMOOTH: ChartCurve = { line: monotonePath, area: monotoneAreaPath };
 
 /** A line's run between its points: bending through them, or straight. TanStack draws straight by default. */
 export const curveOf = (curve: 'smooth' | 'linear') => (curve === 'smooth' ? SMOOTH : undefined);

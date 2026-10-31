@@ -1,6 +1,6 @@
 {
   "name": "@vunset/utils",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0-rc.2",
   "description": "Plain, dependency-free helpers for dates, numbers, strings, CSV, chart colors and SVG parsing.",
   "keywords": [
     "utils",
