@@ -10,12 +10,10 @@ import { installTabs } from './markdown/install-tabs.ts';
 import { readFileSync } from 'node:fs';
 import vuePackage from '../../packages/vue/package.json' with { type: 'json' };
 
-// Where the site is deployed; `base` and every absolute URL below follow it.
 const base = '/';
 const origin = 'https://vunset.com';
 const description = 'A headless, unstyled Vue 3 component library, and a pre-styled UI built on it.';
 
-// The newest released version in the changelog, and the line written under it.
 function latestRelease() {
   const changelog = readFileSync(new URL('../../CHANGELOG.md', import.meta.url), 'utf8');
   const match = changelog.match(/^## (\d+\.\d+\.\d+(?:-[\w.]+)?)\n+([^#\n][^\n]*)?/m);
@@ -23,18 +21,34 @@ function latestRelease() {
 }
 
 export default defineConfig({
-  title: 'Vunset',
+  title: 'Headless Vue components, done right',
+  titleTemplate: ':title - Vunset',
+  htmlAttrs: { prefix: 'og: https://ogp.me/ns#', lang: 'en' },
   description,
   base,
   cleanUrls: true,
   sitemap: { hostname: origin + base },
   head: [
+    [
+      'link',
+      {
+        rel: 'preload',
+        href: `${base}fonts/InstrumentSans-Variable.woff2`,
+        as: 'font',
+        type: 'font/woff2',
+        crossorigin: ''
+      }
+    ],
+    ['link', { rel: 'apple-touch-icon', href: `${base}apple-touch-icon.png` }],
+    ['link', { rel: 'icon', type: 'image/x-icon', href: `${base}favicon.ico`, sizes: '32x32' }],
     ['link', { rel: 'icon', type: 'image/svg+xml', href: `${base}favicon.svg` }],
+    ['meta', { property: 'og:image', content: `${origin + base}og-default.webp` }],
+    ['meta', { property: 'og:image:width', content: '1200' }],
+    ['meta', { property: 'og:image:height', content: '630' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:site_name', content: 'Vunset' }],
     ['meta', { name: 'twitter:card', content: 'summary' }]
   ],
-  // Each page's own title, description and address for link previews.
   transformHead({ pageData, title, description: pageDescription }) {
     const path = pageData.relativePath.replace(/(^|\/)index\.md$/, '$1').replace(/\.md$/, '');
     return [
