@@ -13,7 +13,7 @@ import vuePackage from '../../packages/vue/package.json' with { type: 'json' };
 // Where the site is deployed; `base` and every absolute URL below follow it.
 const base = '/vunset/';
 const origin = 'https://vunset.github.io';
-const description = 'A headless, unstyled Vue 3 component library, and a styled kit built on it.';
+const description = 'A headless, unstyled Vue 3 component library, and a pre-styled UI built on it.';
 
 // The newest released version in the changelog, and the line written under it.
 function latestRelease() {

@@ -9,6 +9,7 @@
     "types": ["vitest/globals", "vite/client"],
     "skipLibCheck": true,
     "noEmit": true,
+    "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "paths": {

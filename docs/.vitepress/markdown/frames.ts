@@ -1,5 +1,5 @@
 import type { MarkdownRenderer } from 'vitepress';
-import { quote, section, type Section } from './sections';
+import { quote, section, type Section } from './sections.ts';
 
 // `## Anatomy`, `## Examples` and `## Keyboard` → a <SectionFrame>: the `##`
 // heading beside, the section's text in a <SectionCard>. Examples, when there

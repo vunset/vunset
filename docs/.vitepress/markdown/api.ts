@@ -2,8 +2,8 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { MarkdownRenderer } from 'vitepress';
 import { createChecker, type ComponentMeta, type PropertyMeta, type PropertyMetaSchema } from 'vue-component-meta';
-import { sourceContainer, type SourceContainer } from './source-container';
-import { section } from './sections';
+import { sourceContainer, type SourceContainer } from './source-container.ts';
+import { section } from './sections.ts';
 
 export interface ApiOptions {
   /** Where components live: `button/Button` is `<root>/button/Button.vue`. */

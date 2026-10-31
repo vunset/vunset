@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { basename, dirname, extname, join, resolve } from 'node:path';
 import type { MarkdownRenderer } from 'vitepress';
-import { sourceContainer } from './source-container';
+import { sourceContainer } from './source-container.ts';
 
 const STYLE_IMPORT = /^import ['"]([^'"]+\.css)['"];?\n/gm;
 const COMPONENT_IMPORT = /^import \w+ from ['"](\.{1,2}\/[^'"]+\.vue)['"];?$/gm;

@@ -2,7 +2,8 @@
 import { defineAsyncComponent, ref, type Component, watch } from 'vue';
 import { ToggleGroup, Toggle } from '@vunset/vue';
 
-const demos = import.meta.glob<Component>('../../demos/**/*.vue', { import: 'default' });
+// The home page's demos are imported by HomeExample itself.
+const demos =import.meta.glob<Component>(['../../demos/**/*.vue', '!../../demos/home/*.vue'], { import: 'default' });
 
 const COLLAPSE_AFTER = 10;
 
