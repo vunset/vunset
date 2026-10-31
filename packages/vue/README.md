@@ -79,7 +79,7 @@ import { DataTable } from '@vunset/vue/data-table';
 
 ## Documentation
 
-[vunset.github.io/vunset/get-started](https://vunset.github.io/vunset/get-started)
+[vunset.com/get-started](https://vunset.com/get-started)
 
 ## License
 

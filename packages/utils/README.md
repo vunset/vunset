@@ -23,7 +23,7 @@ import { formatDate, formatNumber, formatCsv } from '@vunset/utils';
 
 ## Documentation
 
-[vunset.github.io/vunset/helpers/dates](https://vunset.github.io/vunset/helpers/dates)
+[vunset.com/helpers/dates](https://vunset.com/helpers/dates)
 
 ## License
 

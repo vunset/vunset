@@ -51,7 +51,7 @@ Every component, composable and helper is then available without importing it.
 ## Documentation
 
 Every component has a page with examples, the parts it's made of, its keyboard
-support and its full API: [vunset.github.io/vunset](https://vunset.github.io/vunset/).
+support and its full API: [vunset.com](https://vunset.com/).
 
 ## License
 

@@ -20,7 +20,7 @@
     "url": "git+https://github.com/vunset/vunset.git",
     "directory": "packages/ui"
   },
-  "homepage": "https://vunset.github.io/vunset/ui/get-started",
+  "homepage": "https://vunset.com/ui/get-started",
   "bugs": "https://github.com/vunset/vunset/issues",
   "type": "module",
   "sideEffects": [

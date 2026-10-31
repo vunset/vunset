@@ -20,7 +20,7 @@
     "url": "git+https://github.com/vunset/vunset.git",
     "directory": "packages/vue"
   },
-  "homepage": "https://vunset.github.io/vunset/get-started",
+  "homepage": "https://vunset.com/get-started",
   "bugs": "https://github.com/vunset/vunset/issues",
   "type": "module",
   "sideEffects": false,

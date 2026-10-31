@@ -21,8 +21,8 @@ cells) gets one parent class, written in the component's own `<style>`
 
 ## Base path
 
-The site is served from `https://vunset.github.io/vunset/` (`base` in
-`config.mts`). Markdown links and CSS `url()`s get the base on their own; a
+The site is served from `https://vunset.com/` (`base` in `config.mts`, `/`
+for now; the code below keeps a subpath working). Markdown links and CSS `url()`s get the base on their own; a
 theme component's internal `href` goes through `withBase`, and compares the
 page with `usePagePath()` (`theme/sidebar.ts`), never `route.path`, which
 includes the base. A public file a script asks for starts from

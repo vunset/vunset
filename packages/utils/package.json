@@ -18,7 +18,7 @@
     "url": "git+https://github.com/vunset/vunset.git",
     "directory": "packages/utils"
   },
-  "homepage": "https://vunset.github.io/vunset/helpers/dates",
+  "homepage": "https://vunset.com/helpers/dates",
   "bugs": "https://github.com/vunset/vunset/issues",
   "type": "module",
   "sideEffects": false,

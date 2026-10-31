@@ -83,7 +83,7 @@ import { AppDataTable } from '@vunset/ui/data-table';
 
 ## Documentation
 
-[vunset.github.io/vunset/ui/get-started](https://vunset.github.io/vunset/ui/get-started)
+[vunset.com/ui/get-started](https://vunset.com/ui/get-started)
 
 ## License
 
