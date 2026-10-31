@@ -1,0 +1,13 @@
+{
+  // The `::: api` checker's program: the components and what they import, not
+  // the tests or demos, which more than doubled its memory.
+  "extends": "../../tsconfig.json",
+  "compilerOptions": { "types": [] },
+  "include": [
+    "../../packages/utils/src/**/*.ts",
+    "../../packages/vue/src/**/*.ts",
+    "../../packages/vue/src/**/*.vue",
+    "../../packages/ui/src/**/*.ts",
+    "../../packages/ui/src/**/*.vue"
+  ]
+}

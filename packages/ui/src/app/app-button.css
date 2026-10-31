@@ -1,0 +1,153 @@
+@layer components {
+  .app-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: var(--ui-control-height);
+    padding: 0 var(--ui-control-padding-x);
+    border: var(--ui-border-width) solid transparent;
+    border-radius: var(--ui-radius);
+    font-size: var(--ui-font-size);
+    line-height: 1.25;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    outline: none;
+    transition:
+      background-color var(--ui-duration) ease,
+      border-color var(--ui-duration) ease,
+      box-shadow var(--ui-duration) ease,
+      scale var(--ui-duration) ease;
+
+    &:focus-visible {
+      box-shadow: var(--ui-focus-ring);
+    }
+
+    &:is(:disabled, [data-disabled]) {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &:not(:disabled):not([data-disabled]):active {
+      scale: 0.99;
+    }
+
+    svg {
+      flex: none;
+      width: 1em;
+      height: 1em;
+      width: 0.85lh;
+      height: 0.85lh;
+    }
+
+    &[data-variant='solid'] {
+      background: var(--ui-tone);
+      color: var(--ui-on-tone);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+
+      &:hover:not([data-disabled]) {
+        background: color-mix(in srgb, var(--ui-tone) 85%, var(--ui-bg));
+
+        &:active {
+          background: var(--ui-tone);
+        }
+      }
+    }
+
+    &[data-variant='soft'] {
+      background: color-mix(in srgb, var(--ui-tone) 14%, transparent);
+      color: var(--ui-tone);
+
+      &:hover:not([data-disabled]) {
+        background: color-mix(in srgb, var(--ui-tone) 22%, transparent);
+
+        &:active {
+          background: color-mix(in srgb, var(--ui-tone) 14%, transparent);
+        }
+      }
+
+      &[data-tone='neutral'] {
+        background: color-mix(in srgb, var(--ui-tone) 10%, transparent);
+      }
+    }
+
+    &[data-variant='outline'] {
+      border-color: color-mix(in srgb, var(--ui-tone) 30%, transparent);
+      color: var(--ui-tone);
+
+      &:hover:not([data-disabled]) {
+        background: color-mix(in srgb, var(--ui-tone) 5%, transparent);
+
+        &:active {
+          background: color-mix(in srgb, var(--ui-tone) 3%, transparent);
+        }
+      }
+
+      &[data-tone='neutral'] {
+        border-color: color-mix(in srgb, var(--ui-tone) 15%, transparent);
+      }
+    }
+
+    &[data-variant='ghost'] {
+      color: var(--ui-tone);
+
+      &:hover:not([data-disabled]) {
+        background: color-mix(in srgb, var(--ui-tone) 7%, transparent);
+
+        &:active {
+          background: color-mix(in srgb, var(--ui-tone) 5%, transparent);
+        }
+      }
+    }
+
+    /* A default AppBadge's height at the default control height, to sit in a row beside one. */
+    &[data-size='xs'] {
+      gap: 0.25rem;
+      height: calc(var(--ui-control-height) - 0.75rem);
+      padding-inline: 0.5rem;
+      border-radius: var(--ui-radius-sm);
+      font-size: var(--ui-font-size-xs);
+    }
+
+    &[data-size='sm'] {
+      height: calc(var(--ui-control-height) - 0.5rem);
+      padding-inline: 0.625rem;
+      font-size: var(--ui-font-size-sm);
+    }
+
+    &[data-size='lg'] {
+      height: calc(var(--ui-control-height) + 0.5rem);
+      padding-inline: 1.125rem;
+      font-size: var(--ui-font-size-lg);
+    }
+
+    &[data-square] {
+      aspect-ratio: 1;
+      padding-inline: 0;
+    }
+
+    &[data-loading] {
+      opacity: 1;
+      cursor: progress;
+      background-image: repeating-linear-gradient(
+        -75deg,
+        color-mix(in srgb, currentColor 10%, transparent) 0 10px,
+        transparent 10px 20px
+      );
+      background-size: 20px 100%;
+      background-position: 0 0;
+
+      @media (prefers-reduced-motion: no-preference) {
+        animation: app-button-pending 2s linear infinite;
+      }
+    }
+  }
+
+  @keyframes app-button-pending {
+    to {
+      background-position: 20px 0;
+    }
+  }
+}

@@ -1,0 +1,112 @@
+/* Tailwind's order, so the layers rank the same whichever stylesheet loads first.
+   The tokens sit in the lowest: an app's own value wins wherever it is set. */
+@layer theme, base, components, utilities;
+
+@layer theme {
+  :root {
+    /* Each scale follows its base: set the base for all of them, or one step alone.
+       The only place a size token is worked out; component sheets use them as they are. */
+    --ui-font-size: 0.875rem;
+    --ui-font-size-2xs: calc(var(--ui-font-size) - 0.1875rem);
+    --ui-font-size-xs: calc(var(--ui-font-size) - 0.125rem);
+    --ui-font-size-sm: calc(var(--ui-font-size) - 0.0625rem);
+    --ui-font-size-lg: calc(var(--ui-font-size) + 0.0625rem);
+    --ui-font-size-xl: calc(var(--ui-font-size) + 0.125rem);
+
+    /* Tailwind's steps at the default; `0` squares everything, pills included. */
+    --ui-radius: 0.475rem;
+    --ui-radius-xs: calc(var(--ui-radius) / 3);
+    --ui-radius-sm: calc(var(--ui-radius) / 1.5);
+    --ui-radius-lg: calc(var(--ui-radius) * 4 / 3);
+    --ui-radius-xl: calc(var(--ui-radius) * 2);
+    --ui-radius-2xl: calc(var(--ui-radius) * 8 / 3);
+    --ui-radius-3xl: calc(var(--ui-radius) * 4);
+    --ui-radius-full: 9999px;
+
+    --ui-border-width: 1px;
+    --ui-duration: 150ms;
+
+    --ui-control-height: 2.125rem;
+    --ui-control-height-sm: calc(var(--ui-control-height) - 0.5rem);
+    --ui-control-height-lg: calc(var(--ui-control-height) + 0.5rem);
+
+    --ui-control-padding-x: 0.75rem;
+    --ui-control-padding-x-xs: calc(var(--ui-control-padding-x) - 0.375rem);
+    --ui-control-padding-x-sm: calc(var(--ui-control-padding-x) - 0.125rem);
+    --ui-control-padding-x-lg: calc(var(--ui-control-padding-x) + 0.125rem);
+    --ui-control-shadow: 0 1px 3px -1px rgba(0, 0, 0, 0.15);
+
+    --ui-bg: light-dark(#fff, #111111);
+    --ui-border: light-dark(#d4d4d8, #333);
+    --ui-surface: light-dark(#e6e6e6, #27272a);
+    --ui-text: light-dark(#18181b, #fafafa);
+    --ui-muted: color-mix(in srgb, var(--ui-text) 50%, transparent);
+
+    --ui-accent: light-dark(#81a266, #a9c98f);
+    --ui-on-accent: #111111;
+    --ui-neutral: var(--ui-text);
+    --ui-on-neutral: var(--ui-bg);
+    --ui-danger: light-dark(#d42525, #ff4d4d);
+    --ui-on-danger: light-dark(#fff, #fff);
+    --ui-success: light-dark(#16a34a, #4ade80);
+    --ui-on-success: light-dark(#fff, #093019);
+    --ui-warning: light-dark(#d97706, #fbbf24);
+    --ui-on-warning: light-dark(#fff, #301909);
+
+    --ui-focus-ring-width: 0 0 0 3px;
+    --ui-focus-ring-color: color-mix(in srgb, var(--ui-accent) 15%, transparent);
+    --ui-focus-ring: var(--ui-focus-ring-width) var(--ui-focus-ring-color);
+
+    --ui-check-size: 1.125rem;
+    --ui-check-size-sm: calc(var(--ui-check-size) - 0.125rem);
+    --ui-check-size-lg: calc(var(--ui-check-size) + 0.125rem);
+
+    --ui-switch-width: 2.5rem;
+    --ui-switch-width-sm: calc(var(--ui-switch-width) - 0.375rem);
+    --ui-switch-width-lg: calc(var(--ui-switch-width) + 0.375rem);
+    --ui-switch-height: 1.375rem;
+    --ui-switch-height-sm: calc(var(--ui-switch-height) - 0.25rem);
+    --ui-switch-height-lg: calc(var(--ui-switch-height) + 0.25rem);
+
+    --ui-z-floating: 40;
+    --ui-z-overlay: 50;
+    --ui-z-popup: 50;
+    --ui-z-toast: 60;
+    --positioner-z-index: var(--ui-z-popup);
+  }
+
+  [data-tone='neutral'] {
+    --ui-tone: var(--ui-neutral);
+    --ui-on-tone: var(--ui-on-neutral);
+  }
+
+  [data-tone='accent'] {
+    --ui-tone: var(--ui-accent);
+    --ui-on-tone: var(--ui-on-accent);
+  }
+
+  [data-tone='success'] {
+    --ui-tone: var(--ui-success);
+    --ui-on-tone: var(--ui-on-success);
+  }
+
+  [data-tone='warning'] {
+    --ui-tone: var(--ui-warning);
+    --ui-on-tone: var(--ui-on-warning);
+  }
+
+  [data-tone='danger'] {
+    --ui-tone: var(--ui-danger);
+    --ui-on-tone: var(--ui-on-danger);
+  }
+}
+
+@layer base {
+  .app-icon {
+    flex: none;
+    width: 1em;
+    height: 1em;
+    width: 1lh;
+    height: 1lh;
+  }
+}

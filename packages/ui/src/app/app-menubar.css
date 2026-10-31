@@ -1,0 +1,36 @@
+@layer components {
+  .app-menubar {
+    display: inline-flex;
+    align-items: center;
+    color: var(--ui-text);
+    font-size: var(--ui-font-size);
+  }
+
+  .app-menubar-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    height: calc(var(--ui-control-height));
+    padding: 0 0.625rem;
+    border-radius: var(--ui-radius);
+    text-decoration: none;
+    cursor: pointer;
+    outline: none;
+    transition: background-color var(--ui-duration) ease;
+
+    &:hover:not([data-disabled]),
+    &[data-open],
+    &[aria-current='page'] {
+      background: var(--ui-surface);
+    }
+
+    &:focus-visible {
+      box-shadow: var(--ui-focus-ring);
+    }
+
+    &[data-disabled] {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}

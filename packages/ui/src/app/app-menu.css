@@ -1,0 +1,169 @@
+@layer components {
+  .app-menu {
+    position: relative;
+    display: grid;
+    gap: 1px;
+    min-width: max-content;
+    max-width: min(20rem, calc(100vw - 1rem));
+    max-height: var(--available-height, none);
+    padding: 0.25rem;
+    overflow-y: auto;
+    transition:
+      opacity var(--ui-duration) ease,
+      scale var(--ui-duration) ease;
+    transform-origin: var(--ui-origin-y, center) var(--ui-origin-x, center);
+
+    &[data-enter-from],
+    &[data-leave-to] {
+      opacity: 0;
+      scale: 0.97;
+    }
+
+    &[data-side='bottom'] {
+      --ui-origin-y: top;
+    }
+
+    &[data-side='top'] {
+      --ui-origin-y: bottom;
+    }
+
+    &[data-align='start'] {
+      --ui-origin-x: left;
+    }
+
+    &[data-align='end'] {
+      --ui-origin-x: right;
+    }
+  }
+
+  .app-menu-group {
+    display: grid;
+  }
+
+  .app-menu-group-label {
+    padding: 0.375rem 0.5rem 0.25rem;
+    color: var(--ui-muted);
+    font-size: var(--ui-font-size-sm);
+  }
+
+  .app-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    min-height: 2rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--ui-radius-sm);
+    text-align: start;
+    text-decoration: none;
+    cursor: pointer;
+    outline: none;
+    user-select: none;
+
+    &:focus {
+      background: var(--ui-surface);
+    }
+
+    &:hover:not([data-disabled]),
+    &[data-open] {
+      background: color-mix(in srgb, var(--ui-surface) 50%, transparent);
+    }
+
+    &[data-tone='danger'] {
+      color: var(--ui-danger);
+
+      &:focus {
+        background: color-mix(in srgb, var(--ui-danger) 12%, transparent);
+      }
+    }
+
+    &[data-disabled] {
+      opacity: 0.5;
+      cursor: not-allowed;
+
+      &:focus {
+        background: none;
+      }
+    }
+  }
+
+  .app-menu-text {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-menu-icon {
+    flex: none;
+    width: 1rem;
+    height: 1rem;
+    color: var(--ui-muted);
+
+    [data-tone='danger'] > & {
+      color: inherit;
+    }
+  }
+
+  .app-menu-indicator {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 1rem;
+    height: 1rem;
+
+    &[data-unchecked] {
+      visibility: hidden;
+    }
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    &[data-radio] svg {
+      fill: currentColor;
+      stroke: none;
+    }
+  }
+
+  kbd,
+  .app-menu-chevron {
+    flex: none;
+    margin-inline-start: auto;
+    color: var(--ui-muted);
+  }
+
+  .app-menu-chevron {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+
+  .app-menu-separator {
+    margin: 0.25rem -0.25rem;
+  }
+
+  .app-menu-arrow {
+    width: 0.625rem;
+    height: 0.625rem;
+    rotate: 45deg;
+    border: var(--ui-border-width) solid var(--ui-border);
+    background: var(--ui-bg);
+
+    &[data-side='bottom'] {
+      top: -0.3125rem;
+      border-width: var(--ui-border-width) 0 0 var(--ui-border-width);
+    }
+
+    &[data-side='top'] {
+      bottom: -0.3125rem;
+      border-width: 0 var(--ui-border-width) var(--ui-border-width) 0;
+    }
+  }
+
+  /* AppContextMenu's area: a long press opens the menu, not the system callout. */
+  .app-context-menu-area {
+    -webkit-touch-callout: none;
+  }
+}

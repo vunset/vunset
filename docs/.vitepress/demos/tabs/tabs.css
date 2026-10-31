@@ -1,0 +1,117 @@
+:root {
+  --demo-color-text: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));
+  --demo-color-edge: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.3));
+  --demo-color-canvas: light-dark(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.03));
+}
+
+.demo-tabs {
+  display: flex;
+  flex-direction: column;
+  width: 22rem;
+  font-size: 0.875rem;
+  color: var(--demo-color-text);
+  border: 1px dotted var(--demo-color-edge);
+  background-color: var(--demo-color-canvas);
+
+  &[data-orientation='vertical'] {
+    flex-direction: row;
+  }
+}
+
+.demo-tabs-list {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  gap: 0.125rem;
+  padding: 0.25rem;
+
+  &[data-orientation='vertical'] {
+    flex-direction: column;
+  }
+}
+
+.demo-tabs-tab {
+  box-sizing: border-box;
+  height: 1.75rem;
+  margin: 0;
+  padding: 0 0.75rem;
+  border: 1px solid transparent;
+  font: inherit;
+  color: inherit;
+  text-align: start;
+  cursor: pointer;
+  outline: none;
+
+  &[data-selected] {
+    background-color: rgba(from var(--demo-color-text) r g b / 10%);
+  }
+
+  &:focus-visible {
+    border-color: currentColor;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.demo-tabs-list-with-indicator .demo-tabs-tab[data-selected] {
+  background: none;
+}
+
+.demo-tabs-indicator {
+  position: absolute;
+  z-index: -1;
+  top: var(--active-tab-top);
+  left: var(--active-tab-left);
+  width: var(--active-tab-width);
+  height: var(--active-tab-height);
+  background-color: rgba(from var(--demo-color-text) r g b / 10%);
+  transition:
+    left 200ms ease,
+    top 200ms ease,
+    width 200ms ease;
+}
+
+.demo-tabs-panels {
+  display: grid;
+
+  & > * {
+    grid-area: 1 / 1;
+  }
+}
+
+.demo-tabs-panel {
+  flex: 1;
+  padding: 0.75rem;
+  outline: none;
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+
+  &[data-enter-from],
+  &[data-leave-to] {
+    opacity: 0;
+  }
+
+  &[data-enter-from][data-activation-direction='right'],
+  &[data-leave-to][data-activation-direction='left'] {
+    transform: translateX(10px);
+  }
+
+  &[data-enter-from][data-activation-direction='left'],
+  &[data-leave-to][data-activation-direction='right'] {
+    transform: translateX(-10px);
+  }
+
+  &[data-enter-from][data-activation-direction='down'],
+  &[data-leave-to][data-activation-direction='up'] {
+    transform: translateY(8px);
+  }
+
+  &[data-enter-from][data-activation-direction='up'],
+  &[data-leave-to][data-activation-direction='down'] {
+    transform: translateY(-8px);
+  }
+}

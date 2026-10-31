@@ -1,0 +1,108 @@
+@layer components {
+  .form-combobox {
+    min-width: 0;
+  }
+
+  .form-combobox-trigger {
+    --form-combobox-row: calc(var(--ui-control-height) - 0.6rem);
+    --form-combobox-inset: calc((var(--ui-control-height) - var(--form-combobox-row)) / 2 - var(--ui-border-width));
+
+    height: auto;
+    min-height: var(--ui-control-height);
+    padding-block: var(--form-combobox-inset);
+    padding-inline-end: 0.375rem;
+    cursor: text;
+
+    &:has([data-part='chip']) {
+      padding-inline-start: var(--form-combobox-inset);
+    }
+
+    /* A joined button spans the box's padding too. */
+    & > .form-addon:first-child:has(.app-button) {
+      margin-block: calc(-1 * var(--form-combobox-inset));
+    }
+
+    .form-clear {
+      margin-inline: -0.375rem;
+      margin-block: min(0px, (var(--form-combobox-row) - var(--form-clear-size, 1.5rem)) / 2);
+    }
+  }
+
+  .form-combobox-values {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+    min-width: 0;
+  }
+
+  .form-combobox-input {
+    flex: 1;
+    height: var(--form-combobox-row);
+    field-sizing: content;
+    outline: none;
+
+    &::placeholder {
+      color: var(--ui-muted);
+      opacity: 1;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  .form-combobox-chips {
+    display: contents;
+
+    & [data-part='chip'] {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.125rem;
+      max-width: 100%;
+      height: var(--form-combobox-row);
+      padding-inline: 0.5rem 0.125rem;
+      border-radius: var(--ui-radius-sm);
+      background: var(--ui-surface);
+      font-size: var(--ui-font-size-sm);
+    }
+
+    & [data-part='chip-label'] {
+      min-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    & [data-part='chip-overflow'] {
+      align-self: center;
+      color: var(--ui-muted);
+      font-size: var(--ui-font-size-sm);
+    }
+  }
+
+  .form-combobox-chip-remove {
+    display: grid;
+    flex: none;
+    place-items: center;
+    height: min(1.25rem, 100%);
+    border-radius: var(--ui-radius-xs);
+    color: var(--ui-muted);
+    cursor: pointer;
+
+    &:hover {
+      background: var(--ui-border);
+      color: var(--ui-text);
+    }
+
+    & .form-icon {
+      width: 0.75rem;
+      height: 0.75rem;
+    }
+  }
+
+  .form-combobox-trigger:is([data-disabled], [data-readonly]) [data-part='chip'] {
+    padding-inline-end: 0.5rem;
+  }
+}

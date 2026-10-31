@@ -1,0 +1,55 @@
+@layer components {
+  .app-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--ui-text);
+    font-size: var(--ui-font-size);
+  }
+
+  .app-pagination-group {
+    display: flex;
+    border: var(--ui-border-width) solid var(--ui-border);
+    border-radius: var(--ui-radius);
+    box-shadow: var(--ui-control-shadow);
+    overflow: clip;
+  }
+
+  .app-pagination-item {
+    min-width: var(--ui-control-height);
+    padding-inline: 0.5rem;
+    font-variant-numeric: tabular-nums;
+    height: calc(var(--ui-control-height) - 0.15rem);
+    transition: background-color var(--ui-duration) ease;
+    line-height: 1.1;
+    display: grid;
+    place-items: center;
+    background-color: var(--ui-bg);
+
+    &:not(:is(.app-pagination-ellipsis, [data-selected], [data-disabled])):hover {
+      background: var(--ui-surface);
+    }
+
+    &:not(:last-child) {
+      border-right: var(--ui-border-width) solid var(--ui-border);
+    }
+
+    &[data-selected] {
+      background: color-mix(in srgb, var(--ui-accent) 10%, var(--ui-bg));
+      color: var(--ui-accent);
+    }
+
+    &[data-disabled] {
+      color: var(--ui-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .app-pagination-ellipsis {
+    display: inline-grid;
+    place-items: center;
+    cursor: default;
+    color: var(--ui-muted);
+  }
+}

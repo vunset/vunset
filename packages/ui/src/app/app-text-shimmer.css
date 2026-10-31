@@ -1,0 +1,31 @@
+@layer components {
+  .app-text-shimmer {
+    --app-text-shimmer-duration: 1.5s;
+
+    /* As wide as its text, so a short line on a wide row isn't a light
+       crossing mostly empty space. */
+    width: fit-content;
+    max-width: 100%;
+
+    @media (prefers-reduced-motion: no-preference) {
+      mask-image: linear-gradient(
+        90deg,
+        rgb(0 0 0 / 60%) 0%,
+        rgb(0 0 0 / 60%) 40%,
+        #000 50%,
+        rgb(0 0 0 / 60%) 60%,
+        rgb(0 0 0 / 60%) 100%
+      );
+      mask-size: 400% 100%;
+      mask-position: 100% 0;
+      mask-repeat: no-repeat;
+      animation: app-text-shimmer var(--app-text-shimmer-duration) ease infinite;
+    }
+  }
+
+  @keyframes app-text-shimmer {
+    to {
+      mask-position: 0% 0;
+    }
+  }
+}

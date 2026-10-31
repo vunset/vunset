@@ -1,0 +1,82 @@
+:root {
+  --demo-color-text: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));
+  --demo-color-edge: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.3));
+  --demo-color-canvas: light-dark(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.03));
+}
+
+.demo-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.demo-pagination-button {
+  box-sizing: border-box;
+  display: inline-grid;
+  place-items: center;
+  min-width: 2rem;
+  height: 2rem;
+  margin: 0;
+  padding: 0 0.375rem;
+  border: 1px dotted transparent;
+  background-color: transparent;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  color: var(--demo-color-text);
+  text-decoration: none;
+  cursor: pointer;
+  outline: none;
+
+  &:hover:not([data-disabled], [data-selected]) {
+    background-color: rgba(from var(--demo-color-text) r g b / 10%);
+  }
+
+  &[data-selected] {
+    background-color: rgba(from var(--demo-color-text) r g b / 10%);
+    border-color: var(--demo-color-edge);
+  }
+
+  &:focus-visible {
+    border-color: var(--demo-color-edge);
+  }
+
+  &[data-disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+.demo-pagination-ellipsis {
+  min-width: 2rem;
+  text-align: center;
+  opacity: 0.5;
+}
+
+/* The page-size picker, on the same line as the pages. */
+.demo-pagination-size {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-inline-start: 0.75rem;
+  color: var(--demo-color-text);
+
+  & .demo-select-trigger {
+    width: 4.5rem;
+  }
+}
+
+/* The rows a page change scrolls back to. */
+.demo-pagination-rows {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+}

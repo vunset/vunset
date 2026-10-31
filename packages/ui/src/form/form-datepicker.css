@@ -1,0 +1,72 @@
+@layer components {
+  /* The box: the trigger, then the clear button. The rest of its look is `.form-control`. */
+  .form-datepicker {
+    padding: 0;
+
+    &:has(.form-clear) {
+      padding-inline-end: 0.25rem;
+    }
+  }
+
+  .form-datepicker-trigger {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+    height: 100%;
+    padding: 0 var(--ui-control-padding-x);
+    text-align: start;
+    cursor: pointer;
+    outline: none;
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+
+    [data-readonly] > & {
+      cursor: default;
+    }
+  }
+
+  .form-datepicker-value {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    &[data-placeholder] {
+      color: var(--ui-muted);
+    }
+  }
+
+  .form-datepicker-popup {
+    transition:
+      opacity var(--ui-duration) ease,
+      scale var(--ui-duration) ease;
+    transform-origin: var(--ui-origin-y, center) var(--ui-origin-x, center);
+
+    &[data-enter-from],
+    &[data-leave-to] {
+      opacity: 0;
+      scale: 0.97;
+    }
+
+    &[data-side='bottom'] {
+      --ui-origin-y: top;
+    }
+
+    &[data-side='top'] {
+      --ui-origin-y: bottom;
+    }
+
+    &[data-align='start'] {
+      --ui-origin-x: left;
+    }
+
+    &[data-align='end'] {
+      --ui-origin-x: right;
+    }
+  }
+}

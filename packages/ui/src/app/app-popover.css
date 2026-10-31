@@ -1,0 +1,65 @@
+@layer components {
+  .app-popover {
+    position: relative;
+    transition:
+      opacity var(--ui-duration) ease,
+      scale var(--ui-duration) ease;
+    transform-origin: var(--ui-origin-y, center) var(--ui-origin-x, center);
+    padding: 0.25rem;
+
+    &[data-enter-from],
+    &[data-leave-to] {
+      opacity: 0;
+      scale: 0.97;
+    }
+
+    &[data-side='bottom'] {
+      --ui-origin-y: top;
+    }
+
+    &[data-side='top'] {
+      --ui-origin-y: bottom;
+    }
+
+    &[data-align='start'] {
+      --ui-origin-x: left;
+    }
+
+    &[data-align='end'] {
+      --ui-origin-x: right;
+    }
+
+    /* No close button in a popover: the header needs no room for one. */
+    & .app-overlay-header {
+      padding-inline-end: 0;
+    }
+  }
+
+  .app-popover-arrow {
+    width: 0.625rem;
+    height: 0.625rem;
+    rotate: 45deg;
+    border: var(--ui-border-width) solid var(--ui-border);
+    background: var(--ui-bg);
+
+    &[data-side='bottom'] {
+      border-width: var(--ui-border-width) 0 0 var(--ui-border-width);
+      margin-bottom: -0.3125rem;
+    }
+
+    &[data-side='top'] {
+      border-width: 0 var(--ui-border-width) var(--ui-border-width) 0;
+      margin-top: -0.3125rem;
+    }
+
+    &[data-side='left'] {
+      border-width: var(--ui-border-width) var(--ui-border-width) 0 0;
+      margin-left: -0.3125rem;
+    }
+
+    &[data-side='right'] {
+      border-width: 0 0 var(--ui-border-width) var(--ui-border-width);
+      margin-right: -0.3125rem;
+    }
+  }
+}

@@ -1,0 +1,145 @@
+:root {
+  --demo-color-text: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));
+  --demo-color-edge: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.3));
+  --demo-color-canvas: light-dark(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.03));
+}
+
+.demo-scroll-frame {
+  box-sizing: border-box;
+  width: 22rem;
+  max-width: 100%;
+  border: 1px dotted var(--demo-color-edge);
+  overflow: hidden;
+  background-color: var(--demo-color-canvas);
+  font-size: 0.875rem;
+  color: var(--demo-color-text);
+
+  &:has(:focus-visible) {
+    border-color: currentColor;
+  }
+}
+
+.demo-scroll-area {
+  outline: none;
+}
+
+.demo-scroll-area-list {
+  height: 12rem;
+}
+
+.demo-scroll-area-item {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  color: var(--demo-color-text);
+
+  & + & {
+    border-top: 1px dotted var(--demo-color-edge);
+  }
+
+  b {
+    flex: none;
+    width: 3rem;
+    font-weight: 400;
+    color: var(--demo-color-text);
+  }
+}
+
+.demo-scroll-area-row {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem;
+}
+
+.demo-scroll-area-tag {
+  flex: none;
+  padding: 0.25rem 0.625rem;
+  border: 1px dotted var(--demo-color-edge);
+}
+
+.demo-scroll-area-grid {
+  max-height: 10rem;
+}
+
+.demo-scroll-area-table {
+  border-collapse: collapse;
+  min-width: 36rem;
+
+  th,
+  td {
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    white-space: nowrap;
+    border-bottom: 1px dotted var(--demo-color-edge);
+  }
+
+  th {
+    font-weight: 600;
+  }
+}
+
+.demo-scroll-area-header {
+  position: sticky;
+  top: 0;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid transparent;
+  background-color: inherit;
+  font-weight: 600;
+
+  & [data-overflow-y-start] > & {
+    border-bottom: 1px dotted var(--demo-color-edge);
+  }
+}
+
+.demo-scroll-area-sticky {
+  height: 12rem;
+  background-color: var(--demo-color-canvas);
+}
+
+.demo-scroll-area-more {
+  position: sticky;
+  bottom: 0;
+  padding: 0.25rem 0.75rem;
+  background-color: inherit;
+  text-align: center;
+  color: var(--demo-color-text);
+  visibility: hidden;
+
+  [data-overflow-y-end] > & {
+    visibility: visible;
+  }
+}
+
+/* The fade size picked above, and the three areas showing it. */
+.demo-scroll-area-fades {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  max-width: 100%;
+}
+
+.demo-scroll-area-config {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--demo-color-text);
+
+  & .demo-select-trigger {
+    width: 7rem;
+  }
+}
+
+.demo-scroll-area-sizes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+}
+
+.demo-scroll-area-size {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}

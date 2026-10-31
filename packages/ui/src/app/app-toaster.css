@@ -1,0 +1,221 @@
+@layer components {
+  .app-toaster {
+    position: fixed;
+    z-index: var(--ui-z-toast);
+    width: 22rem;
+    max-width: calc(100vw - 2rem);
+    pointer-events: none;
+
+    &[data-side='top'] {
+      top: 1rem;
+    }
+
+    &[data-side='bottom'] {
+      bottom: 1rem;
+    }
+
+    &[data-align='start'] {
+      inset-inline-start: 1rem;
+    }
+
+    &[data-align='end'] {
+      inset-inline-end: 1rem;
+    }
+
+    &[data-align='center'] {
+      inset-inline-start: 50%;
+      translate: -50% 0;
+    }
+
+    /* Stacked: each one behind is nudged back and shrunk; hovered, they fan out. */
+    &[data-side='top'] .app-toast {
+      top: 0;
+      transform: translateY(calc(var(--toast-index) * 0.625rem)) scale(calc(1 - var(--toast-index) * 0.05));
+
+      &[data-enter-from],
+      &[data-leave-to] {
+        transform: translateY(-1rem);
+      }
+    }
+
+    &[data-side='bottom'] .app-toast {
+      bottom: 0;
+      transform: translateY(calc(var(--toast-index) * -0.625rem)) scale(calc(1 - var(--toast-index) * 0.05));
+
+      &[data-enter-from],
+      &[data-leave-to] {
+        transform: translateY(1rem);
+      }
+    }
+
+    &[data-expanded][data-side='top'] .app-toast:not([data-leave-to]) {
+      transform: translateY(calc(var(--toast-offset-y) + var(--toast-index) * 0.5rem));
+    }
+
+    &[data-expanded][data-side='bottom'] .app-toast:not([data-leave-to]) {
+      transform: translateY(calc((var(--toast-offset-y) + var(--toast-index) * 0.5rem) * -1));
+    }
+
+    /* Behind the front one, a toast takes its height, so the stack reads as one card. */
+    &:not([data-expanded]) .app-toast:not([data-front], [data-leave-to]) {
+      height: var(--toast-front-height);
+      overflow: hidden;
+    }
+  }
+
+  .app-toast {
+    --ui-tone: var(--ui-muted);
+
+    position: absolute;
+    inset-inline: 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    padding: 0.75rem;
+    pointer-events: auto;
+    translate: var(--toast-swipe-movement-x) var(--toast-swipe-movement-y);
+    transition:
+      transform 400ms cubic-bezier(0.22, 1, 0.36, 1),
+      translate 300ms ease,
+      opacity 300ms ease,
+      height 400ms cubic-bezier(0.22, 1, 0.36, 1);
+
+    &[data-type='success'] {
+      --ui-tone: var(--ui-success);
+    }
+
+    &[data-type='error'] {
+      --ui-tone: var(--ui-danger);
+    }
+
+    &[data-type='warning'] {
+      --ui-tone: var(--ui-warning);
+    }
+
+    &[data-type='info'],
+    &[data-type='loading'] {
+      --ui-tone: var(--ui-accent);
+    }
+
+    &:has(:focus-visible) {
+      border-color: var(--ui-accent);
+    }
+
+    &[data-enter-from],
+    &[data-leave-to],
+    &[data-limited] {
+      opacity: 0;
+    }
+
+    &[data-limited] {
+      pointer-events: none;
+    }
+
+    &[data-swiping] {
+      transition: none;
+      user-select: none;
+    }
+
+    &[data-swipe-direction='right'] {
+      translate: calc(var(--toast-swipe-movement-x) + 120%) 0;
+    }
+
+    &[data-swipe-direction='left'] {
+      translate: calc(var(--toast-swipe-movement-x) - 120%) 0;
+    }
+
+    &[data-swipe-direction='down'] {
+      translate: 0 calc(var(--toast-swipe-movement-y) + 150%);
+    }
+
+    &[data-swipe-direction='up'] {
+      translate: 0 calc(var(--toast-swipe-movement-y) - 150%);
+    }
+
+    &[data-repeated] {
+      animation: app-toast-nudge 220ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+  }
+
+  .app-toast-icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: 0.0625rem;
+    color: var(--ui-tone);
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    [data-type='loading'] > & {
+      svg {
+        width: 1.125rem;
+        height: 1.125rem;
+      }
+    }
+  }
+
+  .app-toast-body {
+    display: grid;
+    flex: 1;
+    gap: 0.125rem;
+    min-width: 0;
+    padding-block: 0.0625rem;
+  }
+
+  .app-toast-title {
+    font-weight: 500;
+  }
+
+  .app-toast-description {
+    &:empty {
+      display: none;
+    }
+  }
+
+  .app-toast-actions {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .app-toast-close {
+    flex: none;
+    margin: -0.5rem -0.5rem 0 0;
+    color: var(--ui-muted);
+  }
+
+  /* The toast's whole shape, so its rounded corners clip the bar drawn along the bottom. */
+  .app-toast-progress {
+    --toast-progress-height: 2px;
+
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(var(--ui-tone)) left bottom / 100% var(--toast-progress-height) no-repeat;
+    pointer-events: none;
+    animation: app-toast-progress var(--toast-duration) linear forwards;
+
+    &[data-paused] {
+      animation-play-state: paused;
+    }
+  }
+
+  @keyframes app-toast-progress {
+    to {
+      background-size: 0 var(--toast-progress-height);
+    }
+  }
+
+  @keyframes app-toast-nudge {
+    50% {
+      scale: 1.035;
+    }
+  }
+}

@@ -1,0 +1,76 @@
+:root {
+  --demo-color-text: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));
+  --demo-color-edge: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.3));
+  --demo-color-canvas: light-dark(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.03));
+}
+
+.demo-radio-group-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.demo-radio-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.875rem;
+  user-select: none;
+}
+
+.demo-radio {
+  box-sizing: border-box;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 1.125rem;
+  height: 1.125rem;
+  margin: 0;
+  padding: 0;
+  border: 1px dotted var(--demo-color-edge);
+  border-radius: 50%;
+  background-color: var(--demo-color-canvas);
+  color: var(--demo-color-text);
+  cursor: pointer;
+  outline: none;
+
+  &:hover:not([data-disabled], [data-checked]) {
+    background-color: rgba(from var(--demo-color-text) r g b / 10%);
+  }
+
+  &[data-checked] {
+    background-color: rgba(from var(--demo-color-text) r g b / 20%);
+    border-color: currentColor;
+  }
+
+  &[data-readonly] {
+    cursor: default;
+  }
+
+  &[data-disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    border-color: currentColor;
+  }
+}
+
+.demo-radio-indicator {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background-color: currentColor;
+  transition: scale 150ms ease;
+
+  &[data-enter-from],
+  &[data-leave-to] {
+    scale: 0;
+  }
+}
+
+.demo-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}

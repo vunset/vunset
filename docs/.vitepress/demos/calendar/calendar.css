@@ -1,0 +1,161 @@
+:root {
+  --demo-color-text: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));
+  --demo-color-edge: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.3));
+  --demo-color-canvas: light-dark(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.03));
+}
+
+.demo-calendar {
+  box-sizing: border-box;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 1px dotted var(--demo-color-edge);
+  background-color: var(--demo-color-canvas);
+  font-size: 0.875rem;
+  color: var(--demo-color-text);
+}
+
+.demo-calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.demo-calendar-button {
+  box-sizing: border-box;
+  display: inline-grid;
+  place-items: center;
+  min-width: 2rem;
+  height: 2rem;
+  margin: 0;
+  padding: 0 0.575rem;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  outline: none;
+
+  & svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  &:hover:not(:disabled, [data-disabled], [data-selected]) {
+    background-color: rgba(from var(--demo-color-text) r g b / 10%);
+  }
+
+  &:focus-visible {
+    border-color: currentColor;
+  }
+
+  &:disabled,
+  &[data-disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.demo-calendar-view-trigger[data-open] {
+  background-color: rgba(from var(--demo-color-text) r g b / 5%);
+}
+
+.demo-calendar-row {
+  display: grid;
+  grid-template-columns: repeat(7, 2rem);
+  gap: 2px;
+
+  & + .demo-calendar-row {
+    margin-top: 2px;
+  }
+}
+
+.demo-calendar-cells {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+}
+
+.demo-calendar-cell {
+  &[data-current] {
+    border: 1px dotted currentColor;
+  }
+
+  &[data-selected] {
+    background: rgba(from var(--demo-color-text) r g b / 20%);
+    border: 1px solid var(--demo-color-text);
+  }
+}
+
+.demo-calendar-week-day {
+  display: grid;
+  place-items: center;
+  height: 1.5rem;
+  font-size: 0.75rem;
+  opacity: 0.5;
+}
+
+.demo-calendar-day {
+  font-variant-numeric: tabular-nums;
+  border: 1px solid transparent;
+  aspect-ratio: 1;
+
+  &[data-today] {
+    border-style: dotted;
+    border-color: currentColor;
+  }
+
+  &[data-outside] {
+    opacity: 0.3;
+  }
+
+  &[data-in-range] {
+    background: rgba(from var(--demo-color-text) r g b / 10%);
+    border-radius: 0;
+  }
+
+  &[data-preview] {
+    background: rgba(from var(--demo-color-text) r g b / 10%);
+    border-style: dotted;
+    border-color: var(--demo-color-edge);
+  }
+
+  &[data-range-start],
+  &[data-range-end],
+  &[data-selected] {
+    background: rgba(from var(--demo-color-text) r g b / 20%);
+    border-color: var(--demo-color-text);
+  }
+
+  &[data-range-start]:not([data-range-end]) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  &[data-range-end]:not([data-range-start]) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  &[data-disabled] {
+    text-decoration: line-through;
+    opacity: 0.5;
+  }
+
+  &:focus-visible {
+    border-style: solid;
+  }
+}
+
+.demo-calendar-presets {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.25rem;
+  padding-top: 0.5rem;
+  border-top: 1px dotted var(--demo-color-edge);
+
+  & .demo-calendar-button {
+    height: 1.625rem;
+    font-size: 0.825rem;
+  }
+}

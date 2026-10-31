@@ -1,0 +1,176 @@
+:root {
+  --demo-color-text: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));
+  --demo-color-edge: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.3));
+  --demo-color-canvas: light-dark(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.03));
+}
+
+.demo-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  transition: opacity 250ms ease;
+
+  &[data-enter-from],
+  &[data-leave-to] {
+    opacity: 0;
+  }
+}
+
+.demo-drawer {
+  position: fixed;
+  z-index: 10;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  border: 1px dotted var(--demo-color-edge);
+
+  background-color: var(--demo-color-canvas);
+  font-size: 0.875rem;
+  color: var(--demo-color-text);
+  outline: none;
+  transition: transform 250ms ease;
+
+  &:after {
+    content: '';
+    position: absolute;
+    background: inherit;
+  }
+
+  &[data-side='bottom'] {
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border-bottom: 0;
+
+    &[data-enter-from],
+    &[data-leave-to] {
+      transform: translateY(100%);
+    }
+
+    &:after {
+      top: 100%;
+      left: -1px;
+      right: -1px;
+      height: 100vh;
+      border-left: 1px dotted var(--demo-color-edge);
+      border-right: 1px dotted var(--demo-color-edge);
+    }
+  }
+
+  &[data-side='right'] {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(20rem, 85vw);
+    border-right: 0;
+
+    &[data-enter-from],
+    &[data-leave-to] {
+      transform: translateX(100%);
+    }
+
+    &:after {
+      left: 100%;
+      top: -1px;
+      bottom: -1px;
+      width: 100vw;
+      border-top: 1px dotted var(--demo-color-edge);
+      border-bottom: 1px dotted var(--demo-color-edge);
+    }
+  }
+
+  &[data-side='top'] {
+    top: 0;
+    right: 0;
+    left: 0;
+    border-top: 0;
+
+    &[data-enter-from],
+    &[data-leave-to] {
+      transform: translateY(-100%);
+    }
+
+    &:after {
+      bottom: 100%;
+      left: -1px;
+      right: -1px;
+      height: 100vh;
+      border-left: 1px dotted var(--demo-color-edge);
+      border-right: 1px dotted var(--demo-color-edge);
+    }
+  }
+
+  &[data-side='left'] {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: min(20rem, 85vw);
+    border-left: 0;
+
+    &[data-enter-from],
+    &[data-leave-to] {
+      transform: translateX(-100%);
+    }
+
+    &:after {
+      right: 100%;
+      top: -1px;
+      bottom: -1px;
+      width: 100vw;
+      border-top: 1px dotted var(--demo-color-edge);
+      border-bottom: 1px dotted var(--demo-color-edge);
+    }
+  }
+}
+
+.demo-drawer-handle {
+  align-self: center;
+  width: 2.5rem;
+  height: 0.25rem;
+  margin: -0.5rem 0 0.5rem;
+  border-radius: 999px;
+  background-color: var(--demo-color-edge);
+  cursor: grab;
+
+  [data-dragging] > & {
+    cursor: grabbing;
+  }
+
+  /* at the far edge, so it sits where the swipe ends */
+  [data-side='top'] > & {
+    order: 1;
+    margin: 0.5rem 0 -0.5rem;
+  }
+
+  [data-side='left'] > &,
+  [data-side='right'] > & {
+    position: absolute;
+    top: 50%;
+    translate: 0 -50%;
+    width: 0.25rem;
+    height: 2.5rem;
+    margin: 0;
+  }
+
+  [data-side='left'] > & {
+    right: 0.5rem;
+  }
+
+  [data-side='right'] > & {
+    left: 0.5rem;
+  }
+}
+
+.demo-drawer-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.demo-drawer-description {
+  margin: 0;
+  opacity: 0.5;
+}

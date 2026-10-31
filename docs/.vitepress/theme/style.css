@@ -1,0 +1,157 @@
+@import 'tailwindcss';
+@import 'vitepress/dist/client/theme-default/styles/components/vp-code.css';
+
+@font-face {
+  font-family: 'Instrument Sans';
+  src: url('/fonts/InstrumentSans-Variable.woff2') format('woff2-variations');
+  font-weight: 400 700;
+  font-stretch: 75% 100%;
+  font-display: swap;
+}
+
+@theme {
+  --font-sans: 'Instrument Sans', system-ui, sans-serif;
+
+  --color-accent: #a9c98f;
+
+  --color-canvas-subtle: #181a19;
+  --color-canvas: #0f0f0f;
+  --color-canvas-strong: #141615;
+
+  --color-stage: #29332c;
+  --color-card: #1f2321;
+  --color-chip: #262b28;
+
+  --color-surface: #f2f2ee;
+  --color-surface-strong: #f7f7f3;
+  --color-muted: #9a9e98;
+  --color-amber: #e8d7a6;
+
+  --color-edge-subtle: #2e322f;
+  --color-edge: #262826;
+  --color-edge-strong: #1f2120;
+}
+
+@layer base {
+  :root {
+    --header-height: 48px;
+    --scroll-offset: var(--header-height);
+
+    @apply overscroll-none scheme-dark;
+    @apply bg-canvas text-surface overflow-x-clip scroll-pt-24 antialiased;
+  }
+
+  * {
+    outline-color: var(--color-accent);
+  }
+
+  ::selection {
+    @apply bg-accent text-canvas;
+  }
+
+  pre {
+    @apply text-sm;
+  }
+
+  :root {
+    --demo-color-backdrop: var(--color-stage);
+  }
+
+  :root[data-demo-scheme='light'] {
+    --demo-color-backdrop: white;
+  }
+
+  :root[data-demo-scheme='dark'] {
+    --demo-color-backdrop: black;
+  }
+
+  .demo-toast-viewport {
+    --demo-color-canvas: color-mix(in oklab, var(--demo-color-backdrop) 97%, var(--demo-color-text));
+  }
+
+  body > :not(#app) {
+    --demo-color-canvas: color-mix(in oklab, var(--demo-color-backdrop) 97%, var(--demo-color-text));
+    color: var(--demo-color-text);
+    @apply scheme-dark;
+  }
+
+  :root[data-demo-scheme='light'] body > :not(#app) {
+    @apply scheme-light;
+  }
+}
+
+@utility panel {
+  @apply bg-canvas-subtle rounded-[28px];
+
+  .panel {
+    @apply rounded-[20px];
+  }
+}
+
+@utility inset-card {
+  @apply bg-canvas-strong rounded-[20px] shadow-[0_10px_30px_rgb(0_0_0/0.3)];
+}
+
+@utility pill {
+  @apply rounded-full bg-chip px-2.5 py-0.5 font-mono text-xs text-surface/85;
+}
+
+@utility side-title {
+  @apply mb-2.5 text-sm font-medium tracking-tight;
+}
+
+@utility side-link {
+  @apply block border-l-2 border-edge-subtle py-1.5 pl-3.5 text-sm text-muted duration-150 hover:text-surface;
+
+  &[data-active] {
+    @apply border-accent font-medium text-surface;
+  }
+
+  &:not([data-active]) > * {
+    @apply opacity-50;
+  }
+}
+
+@utility pattern-grid {
+  background-image: radial-gradient(--alpha(currentColor / 7%) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+@utility pattern-diagonal {
+  background-image: repeating-linear-gradient(
+    315deg,
+    --alpha(currentColor / 3%) 0,
+    --alpha(currentColor / 3%) 1px,
+    transparent 0,
+    transparent 50%
+  );
+  background-size: 10px 10px;
+}
+
+/* demo */
+
+.demo-chart [data-part='chart-tooltip'],
+.demo-toast,
+[class*='demo-']:is(
+  [data-part='button'],
+  [data-part='trigger']:not([data-submenu-trigger]),
+  :not([data-part='trigger']) > [data-part='input'],
+  [data-part='textarea'],
+  [data-part='popup'],
+  [data-part='calendar'],
+  [data-part='context-menu-trigger'],
+  [data-part='tabs'],
+  [data-part='floating'],
+  [data-part='alert'],
+  [data-part='async-state'],
+  [data-part='control-group'],
+  [data-part='accordion'],
+  [data-part='scroll-area'],
+  [data-part='drag-item'],
+  [data-part='table'],
+  [data-part='toggle-group'],
+  [data-part='popup']:after,
+
+) {
+  @apply pattern-diagonal backdrop-blur-2xl;
+}

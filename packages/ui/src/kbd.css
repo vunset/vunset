@@ -1,0 +1,30 @@
+@layer components {
+  kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.6em;
+    height: 1.6em;
+    padding: 0 0.4em;
+    border-radius: var(--ui-radius-sm);
+    background: var(--ui-surface);
+    color: var(--ui-text);
+    font-family: inherit;
+    font-size: 0.8em;
+    font-weight: 500;
+    line-height: 1;
+    vertical-align: 0.1em;
+    white-space: nowrap;
+  }
+
+  kbd:has(kbd) {
+    gap: 0.25em;
+    min-width: 0;
+    height: auto;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-size: inherit;
+    vertical-align: baseline;
+  }
+}

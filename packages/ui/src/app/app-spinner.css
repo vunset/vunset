@@ -1,0 +1,17 @@
+@layer components {
+  /* ui's `spinner` icon, turning: as tall as the line, in the text's color. */
+  /* Under reduced motion still turning, so it still reads as busy, but slowly. */
+  .app-spinner {
+    animation: app-spinner-turn 2.4s linear infinite;
+
+    @media (prefers-reduced-motion: no-preference) {
+      animation-duration: 0.8s;
+    }
+  }
+
+  @keyframes app-spinner-turn {
+    to {
+      rotate: 1turn;
+    }
+  }
+}

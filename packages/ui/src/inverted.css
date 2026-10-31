@@ -1,0 +1,33 @@
+/* What scheme an element is in, as a color `light-dark()` resolved there, so
+   a style query can read it; outside the layer, where an at-rule like this has to sit. */
+@property --ui-scheme {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: #000;
+}
+
+@layer components {
+  /* The other scheme from the one around it: on a light page dark, on a dark
+     one light, and back again nested. Every `light-dark()` color inside
+     flips, ui's tokens, the app's own and the browser's controls. */
+  :has(> .inverted) {
+    --ui-scheme: light-dark(#000, #fff);
+  }
+
+  /* Without style queries, it takes the page to be light. */
+  .inverted {
+    color-scheme: dark;
+  }
+
+  @container style(--ui-scheme: #fff) {
+    .inverted {
+      color-scheme: light;
+    }
+  }
+
+  /* Its own paint, at no specificity, so a component's class keeps its own. */
+  :where(.inverted) {
+    background-color: var(--ui-bg);
+    color: var(--ui-text);
+  }
+}

@@ -1,0 +1,141 @@
+:root {
+  --demo-color-text: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));
+  --demo-color-edge: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.3));
+  --demo-color-canvas: light-dark(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.03));
+}
+
+.demo-group {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: stretch;
+  gap: 0.125rem;
+  padding: 0.25rem;
+  border: 1px dotted var(--demo-color-edge);
+  font-size: 0.875rem;
+  color: var(--demo-color-text);
+
+  &[data-orientation='vertical'] {
+    flex-direction: column;
+  }
+}
+
+.demo-group .demo-button,
+.demo-group-button {
+  box-sizing: border-box;
+  height: 1.625rem;
+  margin: 0;
+  padding: 0 0.4425rem;
+  border: 1px solid transparent;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  outline: none;
+  min-width: 1.625rem;
+  text-align: center;
+
+  &:hover {
+    background-color: rgba(from var(--demo-color-text) r g b / 10%);
+    border-color: transparent;
+  }
+
+  &:focus-visible {
+    border-color: currentColor;
+  }
+}
+
+.demo-group-separator {
+  border-left: 1px solid currentColor;
+  opacity: 0.3;
+
+  &[data-orientation='horizontal'] {
+    border-left: 0;
+    border-top: 1px solid currentColor;
+  }
+}
+
+/* Other components' parts, set inside a group. */
+.demo-group {
+  & .demo-input {
+    width: 10rem;
+    height: 1.625rem;
+    padding: 0 0.5rem;
+    border-color: transparent;
+    background: none;
+
+    &:focus-visible {
+      border-color: currentColor;
+    }
+  }
+
+  & .demo-toggle-group {
+    padding: 0;
+    border: 0;
+  }
+}
+
+.demo-group-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  white-space: nowrap;
+
+  &[data-open] {
+    background-color: rgba(from var(--demo-color-text) r g b / 10%);
+  }
+}
+
+.demo-group-addon {
+  display: inline-flex;
+  align-items: center;
+  padding-inline: 0.375rem;
+
+  & svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+/* Joined: no gap, a line between neighbors. */
+.demo-group.demo-group-joined {
+  gap: 0;
+  padding: 0;
+
+  & > :not([data-part='separator']):not([data-part='addon']) + :not([data-part='separator']):not([data-part='addon']) {
+    border-inline-start: 1px dotted var(--demo-color-edge);
+  }
+
+  &[data-orientation='vertical'] > :not([data-part='separator']) + :not([data-part='separator']) {
+    border-inline-start: 0;
+    border-block-start: 1px dotted var(--demo-color-edge);
+  }
+
+  & .demo-group-button,
+  & .demo-toggle,
+  & .demo-input {
+    height: 2rem;
+  }
+}
+
+/* A lone toggle, set flush. */
+.demo-group > .demo-toggle {
+  height: 1.625rem;
+  border-color: transparent;
+
+  &:focus-visible {
+    border-color: currentColor;
+  }
+}
+
+.demo-group-looks {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.demo-group-look {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.75rem;
+}

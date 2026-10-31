@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "strict": true,
+    "jsx": "preserve",
+    "types": ["vitest/globals", "vite/client"],
+    "skipLibCheck": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "paths": {
+      "@vunset/utils": ["./packages/utils/src/index.ts"],
+      "@vunset/vue": ["./packages/vue/src/index.ts"],
+      "@vunset/vue/*": ["./packages/vue/src/*"],
+      "@vunset/ui": ["./packages/ui/src/index.ts"],
+      "@vunset/ui/*": ["./packages/ui/src/*"],
+      "#app": ["./node_modules/nuxt/dist/app/index.d.ts"]
+    }
+  },
+  "include": [
+    "packages/*/src/**/*.ts",
+    "packages/*/src/**/*.vue",
+    "packages/*/test/**/*.ts",
+    "docs/.vitepress/**/*.ts",
+    "docs/.vitepress/**/*.vue"
+  ]
+}

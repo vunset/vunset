@@ -1,0 +1,70 @@
+@layer components {
+  /* AppProgress and AppMeter: a label and its value over a bar in a rounded track. */
+  .app-gauge {
+    display: grid;
+    gap: 0.375rem;
+    min-width: 0;
+    color: var(--ui-text);
+    font-size: var(--ui-font-size);
+  }
+
+  .app-gauge-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .app-gauge-label {
+    font-weight: 500;
+  }
+
+  .app-gauge-value {
+    margin-inline-start: auto;
+    color: var(--ui-muted);
+    font-size: var(--ui-font-size-sm);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .app-gauge-track {
+    position: relative;
+    height: 0.5rem;
+    overflow: hidden;
+    border-radius: var(--ui-radius-full);
+    background: var(--ui-surface);
+  }
+
+  .app-gauge-indicator {
+    height: 100%;
+    width: var(--gauge-percentage, 0%);
+    border-radius: inherit;
+    background: var(--ui-tone);
+    transition: width calc(var(--ui-duration) * 2) ease;
+
+    &[data-status='indeterminate'] {
+      position: absolute;
+      width: 35%;
+      transition: none;
+      animation: app-gauge-sweep 1.2s ease-in-out infinite;
+    }
+  }
+
+  @keyframes app-gauge-sweep {
+    from {
+      left: -35%;
+    }
+
+    to {
+      left: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .app-gauge-indicator[data-status='indeterminate'] {
+      left: 0;
+      width: 100%;
+      opacity: 0.4;
+      animation: none;
+    }
+  }
+}

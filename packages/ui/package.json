@@ -1,0 +1,73 @@
+{
+  "name": "@vunset/ui",
+  "version": "1.0.0-rc.1",
+  "description": "Pre-styled Vue 3 components built on @vunset/vue's headless parts.",
+  "keywords": [
+    "vue",
+    "vue3",
+    "components",
+    "ui",
+    "ui-kit",
+    "design-system",
+    "css",
+    "accessibility",
+    "forms",
+    "component-library"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vunset/vunset.git",
+    "directory": "packages/ui"
+  },
+  "homepage": "https://github.com/vunset/vunset#readme",
+  "bugs": "https://github.com/vunset/vunset/issues",
+  "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./chart": {
+      "types": "./dist/chart.d.ts",
+      "import": "./dist/chart.js"
+    },
+    "./data-table": {
+      "types": "./dist/data-table.d.ts",
+      "import": "./dist/data-table.js"
+    },
+    "./all.css": "./dist/all.css",
+    "./preflight.css": "./dist/preflight.css",
+    "./base.css": "./dist/base.css",
+    "./css/*": "./dist/css/*"
+  },
+  "scripts": {
+    "build": "vite build && vue-tsc -p tsconfig.build.json",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@vunset/vue": "1.0.0-rc.1"
+  },
+  "peerDependencies": {
+    "@tanstack/charts": "^1.1.0",
+    "@tanstack/vue-table": "^9.2.4",
+    "vue": "^3.5.43"
+  },
+  "peerDependenciesMeta": {
+    "@tanstack/charts": {
+      "optional": true
+    },
+    "@tanstack/vue-table": {
+      "optional": true
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

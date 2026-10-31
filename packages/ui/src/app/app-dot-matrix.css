@@ -1,0 +1,82 @@
+/* The DNA pattern animates a number its dots read; outside the layer, where
+   an at-rule like this has to sit. */
+@property --app-dot-matrix-t {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
+@layer components {
+  /* Five by five dots in the text's color, faint until their turn. The
+     pattern's keyframes and timing come in as custom properties, each dot's
+     delay inline. Give it a size (`size-8`) for another than 1.5rem. */
+  .app-dot-matrix {
+    display: inline-grid;
+    flex: none;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 12%;
+    width: 1.5rem;
+    height: 1.5rem;
+    vertical-align: middle;
+
+    & > span {
+      background: currentColor;
+      opacity: 0.3;
+      animation: var(--app-dot-matrix-keyframes) var(--app-dot-matrix-duration) var(--app-dot-matrix-easing) infinite;
+    }
+
+    &[data-shape='circle'] > span {
+      border-radius: 50%;
+    }
+
+    /* A dot the pattern leaves out, dimmer than one waiting its turn. */
+    & > span[data-rest] {
+      opacity: 0.12;
+      animation: none;
+    }
+
+    /* A column lights as the sweep `w` (0 → 1 → 0) passes its phase. `max(x, -x)` is `abs(x)`. */
+    &[data-variant='dna'] > span {
+      --app-dot-matrix-w: calc(1 - max(2 * var(--app-dot-matrix-t) - 1, 1 - 2 * var(--app-dot-matrix-t)));
+      --app-dot-matrix-off: max(
+        var(--app-dot-matrix-w) - var(--app-dot-matrix-phase),
+        var(--app-dot-matrix-phase) - var(--app-dot-matrix-w)
+      );
+
+      opacity: calc(0.3 + max(0, 1 - var(--app-dot-matrix-off) * 5));
+    }
+  }
+
+  /* prettier-ignore */
+  @keyframes app-dot-matrix-pulse {
+    0%, 30%, 100% { opacity: 0.3; }
+    15% { opacity: 1; }
+  }
+
+  /* prettier-ignore */
+  @keyframes app-dot-matrix-blink {
+    0%, 50%, 100% { opacity: 0.3; }
+    25% { opacity: 1; }
+  }
+
+  /* prettier-ignore */
+  @keyframes app-dot-matrix-wave {
+    0%, 40%, 100% { opacity: 0.3; }
+    20% { opacity: 1; }
+  }
+
+  /* prettier-ignore */
+  @keyframes app-dot-matrix-beat {
+    0%, 40%, 100% { opacity: 0.3; }
+    8% { opacity: 1; }
+    16% { opacity: 0.5; }
+    24% { opacity: 1; }
+  }
+
+  @keyframes app-dot-matrix-dna {
+    to {
+      --app-dot-matrix-t: 1;
+    }
+  }
+}

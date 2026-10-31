@@ -1,0 +1,50 @@
+@layer components {
+  .form-radio:has([data-disabled]) > .form-label {
+    color: var(--ui-muted);
+    cursor: not-allowed;
+  }
+
+  .form-radio-control {
+    position: relative;
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: var(--ui-check-size);
+    height: var(--ui-check-size);
+    border: var(--ui-border-width) solid var(--ui-border);
+    border-radius: 50%;
+    cursor: pointer;
+    outline: none;
+    transition:
+      border-color var(--ui-duration) ease,
+      box-shadow var(--ui-duration) ease;
+
+    &[data-checked] {
+      border-color: var(--ui-accent);
+    }
+
+    &:focus-visible {
+      box-shadow: var(--ui-focus-ring);
+    }
+
+    &[data-invalid] {
+      border-color: var(--ui-danger);
+    }
+
+    &[data-readonly] {
+      cursor: default;
+    }
+
+    &[data-disabled] {
+      background-color: color-mix(in srgb, var(--ui-text) 10%, var(--ui-bg));
+      cursor: not-allowed;
+    }
+  }
+
+  .form-radio-indicator {
+    width: 50%;
+    height: 50%;
+    border-radius: 50%;
+    background: var(--ui-accent);
+  }
+}

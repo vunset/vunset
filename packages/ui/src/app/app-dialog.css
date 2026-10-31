@@ -1,0 +1,36 @@
+@layer components {
+  .app-dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: var(--ui-z-overlay);
+    display: grid;
+    gap: 1rem;
+    width: min(var(--app-dialog-width), calc(100vw - 2rem));
+    max-height: calc(100dvh - 2rem);
+    padding: 1rem;
+    overflow: auto;
+    translate: -50% -50%;
+    transition:
+      opacity calc(var(--ui-duration) * 1.5) ease,
+      scale calc(var(--ui-duration) * 1.5) ease;
+
+    &[data-size='sm'] {
+      --app-dialog-width: 24rem;
+    }
+
+    &[data-size='md'] {
+      --app-dialog-width: 32rem;
+    }
+
+    &[data-size='lg'] {
+      --app-dialog-width: 48rem;
+    }
+
+    &[data-enter-from],
+    &[data-leave-to] {
+      opacity: 0;
+      scale: 0.96;
+    }
+  }
+}

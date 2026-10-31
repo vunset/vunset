@@ -1,0 +1,127 @@
+.demo-data-table {
+  min-width: 384px;
+
+  th {
+    position: relative;
+  }
+
+  thead tr:first-child th[colspan] {
+    text-align: center;
+  }
+
+  [data-part='table-sort'] {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    border: 1px solid transparent;
+    background: none;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    outline: none;
+
+    &:focus-visible {
+      border-color: currentColor;
+    }
+  }
+
+  [data-part='table-sort-icon'] {
+    width: 0.5rem;
+    height: 0.675rem;
+
+    path {
+      opacity: 0.25;
+
+      &[data-active] {
+        opacity: 1;
+      }
+    }
+  }
+
+  [data-part='table-resizer'] {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+    width: 0.375rem;
+    cursor: col-resize;
+    touch-action: none;
+
+    &:hover,
+    &[data-resizing] {
+      border-inline-end: 1px solid currentColor;
+    }
+  }
+
+  [data-part='table-expander'] {
+    display: grid;
+    place-items: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin: 0;
+    padding: 0;
+    border: 1px solid transparent;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    outline: none;
+
+    &:focus-visible {
+      border-color: currentColor;
+    }
+
+    svg {
+      width: 0.75rem;
+      transition: rotate 150ms ease;
+    }
+
+    &[data-expanded] svg {
+      rotate: 90deg;
+    }
+  }
+
+  [data-depth] [data-column='name'] {
+    padding-inline-start: calc(0.75rem + var(--depth) * 1rem);
+  }
+
+  .demo-data-table-num {
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.demo-table-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Nested rows dimmed, and the pinned edge. */
+.demo-data-table-edges {
+  [data-depth] td {
+    color: rgba(from var(--demo-color-text) r g b / 60%);
+  }
+
+  [data-pinned='start'] {
+    border-inline-end: 1px dotted var(--demo-color-edge);
+  }
+
+  [data-pinned-edge][data-pinned='start'] {
+    border-inline-end-style: solid;
+  }
+}
+
+.demo-data-table-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.75rem;
+}
+
+.demo-data-table-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

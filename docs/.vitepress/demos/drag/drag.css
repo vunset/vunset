@@ -1,0 +1,98 @@
+:root {
+  --demo-color-text: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));
+  --demo-color-edge: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.3));
+  --demo-color-canvas: light-dark(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.03));
+}
+
+.demo-drag {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 18rem;
+  font-size: 0.875rem;
+
+  &[data-orientation='horizontal'] {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    width: auto;
+  }
+
+  &[data-sorting] {
+    user-select: none;
+
+    & .demo-drag-item:not([data-dragging]) {
+      transition: transform 160ms ease;
+    }
+  }
+}
+
+.demo-drag-item {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px dotted var(--demo-color-edge);
+  background-color: var(--demo-color-canvas);
+  color: var(--demo-color-text);
+  outline: none;
+
+  &:not(:has([data-part='drag-handle'])) {
+    cursor: grab;
+  }
+
+  &:focus-visible,
+  &:has(:focus-visible) {
+    border-color: currentColor;
+  }
+
+  &[data-dragging] {
+    z-index: 1;
+    border-color: currentColor;
+    background-color: var(--demo-color-canvas);
+    cursor: grabbing;
+  }
+
+  &[data-disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.demo-drag-handle {
+  margin: 0;
+  padding: 0 0.125rem;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: none;
+  font: inherit;
+  line-height: 1;
+  cursor: grab;
+  outline: none;
+
+  &:focus-visible {
+    border-color: currentColor;
+  }
+
+  &[data-dragging] {
+    cursor: grabbing;
+  }
+}
+
+.demo-drag[data-orientation='grid'] {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
+  width: min(100%, 28rem);
+
+  &.demo-drag-dense {
+    grid-template-columns: repeat(auto-fill, minmax(3rem, 1fr));
+  }
+}
+
+.demo-drag-tile {
+  justify-content: center;
+  aspect-ratio: 1;
+  padding: 0.5rem;
+  text-align: center;
+}

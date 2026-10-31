@@ -1,0 +1,163 @@
+:root {
+  --demo-color-text: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));
+  --demo-color-edge: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.3));
+  --demo-color-canvas: light-dark(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.03));
+}
+
+.demo-chart,
+.demo-chart-legend {
+  --chart-color-0: rgb(255, 125, 125);
+  --chart-color-1: rgb(125, 255, 125);
+  --chart-color-2: rgb(125, 125, 255);
+  --chart-color-3: rgb(255, 125, 255);
+}
+
+.demo-chart {
+  /* Unset what ui's sheet sets, so the wireframes show the library's own size. */
+  --chart-tick-font-size: initial;
+  color: var(--demo-color-text);
+  display: block;
+  width: 100%;
+  font-size: 0.75rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .demo-chart .ts-chart-tooltip {
+    transition:
+      left 120ms ease-out,
+      top 120ms ease-out;
+  }
+}
+
+[data-part='chart-tooltip'] {
+  border: 1px dotted var(--demo-color-edge);
+  border-radius: 0;
+  background: var(--demo-color-canvas);
+  box-shadow: none;
+  color: var(--demo-color-text);
+  font-size: 0.8125rem;
+}
+
+[data-part='chart-center-label'] {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+[data-part='chart-center-sub-label'] {
+  opacity: 0.5;
+}
+
+[data-part='tooltip-heading'] {
+  padding: 0.375rem 0.75rem;
+  border-bottom: 1px dotted var(--demo-color-edge);
+  font-weight: 600;
+}
+
+[data-part='tooltip-rows'] {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+}
+
+[data-part='tooltip-row'] {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+[data-part='tooltip-swatch'] {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+}
+
+[data-part='tooltip-value'] {
+  margin-inline-start: auto;
+  font-weight: 600;
+}
+
+.demo-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+
+  [data-part='legend-item'] {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin: 0;
+    padding: 0.125rem 0.5rem;
+    border: 1px dotted var(--demo-color-edge);
+    border-radius: 0;
+    background: var(--demo-color-canvas);
+    font: inherit;
+    font-size: 0.8125rem;
+    cursor: pointer;
+    outline: none;
+
+    &:hover,
+    &:focus-visible {
+      border-color: currentColor;
+    }
+
+    &:focus-visible {
+      border-style: solid;
+    }
+
+    &[data-hidden] {
+      opacity: 0.5;
+      border-color: transparent;
+    }
+  }
+
+  [data-part='legend-swatch'] {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 0;
+  }
+}
+
+.demo-chart-tooltip {
+  display: grid;
+  gap: 0.125rem;
+  padding: 0.5rem 0.75rem;
+
+  span {
+    opacity: 0.5;
+  }
+}
+
+.demo-chart-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.demo-chart-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.demo-chart-table {
+  border-collapse: collapse;
+
+  td {
+    padding: 0.25rem 0.5rem;
+    border-top: 1px dotted var(--demo-color-edge);
+  }
+
+  td:last-child {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.demo-chart-swatch {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-inline-end: 0.375rem;
+}

@@ -1,0 +1,27 @@
+@layer components {
+  .app-copy [data-part='copy-icons'] {
+    display: inline-grid;
+    flex: none;
+
+    & > * {
+      grid-area: 1 / 1;
+    }
+  }
+
+  .app-copy-icon {
+    width: 1rem;
+    height: 1rem;
+    transition:
+      opacity var(--ui-duration) ease,
+      scale var(--ui-duration) ease;
+
+    &:not([data-active]) {
+      opacity: 0;
+      scale: 0.6;
+    }
+  }
+
+  .app-copy[data-copied] {
+    color: var(--ui-success);
+  }
+}

@@ -1,0 +1,20 @@
+@layer components {
+  /* On a Separator: a hairline across its parent, or down it when vertical.
+     Spacing comes from the parent's gap or a margin of the app's own. One
+     straight inside an AppGroup takes it without the class. */
+  .app-separator,
+  .app-group > [data-part='separator'] {
+    flex: none;
+    border: none;
+    background: var(--ui-border);
+
+    &[data-orientation='horizontal'] {
+      height: var(--ui-border-width);
+    }
+
+    &[data-orientation='vertical'] {
+      align-self: stretch;
+      width: var(--ui-border-width);
+    }
+  }
+}

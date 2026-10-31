@@ -1,0 +1,67 @@
+@layer components {
+  /* On the Table parts' container: a bordered, scrolling box. Give it a
+     height (`max-height`) for a sticky header or footer to stick within.
+     `--ui-table-*` colors are left unset, so the fallbacks follow a nearer `--ui-bg`. */
+  .app-table {
+    color: var(--ui-text);
+    font-size: var(--ui-font-size);
+    text-align: start;
+
+    [data-part='table'] {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    th,
+    td {
+      padding: 0.5rem 0.75rem;
+      background-color: var(--ui-table-bg, var(--ui-bg));
+      border-bottom: var(--ui-border-width) solid var(--ui-border);
+      text-align: inherit;
+      white-space: nowrap;
+    }
+
+    tbody {
+      & tr:last-child td {
+        border-bottom: none;
+      }
+
+      & tr[data-index]:hover td {
+        background: var(--ui-table-hover, color-mix(in srgb, var(--ui-text) 6%, var(--ui-table-bg, var(--ui-bg))));
+      }
+
+      & tr[data-selected] td {
+        background: var(
+          --ui-table-selected,
+          color-mix(in srgb, var(--ui-accent) 14%, var(--ui-table-bg, var(--ui-bg)))
+        );
+      }
+    }
+
+    th {
+      font-weight: 500;
+    }
+
+    tfoot td {
+      border-top: var(--ui-border-width) solid var(--ui-border);
+      border-bottom: none;
+      font-weight: 500;
+    }
+
+    caption {
+      padding: 0.5rem 0.75rem;
+      color: var(--ui-muted);
+      text-align: start;
+    }
+  }
+
+  :where(.app-table-striped, .app-table[data-striped]) tbody tr[data-odd] td {
+    background: var(--ui-table-stripe, color-mix(in srgb, var(--ui-text) 3%, var(--ui-table-bg, var(--ui-bg))));
+  }
+
+  .app-table .app-table-numeric {
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+  }
+}

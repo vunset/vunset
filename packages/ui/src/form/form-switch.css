@@ -1,0 +1,58 @@
+@layer components {
+  .form-switch {
+    position: relative;
+    display: inline-flex;
+    flex: none;
+    width: var(--ui-switch-width);
+    height: var(--ui-switch-height);
+    padding: 2px;
+    border-radius: var(--ui-radius-xl);
+    border: var(--ui-border-width) solid var(--ui-border);
+    background: var(--ui-bg);
+    cursor: pointer;
+    outline: none;
+    transition:
+      background-color var(--ui-duration) ease,
+      box-shadow var(--ui-duration) ease;
+
+    &[data-checked] {
+      border-color: var(--ui-accent);
+      background: var(--ui-accent);
+    }
+
+    &:focus-visible {
+      box-shadow: var(--ui-focus-ring);
+    }
+
+    &[data-invalid] {
+      border-color: var(--ui-danger);
+    }
+
+    &[data-readonly] {
+      cursor: default;
+    }
+
+    &[data-disabled] {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  .form-switch-thumb {
+    display: block;
+    aspect-ratio: 1;
+    height: 100%;
+    border-radius: var(--ui-radius-xl);
+    background: color-mix(in srgb, var(--ui-border) 70%, transparent);
+
+    transition:
+      translate var(--ui-duration) ease,
+      width var(--ui-duration) ease;
+
+    &[data-checked] {
+      background-color: #fff;
+      box-shadow: 0 1px 2px rgb(0 0 0 / 25%);
+      translate: calc(var(--ui-switch-width) - var(--ui-switch-height)) 0;
+    }
+  }
+}

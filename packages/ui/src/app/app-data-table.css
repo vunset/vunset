@@ -1,0 +1,115 @@
+@layer components {
+  /* What a data table adds to `.app-table`: the sort buttons, resize strips,
+     expand buttons, nested rows and column groups. */
+  .app-data-table {
+    thead {
+      th {
+        position: relative;
+
+        &[data-sort] {
+          color: var(--ui-accent);
+        }
+      }
+
+      tr:not(:last-child) th[colspan] {
+        text-align: center;
+      }
+    }
+
+    tbody {
+      td[data-column='expander'] {
+        padding: 0;
+
+        & [data-part='table-expander'] {
+          display: grid;
+          place-items: center;
+          width: 1.5rem;
+          height: 1.5rem;
+          padding: 0.25rem;
+          margin: auto;
+          border-radius: var(--ui-radius-sm);
+          color: var(--ui-muted);
+          cursor: pointer;
+          outline: none;
+          transition: background-color var(--ui-duration) ease;
+
+          svg {
+            width: 0.875rem;
+            height: 0.875rem;
+
+            @media (prefers-reduced-motion: no-preference) {
+              transition: transform var(--ui-duration) ease;
+            }
+
+            [data-expanded] & {
+              color: var(--ui-text);
+              transform: rotate(90deg);
+            }
+          }
+
+          &:hover {
+            background: color-mix(in srgb, var(--ui-text) 8%, transparent);
+            color: var(--ui-text);
+          }
+
+          &:focus-visible {
+            box-shadow: var(--ui-focus-ring);
+          }
+        }
+      }
+    }
+
+    & [data-part='table-sort'] {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      border-radius: var(--ui-radius-sm);
+      text-align: inherit;
+      cursor: pointer;
+      outline: none;
+      line-height: 1;
+
+      & [data-part='table-sort-icon'] {
+        width: 0.75rem;
+        height: 0.75rem;
+
+        path {
+          opacity: 0.4;
+
+          &[data-active] {
+            opacity: 1;
+          }
+        }
+      }
+
+      &:focus-visible {
+        box-shadow: var(--ui-focus-ring);
+      }
+    }
+
+    & [data-part='table-resizer'] {
+      position: absolute;
+      inset-block: 0.375rem;
+      inset-inline-end: 0.25rem;
+      width: 0.125rem;
+      border-radius: var(--ui-radius-xs);
+      background: var(--ui-border);
+      cursor: col-resize;
+      touch-action: none;
+      transition: background-color var(--ui-duration) ease;
+
+      &:hover,
+      &[data-resizing] {
+        background: var(--ui-accent);
+      }
+    }
+  }
+
+  .app-data-table-empty {
+    margin: 0;
+    padding: 1rem 0;
+    color: var(--ui-muted);
+    text-align: center;
+    white-space: normal;
+  }
+}

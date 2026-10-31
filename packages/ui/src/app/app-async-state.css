@@ -1,0 +1,27 @@
+@layer components {
+  .app-async-state {
+    position: relative;
+    color: var(--ui-text);
+    font-size: var(--ui-font-size-sm);
+
+    & [data-part='async-state-overlay'] {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      border-radius: var(--ui-radius);
+      background: color-mix(in srgb, var(--ui-bg) 60%, transparent);
+      transition: opacity var(--ui-duration) ease;
+
+      > .app-async-state-loader {
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+
+      &[data-enter-from],
+      &[data-leave-to] {
+        opacity: 0;
+      }
+    }
+  }
+}

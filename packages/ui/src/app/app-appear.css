@@ -1,0 +1,16 @@
+@layer components {
+  .app-appear {
+    transition:
+      opacity calc(var(--ui-duration) * 1.5) ease-out,
+      translate calc(var(--ui-duration) * 1.5) ease-out;
+
+    &[data-enter-from],
+    &[data-leave-to] {
+      opacity: 0;
+
+      @media (prefers-reduced-motion: no-preference) {
+        translate: 0 0.25rem;
+      }
+    }
+  }
+}

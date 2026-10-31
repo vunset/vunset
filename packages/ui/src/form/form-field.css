@@ -1,0 +1,252 @@
+@layer components {
+  .form-field {
+    display: grid;
+    gap: 0.25rem;
+    color: var(--ui-text);
+    font-size: var(--ui-font-size);
+    position: relative;
+
+    &:has(.form-control, .form-toggle-group) .form-error {
+      font-size: var(--ui-font-size-xs);
+      color: var(--ui-on-neutral);
+      background-color: var(--ui-neutral);
+      margin-top: -0.5lh;
+      position: absolute;
+      top: 100%;
+      padding: 0.15rem 0.275rem;
+      line-height: 1;
+      border-radius: var(--ui-radius-sm);
+      margin-inline: var(--ui-control-padding-x-xs);
+      font-weight: 500;
+
+      &:empty {
+        padding: 0;
+      }
+    }
+
+    &:not(:has(.form-control, .form-toggle-group)) .form-error {
+      font-size: var(--ui-font-size-xs);
+      color: var(--ui-danger);
+    }
+
+    & .form-error {
+      transform-origin: top left;
+      transition:
+        opacity var(--ui-duration) ease,
+        scale var(--ui-duration) ease;
+
+      &:is([data-enter-from], [data-leave-to]) {
+        opacity: 0;
+
+        @media (prefers-reduced-motion: no-preference) {
+          scale: 0.9;
+        }
+      }
+    }
+
+    &[data-size='sm'] > :not(.form-label, .form-label-row, .form-help, .form-error) {
+      --ui-control-height: var(--ui-control-height-sm);
+      --ui-control-padding-x: var(--ui-control-padding-x-sm);
+      --ui-font-size: var(--ui-font-size-sm);
+      --ui-check-size: var(--ui-check-size-sm);
+      --ui-switch-width: var(--ui-switch-width-sm);
+      --ui-switch-height: var(--ui-switch-height-sm);
+      --form-clear-size: 1.25rem;
+    }
+
+    &[data-size='lg'] > :not(.form-label, .form-label-row, .form-help, .form-error) {
+      --ui-control-height: var(--ui-control-height-lg);
+      --ui-control-padding-x: var(--ui-control-padding-x-lg);
+      --ui-font-size: var(--ui-font-size-lg);
+      --ui-check-size: var(--ui-check-size-lg);
+      --ui-switch-width: var(--ui-switch-width-lg);
+      --ui-switch-height: var(--ui-switch-height-lg);
+    }
+  }
+
+  .form-label {
+    width: fit-content;
+    font-weight: 500;
+    font-size: var(--ui-font-size-sm);
+
+    &[data-required]::after {
+      content: '*';
+      color: var(--ui-danger);
+      margin-left: 0.125em;
+      display: inline-block;
+      transition: scale var(--ui-duration) ease;
+    }
+
+    &[data-required][data-filled]::after {
+      scale: 0;
+    }
+
+    &[data-disabled] {
+      color: var(--ui-muted);
+    }
+  }
+
+  .form-label-row {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    line-height: 1.2;
+  }
+
+  .form-label-start,
+  .form-label-end {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .form-label-end {
+    margin-inline-start: auto;
+  }
+
+  .form-help {
+    margin: 0;
+    font-size: var(--ui-font-size-sm);
+    color: var(--ui-muted);
+    transition: color var(--ui-duration) ease;
+
+    &:hover {
+      color: var(--ui-text);
+    }
+  }
+
+  .form-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .form-addon {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+  }
+
+  .form-control > .form-addon .app-button {
+    max-height: calc(var(--ui-control-height) - 2 * var(--ui-border-width) - 0.5rem);
+  }
+
+  .form-control:not(.form-textarea) {
+    &:has(> .form-addon:first-child .app-button) {
+      padding-inline-start: 0;
+    }
+
+    &:has(> .form-addon:last-child .app-button) {
+      padding-inline-end: 0;
+    }
+
+    & > .form-addon:is(:first-child, :last-child):has(.app-button) {
+      align-self: stretch;
+      align-items: stretch;
+    }
+
+    & > .form-addon:is(:first-child, :last-child) .app-button {
+      height: auto;
+      max-height: none;
+      border-block-color: transparent;
+      --form-addon-radius: calc(var(--ui-radius) - var(--ui-border-width));
+    }
+
+    & > .form-addon:first-child .app-button {
+      border-inline-start-color: transparent;
+      border-radius: 0;
+      border-start-start-radius: var(--form-addon-radius);
+      border-end-start-radius: var(--form-addon-radius);
+    }
+
+    & > .form-addon:last-child .app-button {
+      border-inline-end-color: transparent;
+      border-radius: 0;
+      border-start-end-radius: var(--form-addon-radius);
+      border-end-end-radius: var(--form-addon-radius);
+    }
+  }
+
+  .form-clear {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: var(--form-clear-size, 1.5rem);
+    height: var(--form-clear-size, 1.5rem);
+    border-radius: var(--ui-radius-sm);
+    color: var(--ui-muted);
+    cursor: pointer;
+
+    &:hover {
+      background: var(--ui-surface);
+      color: var(--ui-text);
+    }
+  }
+
+  /* With no label to carry it, the required mark sits inside the control's top-end corner,
+     going as the label's does once there is a value. */
+  .form-field[data-required]:not(:has(> .form-label, > .form-label-row))::after {
+    content: '*';
+    position: absolute;
+    top: 0.125rem;
+    inset-inline-end: 0.3125rem;
+    z-index: 1;
+    color: var(--ui-danger);
+    font-size: var(--ui-font-size-sm);
+    line-height: 1;
+    pointer-events: none;
+    transition: scale var(--ui-duration) ease;
+  }
+
+  .form-field[data-required][data-filled]:not(:has(> .form-label, > .form-label-row))::after {
+    scale: 0;
+  }
+
+  /* A checkbox or switch alone: the mark takes the label's cell, just after the box. */
+  .form-field[data-layout='inline'][data-required]:not(:has(> .form-label, > .form-label-row))::after {
+    position: static;
+    grid-area: 1 / 2;
+    justify-self: start;
+    align-self: start;
+  }
+
+  .form-field[data-layout='inline'],
+  .form-radio {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 0.5rem;
+    row-gap: 0.25rem;
+    align-items: center;
+
+    & > .form-label,
+    & > .form-label-row {
+      grid-area: 1 / 2;
+    }
+
+    & > .form-label,
+    & > .form-label-row > .form-label {
+      cursor: pointer;
+
+      &[data-disabled] {
+        cursor: not-allowed;
+      }
+    }
+
+    & > .form-help,
+    & > .form-error {
+      grid-column: 2;
+    }
+  }
+
+  .form-radio-group,
+  .form-checkbox-group {
+    display: grid;
+    gap: 0.5rem;
+
+    &[data-orientation='horizontal'] {
+      display: flex;
+      flex-wrap: wrap;
+      column-gap: 1.25rem;
+    }
+  }
+}

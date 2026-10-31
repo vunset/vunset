@@ -1,0 +1,44 @@
+.demo-input-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  width: 16rem;
+  font-size: 0.875rem;
+}
+
+.demo-input-hint {
+  margin: 0;
+  font-size: 0.75rem;
+  opacity: 0.5;
+}
+
+.demo-input {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 16rem;
+  height: 2.25rem;
+  margin: 0;
+  padding: 0 0.75rem;
+  border: 1px dotted light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.3));
+  background-color: light-dark(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.03));
+  color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));
+  font: inherit;
+  outline: none;
+
+  &::placeholder {
+    opacity: 0.5;
+  }
+
+  &:focus-visible {
+    border-color: currentColor;
+  }
+
+  &[data-invalid] {
+    border-style: solid;
+  }
+
+  &[data-disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

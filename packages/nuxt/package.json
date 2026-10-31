@@ -1,0 +1,62 @@
+{
+  "name": "@vunset/nuxt",
+  "version": "1.0.0-rc.1",
+  "description": "Nuxt module for Vunset: every component, composable and helper auto-imported, styles loaded.",
+  "keywords": [
+    "nuxt",
+    "nuxt-module",
+    "vue",
+    "headless",
+    "components",
+    "ui",
+    "accessibility"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vunset/vunset.git",
+    "directory": "packages/nuxt"
+  },
+  "homepage": "https://github.com/vunset/vunset#readme",
+  "bugs": "https://github.com/vunset/vunset/issues",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/module.d.ts",
+      "import": "./dist/module.js"
+    }
+  },
+  "scripts": {
+    "build": "node scripts/components.ts && tsc -p tsconfig.build.json",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@vunset/ui": "1.0.0-rc.1",
+    "@vunset/utils": "1.0.0-rc.1",
+    "@vunset/vue": "1.0.0-rc.1",
+    "@nuxt/kit": "^4.6.1",
+    "defu": "^6.1.7"
+  },
+  "peerDependencies": {
+    "@tanstack/charts": "^1.1.0",
+    "@tanstack/vue-table": "^9.2.4"
+  },
+  "peerDependenciesMeta": {
+    "@tanstack/charts": {
+      "optional": true
+    },
+    "@tanstack/vue-table": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@nuxt/schema": "^4.6.1",
+    "nuxt": "^4.6.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

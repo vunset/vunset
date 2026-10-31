@@ -1,0 +1,45 @@
+@layer components {
+  .app-confirm {
+    display: grid;
+    gap: 0.25rem;
+    width: max-content;
+    max-width: min(20rem, calc(100vw - 1rem));
+    padding: 0.875rem;
+
+    &[data-align='start'] .app-confirm-actions {
+      flex-direction: row-reverse;
+    }
+  }
+
+  .app-confirm-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .app-confirm-icon {
+    flex: none;
+    color: var(--ui-danger);
+  }
+
+  .app-confirm-title {
+    font-size: var(--ui-font-size);
+  }
+
+  .app-confirm-message {
+    margin: 0;
+    color: var(--ui-muted);
+    font-size: var(--ui-font-size);
+    white-space: pre-line;
+  }
+
+  .app-confirm-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+
+    & button {
+      flex-grow: 1;
+    }
+  }
+}

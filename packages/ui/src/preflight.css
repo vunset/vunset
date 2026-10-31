@@ -1,0 +1,40 @@
+/* The reset the components are built on, as `@vunset/ui/preflight.css`. Not in
+   `all.css`: Tailwind's Preflight already does all of it. Without Tailwind, import
+   it before `all.css`. It reaches every element on the page, the app's too. */
+@layer theme, base, components, utilities;
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    box-sizing: border-box;
+    border: 0 solid;
+  }
+
+  /* The border above took its line away. */
+  hr {
+    height: 0;
+    border-top-width: 1px;
+    color: inherit;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: inherit;
+  }
+
+  button,
+  input,
+  select,
+  textarea,
+  ::file-selector-button {
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+  }
+}

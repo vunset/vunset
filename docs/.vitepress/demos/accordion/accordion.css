@@ -1,0 +1,76 @@
+:root {
+  --demo-color-text: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));
+  --demo-color-edge: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.3));
+  --demo-color-canvas: light-dark(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.03));
+}
+
+.demo-accordion {
+  width: 22rem;
+  border: 1px dotted var(--demo-color-edge);
+  background-color: var(--demo-color-canvas);
+  font-size: 0.875rem;
+  color: var(--demo-color-text);
+}
+
+.demo-accordion-item + .demo-accordion-item {
+  border-top: 1px dotted var(--demo-color-edge);
+}
+
+.demo-accordion-header {
+  margin: 0;
+  font: inherit;
+}
+
+.demo-accordion-trigger {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin: 0;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: none;
+  font: inherit;
+  font-weight: 500;
+  color: inherit;
+  text-align: start;
+  cursor: pointer;
+  outline: none;
+
+  &:focus-visible {
+    border-color: currentColor;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.demo-accordion-icon {
+  width: 1rem;
+  height: 1rem;
+  transition: rotate 200ms ease;
+
+  [data-open] > & {
+    rotate: 90deg;
+  }
+}
+
+.demo-accordion-panel {
+  overflow: hidden;
+  height: var(--collapsible-panel-height);
+  transition: height 200ms ease;
+
+  &[data-enter-from],
+  &[data-leave-to] {
+    height: 0;
+  }
+}
+
+.demo-accordion-content {
+  padding: 0 0.75rem 0.75rem;
+  opacity: 0.7;
+}

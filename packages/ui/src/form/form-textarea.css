@@ -1,0 +1,63 @@
+@layer components {
+  .form-textarea {
+    align-items: flex-start;
+    height: auto;
+    padding-inline: 0;
+    cursor: text;
+    overflow: clip;
+
+    & > .form-addon {
+      min-height: calc(var(--ui-control-height) - 2 * var(--ui-border-width));
+    }
+
+    & > .form-addon[data-side='start'] {
+      padding-inline-start: var(--ui-control-padding-x);
+    }
+
+    & > .form-addon[data-side='end'] {
+      padding-inline-end: var(--ui-control-padding-x);
+    }
+
+    /* A button sits inset in the first row, not joined to the border. */
+    & > .form-addon[data-side='start']:has(.app-button) {
+      padding-inline-start: 0.25rem;
+    }
+
+    & > .form-addon[data-side='end']:has(.app-button) {
+      padding-inline-end: 0.25rem;
+    }
+  }
+
+  .form-textarea-control {
+    flex: 1;
+    align-self: stretch;
+    min-width: 0;
+    min-height: calc(var(--ui-control-height) - 2 * var(--ui-border-width));
+    padding-block: calc((var(--ui-control-height) - 1lh) / 2 - var(--ui-border-width));
+    padding-inline: var(--ui-control-padding-x);
+    outline: none;
+    resize: vertical;
+
+    .form-addon + & {
+      padding-inline-start: 0;
+    }
+
+    &:has(+ .form-addon) {
+      padding-inline-end: 0;
+    }
+
+    &::placeholder {
+      color: var(--ui-muted);
+      opacity: 1;
+    }
+
+    &[data-autosize],
+    &:disabled {
+      resize: none;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+}

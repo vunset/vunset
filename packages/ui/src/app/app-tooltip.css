@@ -1,0 +1,43 @@
+@layer components {
+  .app-tooltip {
+    max-width: 18rem;
+    padding: 0.3125rem 0.5rem;
+    border-radius: var(--ui-radius-sm);
+    background: var(--ui-text);
+    color: var(--ui-bg);
+    font-size: var(--ui-font-size-sm);
+    line-height: 1.35;
+    transition:
+      opacity var(--ui-duration) ease,
+      scale var(--ui-duration) ease;
+
+    &[data-enter-from],
+    &[data-leave-to] {
+      opacity: 0;
+      scale: 0.97;
+    }
+  }
+
+  .app-tooltip-arrow {
+    width: 0.5rem;
+    height: 0.5rem;
+    rotate: 45deg;
+    background: var(--ui-text);
+
+    &[data-side='bottom'] {
+      margin-bottom: -0.25rem;
+    }
+
+    &[data-side='top'] {
+      margin-top: -0.25rem;
+    }
+
+    &[data-side='left'] {
+      margin-left: -0.25rem;
+    }
+
+    &[data-side='right'] {
+      margin-right: -0.25rem;
+    }
+  }
+}

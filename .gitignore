@@ -1,0 +1,16 @@
+node_modules
+dist
+.idea
+docs/.vitepress/cache
+.DS_Store
+*.tgz
+*.log
+.env*
+coverage
+.claude/settings.local.json
+.vscode/*
+!.vscode/extensions.json
+.migration
+
+# local task list, not shipped
+TASKS.md

@@ -1,0 +1,42 @@
+@layer components {
+  .form-select {
+    min-width: 0;
+  }
+
+  .form-select-trigger {
+    padding-inline-end: 0.375rem;
+    cursor: pointer;
+    text-align: start;
+
+    .form-clear {
+      margin-inline: -0.375rem;
+      margin-block: min(0px, (var(--ui-control-height) - var(--form-clear-size, 1.5rem)) / 2);
+    }
+  }
+
+  .form-select-value {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    & [data-part='placeholder'] {
+      color: var(--ui-muted);
+    }
+  }
+
+  .form-select-search {
+    flex: none;
+    margin-bottom: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    background-color: color-mix(in srgb, var(--ui-surface) 50%, transparent);
+    border-radius: var(--ui-radius-sm);
+    outline: none;
+    width: 100%;
+
+    &:focus {
+      background-color: var(--ui-surface);
+    }
+  }
+}

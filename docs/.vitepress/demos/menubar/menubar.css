@@ -1,0 +1,51 @@
+:root {
+  --demo-color-text: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));
+  --demo-color-edge: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.3));
+  --demo-color-canvas: light-dark(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.03));
+}
+
+.demo-menubar {
+  box-sizing: border-box;
+  display: inline-flex;
+  gap: 0.125rem;
+  padding: 0.25rem;
+  border: 1px dotted var(--demo-color-edge);
+  background-color: var(--demo-color-canvas);
+  font-size: 0.875rem;
+  color: var(--demo-color-text);
+}
+
+.demo-menubar-trigger {
+  box-sizing: border-box;
+  height: 1.625rem;
+  margin: 0;
+  padding: 0 0.625rem;
+  border: 1px solid transparent;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  outline: none;
+
+  &[data-open] {
+    background-color: rgba(from var(--demo-color-text) r g b / 10%);
+  }
+
+  &:focus-visible {
+    border-color: currentColor;
+  }
+}
+
+.demo-menubar-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.demo-menubar-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}

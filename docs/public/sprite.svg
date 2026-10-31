@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none">
+  <symbol id="check" viewBox="0 0 16 16">
+    <path d="M3 8.5l3.5 3.5L13 5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+      stroke-linejoin="round" />
+  </symbol>
+  <symbol id="bell" viewBox="0 0 16 16">
+    <path d="M8 2a4 4 0 00-4 4v3l-1 2h10l-1-2V6a4 4 0 00-4-4z" stroke="currentColor" stroke-width="1.4"
+      stroke-linejoin="round" />
+    <path d="M6.5 13a1.5 1.5 0 003 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+  </symbol>
+  <symbol id="trash" viewBox="0 0 16 16">
+    <path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.5 8h6l.5-8" stroke="currentColor" stroke-width="1.4"
+      stroke-linecap="round" stroke-linejoin="round" />
+  </symbol>
+  <symbol id="times" viewBox="0 0 24 24" fill="none">
+    <path d="M6.25 6.25L17.75 17.75M17.75 6.25L6.25 17.75" stroke="currentColor" stroke-width="1.5"
+      stroke-linecap="round" />
+  </symbol>
+  <symbol id="search" viewBox="0 0 24 24" fill="none">
+    <path
+      d="M20.25 20.25L16.1265 16.1265M16.1265 16.1265C17.4385 14.8145 18.25 13.002 18.25 11C18.25 6.99594 15.0041 3.75 11 3.75C6.99594 3.75 3.75 6.99594 3.75 11C3.75 15.0041 6.99594 18.25 11 18.25C13.002 18.25 14.8145 17.4385 16.1265 16.1265Z"
+      stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+  </symbol>
+  <symbol id="star" viewBox="0 0 16 16">
+    <path fill="currentColor" d="M8 1.5l1.9 4 4.4.6-3.2 3 .8 4.4L8 11.4l-3.9 2.1.8-4.4-3.2-3 4.4-.6z" />
+  </symbol>
+  <symbol id="chevron-right" viewBox="0 0 24 24">
+    <path d="M9.5 18.25L15.75 12L9.5 5.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+      stroke-linejoin="round" />
+  </symbol>
+  <symbol id="chevron-left" viewBox="0 0 24 24">
+    <path d="M14.5 18.25L8.25 12L14.5 5.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+      stroke-linejoin="round" />
+  </symbol>
+  <symbol id="calendar" viewBox="0 0 24 24" fill="none">
+    <path d="M3.75 4.75H20.25V20.25H3.75V4.75Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+      stroke-linejoin="round" />
+    <path d="M7.75 8.75H16.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+      stroke-linejoin="round" />
+    <path d="M7.75 4.75V2.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M16.25 4.75V2.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+      stroke-linejoin="round" />
+  </symbol>
+  <symbol id="grabber" viewBox="0 0 24 24" fill="none">
+    <path d="M8 9L12 5L16 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M16 15L12 19L8 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+      stroke-linejoin="round" />
+  </symbol>
+  <symbol id="chevron-left" viewBox="0 0 24 24" fill="none">
+    <path d="M14.5 18.25L8.25 12L14.5 5.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+      stroke-linejoin="round" />
+  </symbol>
+  <symbol id="chevron-right" viewBox="0 0 24 24" fill="none">
+    <path d="M9.5 18.25L15.75 12L9.5 5.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+      stroke-linejoin="round" />
+  </symbol>
+</svg>

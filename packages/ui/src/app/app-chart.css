@@ -1,0 +1,136 @@
+@layer components {
+  /* No component: `@vunset/vue/chart`'s charts, drawn in ui's tokens. The
+     series palette sits on `:root`, so a legend outside a chart has it too.
+     The parts are matched by `data-part` at no specificity, so any rule of
+     the app's own wins. Set
+     `--chart-color-N` again, on `:root` or one chart, for other colors. */
+  :root {
+    --chart-color-0: var(--ui-accent);
+    --chart-color-1: light-dark(#10b981, #34d399);
+    --chart-color-2: light-dark(#f59e0b, #fbbf24);
+    --chart-color-3: light-dark(#8b5cf6, #a78bfa);
+    --chart-color-4: light-dark(#f43f5e, #fb7185);
+    --chart-color-5: light-dark(#06b6d4, #22d3ee);
+    --chart-color-6: light-dark(#f97316, #fb923c);
+    --chart-color-7: light-dark(#64748b, #94a3b8);
+  }
+
+  /* The drawing: axes and grid are painted in the chart's `color`, faded;
+     `--chart-tick-font-size` sizes the tick labels, and the axes make room. */
+  :where([data-part='chart']) {
+    --chart-tick-font-size: var(--ui-font-size-xs);
+    display: block;
+    width: 100%;
+    color: var(--ui-text);
+    font-size: var(--ui-font-size-sm);
+  }
+
+  /* The donut's middle: the total, and a line under it. */
+  :where([data-part='chart-center-label']) {
+    color: var(--ui-text);
+    font-size: var(--ui-font-size-xl);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  :where([data-part='chart-center-sub-label']) {
+    color: var(--ui-muted);
+    font-size: var(--ui-font-size-xs);
+  }
+
+  /* The legend: a row of small toggles, each its series' swatch and name. */
+  :where([data-part='legend']) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-bottom: 0.75rem;
+  }
+
+  :where([data-part='legend-item']) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: var(--ui-radius-sm);
+    color: var(--ui-text);
+    font-size: var(--ui-font-size-sm);
+    cursor: pointer;
+    outline: none;
+    transition:
+      background-color var(--ui-duration) ease,
+      opacity var(--ui-duration) ease;
+
+    &:hover {
+      background: var(--ui-surface);
+    }
+
+    &:focus-visible {
+      box-shadow: var(--ui-focus-ring);
+    }
+
+    /* A series switched off: dimmed. */
+    &[data-hidden] {
+      opacity: 0.5;
+    }
+  }
+
+  :where([data-part='legend-swatch']) {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :where([data-part='chart'] .ts-chart-tooltip) {
+      transition:
+        left var(--ui-duration) ease-out,
+        top var(--ui-duration) ease-out;
+    }
+  }
+
+  /* The tooltip: a heading (the x value), then a row per series. */
+  :where([data-part='chart-tooltip']) {
+    border: var(--ui-border-width) solid var(--ui-border);
+    border-radius: var(--ui-radius);
+    background: var(--ui-bg);
+    box-shadow: 0 8px 24px -6px rgb(0 0 0 / 18%);
+    color: var(--ui-text);
+    font-size: var(--ui-font-size-sm);
+  }
+
+  :where([data-part='tooltip-heading']) {
+    padding: 0.375rem 0.75rem;
+    border-bottom: var(--ui-border-width) solid var(--ui-border);
+    font-weight: 600;
+  }
+
+  :where([data-part='tooltip-rows']) {
+    display: grid;
+    gap: 0.25rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  :where([data-part='tooltip-row']) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  :where([data-part='tooltip-swatch']) {
+    flex: none;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+  }
+
+  :where([data-part='tooltip-label']) {
+    color: var(--ui-text);
+  }
+
+  :where([data-part='tooltip-value']) {
+    margin-inline-start: auto;
+    padding-inline-start: 1rem;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+}

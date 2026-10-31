@@ -1,0 +1,157 @@
+@layer components {
+  .form-timepicker {
+    gap: 0.25rem;
+    padding-inline-start: 0.25rem;
+
+    &:has(.form-clear) {
+      padding-inline-end: 0.25rem;
+    }
+  }
+
+  .form-timepicker-trigger {
+    display: grid;
+    place-items: center;
+    align-self: stretch;
+    padding-inline: 0.25rem;
+    border-radius: var(--ui-radius-sm);
+    color: var(--ui-muted);
+    cursor: pointer;
+    outline: none;
+    transition: color var(--ui-duration) ease;
+
+    &:hover,
+    &[data-open] {
+      color: var(--ui-text);
+    }
+
+    &:focus-visible {
+      box-shadow: var(--ui-focus-ring);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+
+    [data-readonly] > & {
+      cursor: default;
+    }
+  }
+
+  .form-timepicker-input {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    min-width: 0;
+    font-variant-numeric: tabular-nums;
+
+    [data-part='separator'] {
+      color: var(--ui-muted);
+    }
+
+    [data-part='segment'] {
+      padding-inline: 0.125rem;
+      border-radius: var(--ui-radius-sm);
+      caret-color: transparent;
+      outline: none;
+
+      &[data-placeholder] {
+        color: var(--ui-muted);
+      }
+
+      &:focus {
+        background: color-mix(in srgb, var(--ui-accent) 18%, transparent);
+        color: var(--ui-text);
+      }
+    }
+  }
+
+  .form-timepicker-popup {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    transition:
+      opacity var(--ui-duration) ease,
+      scale var(--ui-duration) ease;
+    transform-origin: var(--ui-origin-y, center) var(--ui-origin-x, center);
+
+    &[data-enter-from],
+    &[data-leave-to] {
+      opacity: 0;
+      scale: 0.97;
+    }
+
+    &[data-side='bottom'] {
+      --ui-origin-y: top;
+    }
+
+    &[data-side='top'] {
+      --ui-origin-y: bottom;
+    }
+
+    &[data-align='start'] {
+      --ui-origin-x: left;
+    }
+
+    &[data-align='end'] {
+      --ui-origin-x: right;
+    }
+  }
+
+  /* A column of values, its pick kept in the middle. */
+  .form-timepicker-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    height: 13.5rem;
+    padding-block: 6rem;
+    overflow-y: auto;
+    border-radius: var(--ui-radius-sm);
+    font-variant-numeric: tabular-nums;
+    scrollbar-width: none;
+    scroll-behavior: smooth;
+    scroll-snap-type: y mandatory;
+    outline: none;
+
+    &:focus-visible {
+      box-shadow: var(--ui-focus-ring);
+    }
+
+    [data-part='option'] {
+      scroll-snap-align: center;
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--ui-radius-sm);
+      text-align: center;
+      cursor: pointer;
+
+      &:hover:not([data-disabled]) {
+        background: var(--ui-surface);
+      }
+
+      &[data-selected] {
+        background: color-mix(in srgb, var(--ui-accent) 15%, transparent);
+        color: var(--ui-accent);
+      }
+
+      /* Outside `min`/`max`. */
+      &[data-disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .form-timepicker-separator {
+    color: var(--ui-muted);
+    align-self: center;
+
+    &::before {
+      content: ':';
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .form-timepicker-column {
+      scroll-behavior: auto;
+    }
+  }
+}
