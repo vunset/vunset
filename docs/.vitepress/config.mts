@@ -10,18 +10,39 @@ import { installTabs } from './markdown/install-tabs.ts';
 import { readFileSync } from 'node:fs';
 import vuePackage from '../../packages/vue/package.json' with { type: 'json' };
 
+// Where the site is deployed; `base` and every absolute URL below follow it.
+const base = '/vunset/';
+const origin = 'https://vunset.github.io';
+const description = 'A headless, unstyled Vue 3 component library, and a styled kit built on it.';
+
 // The newest released version in the changelog, and the line written under it.
 function latestRelease() {
   const changelog = readFileSync(new URL('../../CHANGELOG.md', import.meta.url), 'utf8');
-  const match = changelog.match(/^## (\d+\.\d+\.\d+)\n+([^#\n][^\n]*)?/m);
+  const match = changelog.match(/^## (\d+\.\d+\.\d+(?:-[\w.]+)?)\n+([^#\n][^\n]*)?/m);
   return { version: match?.[1] ?? vuePackage.version, note: match?.[2]?.trim() ?? '' };
 }
 
 export default defineConfig({
   title: 'Vunset',
-  description: 'a headless, unstyled Vue component library',
+  description,
+  base,
   cleanUrls: true,
-  head: [['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }]],
+  sitemap: { hostname: origin + base },
+  head: [
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: `${base}favicon.svg` }],
+    ['meta', { property: 'og:type', content: 'website' }],
+    ['meta', { property: 'og:site_name', content: 'Vunset' }],
+    ['meta', { name: 'twitter:card', content: 'summary' }]
+  ],
+  // Each page's own title, description and address for link previews.
+  transformHead({ pageData, title, description: pageDescription }) {
+    const path = pageData.relativePath.replace(/(^|\/)index\.md$/, '$1').replace(/\.md$/, '');
+    return [
+      ['meta', { property: 'og:title', content: title }],
+      ['meta', { property: 'og:description', content: pageDescription }],
+      ['meta', { property: 'og:url', content: origin + base + path }]
+    ];
+  },
   postRender(context) {
     const teleports = (context.teleports ??= {});
     teleports.body = `<div id="teleports">${teleports['#teleports'] ?? ''}</div>${teleports.body ?? ''}`;

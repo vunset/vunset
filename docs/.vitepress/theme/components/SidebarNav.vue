@@ -7,10 +7,10 @@
         <a
           v-for="subItem in item.items"
           :key="subItem.link"
-          :href="subItem.link"
+          :href="withBase(subItem.link)"
           class="side-link"
           :data-active="isActive(subItem.link) || undefined"
-          v-html="route.path.includes('/ui/') ? formatText(subItem.text) : subItem.text"
+          v-html="path.startsWith('/ui/') ? formatText(subItem.text) : subItem.text"
         />
       </div>
     </div>
@@ -18,10 +18,11 @@
 </template>
 
 <script setup lang="ts">
+import { withBase } from 'vitepress';
 import { ScrollArea } from '@vunset/vue';
 import { formatText, useSidebar } from '../sidebar';
 
-const { groups: sidebar, route } = useSidebar();
+const { groups: sidebar, path } = useSidebar();
 
-const isActive = (link: string) => link === route.path;
+const isActive = (link: string) => link === path.value;
 </script>

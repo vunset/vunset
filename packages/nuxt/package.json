@@ -17,7 +17,7 @@
     "url": "git+https://github.com/vunset/vunset.git",
     "directory": "packages/nuxt"
   },
-  "homepage": "https://github.com/vunset/vunset#readme",
+  "homepage": "https://vunset.github.io/vunset/nuxt/get-started",
   "bugs": "https://github.com/vunset/vunset/issues",
   "type": "module",
   "files": [

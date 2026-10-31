@@ -19,6 +19,15 @@ cells) gets one parent class, written in the component's own `<style>`
 (`@reference '../style.css'`), never as `[&_p]:` variants.
 `theme/article.css` styles only the prose.
 
+## Base path
+
+The site is served from `https://vunset.github.io/vunset/` (`base` in
+`config.mts`). Markdown links and CSS `url()`s get the base on their own; a
+theme component's internal `href` goes through `withBase`, and compares the
+page with `usePagePath()` (`theme/sidebar.ts`), never `route.path`, which
+includes the base. A public file a script asks for starts from
+`import.meta.env.BASE_URL` (the icon sprite in `theme/index.ts`).
+
 ## Demos
 
 What the pages render lives in `docs/.vitepress/` beside the theme: the demos
@@ -38,6 +47,8 @@ shows everything it takes.
   so read the changelog before bumping. The build needs ~2 GB of heap (peak RSS
   ~2.8 GB): Node's default, sized from RAM, covers it, but a CI deploy (GitHub
   Pages) should set `NODE_OPTIONS=--max-old-space-size=4096`.
+- **Deployed by `.github/workflows/docs.yml`** to GitHub Pages on every push to
+  `main`.
 - **The build's chunk-size warning** is the docs pages: each preview's
   highlighted source is compiled into its page.
 - **The SSR suite** (`packages/vue/test/ssr.test.ts`) renders every docs demo and

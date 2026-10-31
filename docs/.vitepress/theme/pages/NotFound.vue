@@ -24,13 +24,13 @@
 
       <div class="mt-9 flex flex-wrap justify-center gap-3">
         <a
-          href="/"
+          :href="withBase('/')"
           class="rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-canvas duration-150 hover:bg-accent/85"
         >
           Back home
         </a>
         <a
-          href="/get-started"
+          :href="withBase('/get-started')"
           class="rounded-full border border-edge-subtle px-5 py-2.5 text-sm font-medium text-surface duration-150 hover:bg-canvas-subtle"
         >
           Get started
@@ -44,6 +44,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { withBase } from 'vitepress';
 import Header from '../components/Header.vue';
 import PrismRays from '../components/PrismRays.vue';
 

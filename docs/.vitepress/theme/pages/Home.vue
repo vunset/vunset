@@ -6,7 +6,7 @@
       <section class="max-w-130">
         <a
           v-if="release"
-          href="/changelog"
+          :href="withBase('/changelog')"
           class="mb-6 inline-flex items-center gap-2.5 rounded-full border border-edge-subtle bg-canvas/60 py-1 pr-3 pl-1 text-sm text-muted duration-150 hover:border-accent/40 hover:text-surface"
         >
           <span class="rounded-full bg-accent/15 px-2 py-0.5 font-mono text-xs font-medium text-accent">
@@ -29,7 +29,7 @@
           @mouseenter="hovered = item.name"
         >
           <div class="flex items-center justify-between gap-3">
-            <a :href="item.link" class="font-mono text-sm font-medium text-surface hover:text-accent">
+            <a :href="withBase(item.link)" class="font-mono text-sm font-medium text-surface hover:text-accent">
               {{ item.name }}
             </a>
 
@@ -60,7 +60,7 @@
           </div>
 
           <a
-            :href="item.link"
+            :href="withBase(item.link)"
             class="self-start rounded-full border px-4 py-2 text-sm font-medium duration-150"
             :class="
               item.name === active
@@ -86,7 +86,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { useData } from 'vitepress';
+import { useData, withBase } from 'vitepress';
 import { Copy } from '@vunset/vue';
 import Header from '../components/Header.vue';
 import PrismRays from '../components/PrismRays.vue';

@@ -77,7 +77,7 @@ export default defineNuxtConfig({
 
 ## Documentation
 
-[github.com/vunset/vunset/tree/main/docs/nuxt](https://github.com/vunset/vunset/tree/main/docs/nuxt)
+[vunset.github.io/vunset/nuxt/get-started](https://vunset.github.io/vunset/nuxt/get-started)
 
 ## License
 

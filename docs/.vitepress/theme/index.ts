@@ -16,6 +16,7 @@ import InstallTabs from './components/InstallTabs.vue';
 import HomeExample from './components/HomeExample.vue';
 
 configureIcons({
+  sprite: `${import.meta.env.BASE_URL}sprite.svg`,
   inline: import.meta.glob<string>('../demos/icon/icons/*.svg', { query: '?raw', import: 'default' })
 });
 

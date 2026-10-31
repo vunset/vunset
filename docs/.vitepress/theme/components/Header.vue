@@ -3,7 +3,7 @@
     <div
       class="flex justify-between md:grid md:grid-cols-[1fr_auto_1fr] gap-x-6 md:px-2 items-center w-full pointer-events-auto"
     >
-      <a href="/" class="inline-flex w-fit items-center gap-2">
+      <a :href="withBase('/')" class="inline-flex w-fit items-center gap-2">
         <svg
           class="h-8 w-10.5"
           width="57"
@@ -27,7 +27,7 @@
           <TooltipRoot v-for="item in site.themeConfig.nav" :key="item.text">
             <TooltipTrigger
               as="a"
-              :href="item.link"
+              :href="withBase(item.link)"
               class="px-3 py-1 rounded-full duration-150"
               :class="section(item.link) === section(path) ? 'bg-chip' : 'text-muted hover:text-surface'"
             >
@@ -105,7 +105,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useData } from 'vitepress';
+import { useData, withBase } from 'vitepress';
 import SearchDialog from './SearchDialog.vue';
 import MobileMenu from './MobileMenu.vue';
 import { section } from '../sidebar';

@@ -24,9 +24,9 @@
           <a
             v-for="item in site.themeConfig.nav"
             :key="item.text"
-            :href="item.link"
+            :href="withBase(item.link)"
             class="px-3 py-1 rounded-full text-sm duration-150"
-            :class="section(item.link) === section(route.path) ? 'bg-chip' : 'text-muted hover:text-surface'"
+            :class="section(item.link) === section(path) ? 'bg-chip' : 'text-muted hover:text-surface'"
           >
             {{ item.text }}
           </a>
@@ -51,15 +51,16 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { useData, useRoute } from 'vitepress';
+import { useData, useRoute, withBase } from 'vitepress';
 import { DrawerRoot, DrawerTrigger, DrawerBackdrop, DrawerTitle, Portal, Popup } from '@vunset/vue';
 import SidebarNav from './SidebarNav.vue';
-import { section } from '../sidebar';
+import { section, usePagePath } from '../sidebar';
 
 defineOptions({ inheritAttrs: false });
 
 const { site } = useData();
 const route = useRoute();
+const path = usePagePath();
 
 const open = ref(false);
 

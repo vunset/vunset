@@ -69,8 +69,11 @@ package's entry or what it imports from another package.
 
 All four packages share one version, their `@vunset/*` dependencies pinned to
 it exactly. `npm run bump -- <version>` sets it everywhere; add the entry to
-`CHANGELOG.md`; `npm run release` publishes utils → vue → ui → nuxt, a
-prerelease (`1.0.0-rc.2`) under the `next` tag (`-- --dry-run` to check).
+`CHANGELOG.md`, commit, and push a tag `v<version>`: `.github/workflows/release.yml`
+runs the checks and `npm run release` through npm's trusted publishing (no
+token; provenance comes with it), which publishes
+utils → vue → ui → nuxt, a prerelease (`1.0.0-rc.2`) under the `next` tag.
+`npm run release -- --dry-run` checks it locally.
 
 ## File layout
 
