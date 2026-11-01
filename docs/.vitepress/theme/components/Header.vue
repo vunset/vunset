@@ -4,19 +4,7 @@
       class="flex justify-between md:grid md:grid-cols-[1fr_auto_1fr] gap-x-6 md:px-2 items-center w-full pointer-events-auto"
     >
       <a :href="withBase('/')" class="inline-flex w-fit items-center gap-2">
-        <svg
-          class="h-8 w-10.5"
-          width="57"
-          height="44"
-          viewBox="0 0 57 44"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path d="M31 12V9L45 0.5L55 6L55 13L40 28L38 27M40 28L41 14M41 14L55 6M41 14L31 9" stroke="white" />
-          <path d="M38 16L28 22M0 6L0.5 13L28 42L38 31V16L10 0.5L0 6ZM28 22V42M28 22L0 6" stroke="white" />
-        </svg>
-
-        VUNSET
+        <Logo class="h-8" />
       </a>
 
       <TooltipGroup :delay="600">
@@ -108,6 +96,7 @@ import { computed } from 'vue';
 import { useData, withBase } from 'vitepress';
 import SearchDialog from './SearchDialog.vue';
 import MobileMenu from './MobileMenu.vue';
+import Logo from './Logo.vue';
 import { section } from '../sidebar';
 import {
   TooltipGroup,

@@ -21,7 +21,7 @@ function latestRelease() {
 }
 
 export default defineConfig({
-  title: 'Headless Vue components, done right',
+  title: 'Headless Vue Components',
   titleTemplate: ':title - Vunset',
   htmlAttrs: { prefix: 'og: https://ogp.me/ns#', lang: 'en' },
   description,

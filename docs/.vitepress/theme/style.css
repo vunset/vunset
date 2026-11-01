@@ -65,7 +65,8 @@
     --demo-color-backdrop: black;
   }
 
-  .demo-toast-viewport {
+  .demo-toast-viewport,
+  .demo-chart [data-part='chart-tooltip'] {
     --demo-color-canvas: color-mix(in oklab, var(--demo-color-backdrop) 97%, var(--demo-color-text));
   }
 

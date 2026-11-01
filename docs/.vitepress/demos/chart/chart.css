@@ -6,10 +6,10 @@
 
 .demo-chart,
 .demo-chart-legend {
-  --chart-color-0: rgb(255, 125, 125);
-  --chart-color-1: rgb(125, 255, 125);
-  --chart-color-2: rgb(125, 125, 255);
-  --chart-color-3: rgb(255, 125, 255);
+  --chart-color-0: light-dark(rgb(225, 70, 70), rgb(255, 125, 125));
+  --chart-color-1: light-dark(rgb(40, 170, 70), rgb(125, 255, 125));
+  --chart-color-2: light-dark(rgb(70, 70, 225), rgb(125, 125, 255));
+  --chart-color-3: light-dark(rgb(200, 60, 200), rgb(255, 125, 255));
 }
 
 .demo-chart {
@@ -147,11 +147,11 @@
   td {
     padding: 0.25rem 0.5rem;
     border-top: 1px dotted var(--demo-color-edge);
-  }
 
-  td:last-child {
-    text-align: right;
-    font-variant-numeric: tabular-nums;
+    &:last-child {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
   }
 }
 

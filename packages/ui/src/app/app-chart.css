@@ -123,6 +123,20 @@
     border-radius: 50%;
   }
 
+  :where(.inverted [data-part='tooltip-row']) {
+    --ui-scheme: light-dark(#000, #fff);
+  }
+
+  :where(.inverted [data-part='tooltip-swatch']) {
+    color-scheme: light;
+  }
+
+  @container style(--ui-scheme: #000) {
+    :where(.inverted [data-part='tooltip-swatch']) {
+      color-scheme: dark;
+    }
+  }
+
   :where([data-part='tooltip-label']) {
     color: var(--ui-text);
   }

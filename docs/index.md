@@ -2,7 +2,7 @@
 layout: home
 
 hero:
-  text: Headless Vue components, done right
+  text: Headless Vue Components
   tagline: Accessible, keyboard-ready parts with no styles attached. Bring your own design, or start pre-styled.
 
 packages:
