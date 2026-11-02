@@ -76,7 +76,7 @@ export default defineConfig({
       md.use(scrollTable);
       md.use(installTabs);
     },
-    theme: { light: 'vesper', dark: 'kanagawa-wave' }
+    theme: { light: 'github-light', dark: 'github-dark' }
   },
   themeConfig: {
     search: {

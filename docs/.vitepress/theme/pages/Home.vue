@@ -80,7 +80,7 @@
       </section>
     </main>
 
-    <PrismRays />
+    <PrismRays :key="String(isDark)" :light="!isDark" />
   </div>
 </template>
 
@@ -101,7 +101,7 @@ interface Package {
   accent?: boolean;
 }
 
-const { frontmatter, site, theme } = useData();
+const { frontmatter, site, theme, isDark } = useData();
 
 const hero = computed<{ text: string; tagline?: string }>(
   () => frontmatter.value.hero ?? { text: site.value.title, tagline: site.value.description }

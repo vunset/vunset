@@ -83,7 +83,7 @@ const indicator = {
     </TabsRoot>
 
     <div
-      class="relative m-2 grid max-md:order-first place-items-center rounded-[20px] py-14 text-surface pattern-grid bg-white/5"
+      class="relative m-2 grid max-md:order-first place-items-center rounded-[20px] py-14 text-surface pattern-grid bg-current/5"
     >
       <span
         class="pointer-events-none absolute top-3 left-3 font-mono text-[11px]/none tracking-wider text-current/40 uppercase"

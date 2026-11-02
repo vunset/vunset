@@ -34,6 +34,33 @@
       <div class="flex items-center justify-end gap-0.5 pointer-events-auto">
         <SearchDialog />
 
+        <button
+          type="button"
+          class="size-8 rounded-full shrink-0 grid hover:bg-chip p-1 duration-150"
+          :aria-label="isDark ? 'Switch to light theme' : 'Switch to dark theme'"
+          :title="isDark ? 'Light theme' : 'Dark theme'"
+          @click="isDark = !isDark"
+        >
+          <svg class="size-4 m-auto" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              v-if="isDark"
+              d="M11.9982 3.29071V1.76746M5.83985 18.1585L4.76275 19.2356M11.9982 22.2326V20.7093M19.2334 4.76456L18.1562 5.84166M20.707 12H22.2303M18.1562 18.1584L19.2334 19.2355M1.76562 12H3.28888M4.76267 4.7645L5.83977 5.8416M15.7104 8.28769C17.7606 10.3379 17.7606 13.6621 15.7104 15.7123C13.6601 17.7626 10.336 17.7626 8.28574 15.7123C6.23548 13.6621 6.23548 10.3379 8.28574 8.28769C10.336 6.23744 13.6601 6.23744 15.7104 8.28769Z"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              v-else
+              d="M21.2481 11.8112C20.1889 12.5601 18.8958 13.0001 17.5 13.0001C13.9101 13.0001 11 10.0899 11 6.50006C11 5.10422 11.44 3.81114 12.1888 2.75195C12.126 2.75069 12.0631 2.75006 12 2.75006C6.89137 2.75006 2.75 6.89143 2.75 12.0001C2.75 17.1087 6.89137 21.2501 12 21.2501C17.1086 21.2501 21.25 17.1087 21.25 12.0001C21.25 11.937 21.2494 11.874 21.2481 11.8112Z"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+
         <a
           :href="site.themeConfig.socialLinks[0].link"
           target="_blank"
@@ -110,7 +137,7 @@ import {
   Popup
 } from '@vunset/vue';
 
-const { site, page } = useData();
+const { site, page, isDark } = useData();
 
 const packages = [
   { name: '@vunset/vue', details: 'Headless primitives' },

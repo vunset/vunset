@@ -101,7 +101,7 @@ and follows the page's color scheme.
 | `--ui-border` | `light-dark(#d4d4d8, #333)` |
 | `--ui-text` | `light-dark(#18181b, #fafafa)` |
 | `--ui-muted` | `--ui-text` at 50% |
-| `--ui-accent`, `--ui-on-accent` | `#228c9e`, `#fff` |
+| `--ui-accent`, `--ui-on-accent` | `light-dark(#2563eb, #3b82f6)`, `#fff` |
 | `--ui-neutral`, `--ui-on-neutral` | `--ui-text`, `--ui-bg` |
 | `--ui-danger`, `--ui-on-danger` | `light-dark(#d42525, #ff4d4d)`, `light-dark(#fff, #4c0707)` |
 | `--ui-success`, `--ui-on-success` | `light-dark(#16a34a, #4ade80)`, `light-dark(#fff, #093019)` |

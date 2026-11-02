@@ -53,6 +53,9 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 
+// The light theme tints a white page instead of lighting a dark one.
+const props = defineProps<{ light?: boolean }>();
+
 const canvas = ref<HTMLCanvasElement | null>(null);
 const running = ref(false);
 
@@ -106,6 +109,18 @@ const DEFAULTS = {
   // hazeStrength: 0.07,
   // corner: 1,
   // grain: 0.04
+};
+
+// Wider, stronger rainbows: on white, the colors carry the rays.
+const LIGHT_DEFAULTS: Partial<typeof DEFAULTS> = {
+  rays: 14,
+  dispersion: 0.55,
+  color: 1.2,
+  brightness: 1.1,
+  exposure: 1.6,
+  hazeStrength: 0.15,
+  corner: 0.15,
+  grain: 0.02
 };
 
 type Key = keyof typeof DEFAULTS;
@@ -164,8 +179,9 @@ const GROUPS: { title: string; controls: Control[] }[] = [
 ];
 
 const dev = import.meta.env.DEV;
-const STORAGE_KEY = 'prism-rays';
-const settings = reactive({ ...DEFAULTS, ...(dev ? stored() : {}) });
+const STORAGE_KEY = props.light ? 'prism-rays-light' : 'prism-rays';
+const defaults = props.light ? { ...DEFAULTS, ...LIGHT_DEFAULTS } : DEFAULTS;
+const settings = reactive({ ...defaults, ...(dev ? stored() : {}) });
 const panelOpen = ref(false);
 const copied = ref(false);
 
@@ -186,7 +202,7 @@ if (dev) {
 }
 
 function reset() {
-  Object.assign(settings, DEFAULTS);
+  Object.assign(settings, defaults);
 }
 
 async function copy() {
@@ -206,6 +222,7 @@ const FRAGMENT = `
 precision highp float;
 uniform vec2 resolution;
 uniform float time;
+uniform float lightTheme;
 ${Object.keys(DEFAULTS)
   .map((key) => `uniform float ${key};`)
   .join('\n')}
@@ -214,6 +231,18 @@ const int MAX_RAYS = 24;
 
 float hash(vec2 p) {
   return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
+// Six spectral bands, red to violet; across one ray they add up to white.
+const vec3 SPECTRUM_SUM = vec3(3.75, 2.9, 2.4);
+
+vec3 hue(int k) {
+  if (k == 0) return vec3(1.0, 0.1, 0.1);
+  if (k == 1) return vec3(1.0, 0.5, 0.0);
+  if (k == 2) return vec3(1.0, 0.9, 0.0);
+  if (k == 3) return vec3(0.1, 0.9, 0.3);
+  if (k == 4) return vec3(0.1, 0.4, 1.0);
+  return vec3(0.55, 0.1, 1.0);
 }
 
 // One ray's light at angle a: a soft body with a brighter, narrower core.
@@ -255,6 +284,14 @@ void main() {
     float split = width * dispersion;
     vec3 band = vec3(ray(a - split, width), ray(a, width), ray(a + split, width));
 
+    if (lightTheme > 0.5) {
+      band = vec3(0.0);
+      for (int k = 0; k < 6; k++) {
+        band += hue(k) * ray(a + (float(k) - 2.5) * split, width);
+      }
+      band /= SPECTRUM_SUM / 3.0;
+    }
+
     // Dispersion shows on the strong rays; the faint ones stay gray.
     float tint = color + 0.65 * smoothstep(0.55, 0.95, strength);
     vec3 gray = vec3(band.g);
@@ -272,16 +309,30 @@ void main() {
 
   // The gray haze.
   vec2 haze = vec2(uv.x * aspect, uv.y) - vec2(hazeX * aspect, hazeY);
-  light += vec3(0.42, 0.43, 0.45) * exp(-dot(haze, haze) * 3.5) * hazeStrength;
+  float hazeAmount = exp(-dot(haze, haze) * 3.5) * hazeStrength;
 
-  // Darkest in the top-left, where the heading sits.
-  light *= mix(corner, 1.0, smoothstep(0.1, 0.95, uv.x * 0.6 + (1.0 - uv.y) * 0.6));
+  // Quietest in the top-left, where the heading sits.
+  float cornerFade = mix(corner, 1.0, smoothstep(0.1, 0.95, uv.x * 0.6 + (1.0 - uv.y) * 0.6));
+  float noise = (hash(gl_FragCoord.xy + fract(time) * 91.0) - 0.5) * grain;
+
+  if (lightTheme > 0.5) {
+    vec3 ink = 1.0 - exp(-light * cornerFade * exposure);
+    float amount = max(ink.r, max(ink.g, ink.b));
+    vec3 tint = ink / max(amount, 0.001);
+    // Colored light tints the white; where the bands overlap to white, a faint shade shows the ray.
+    vec3 paper = mix(vec3(1.0), tint, amount * 0.55) * (1.0 - amount * 0.06);
+    paper -= vec3(0.05, 0.05, 0.045) * hazeAmount;
+    gl_FragColor = vec4(paper + noise, 1.0);
+    return;
+  }
+
+  light += vec3(0.42, 0.43, 0.45) * hazeAmount;
+  light *= cornerFade;
 
   // Slightly cool, compressed so bright rays never clip.
   light *= vec3(0.94, 0.97, 1.04);
   light = 1.0 - exp(-light * exposure);
 
-  float noise = (hash(gl_FragCoord.xy + fract(time) * 91.0) - 0.5) * grain;
   gl_FragColor = vec4(light + vec3(0.012) + noise, 1.0);
 }
 `;
@@ -305,6 +356,7 @@ onMounted(() => {
 
   const resolution = gl.getUniformLocation(program, 'resolution');
   const time = gl.getUniformLocation(program, 'time');
+  gl.uniform1f(gl.getUniformLocation(program, 'lightTheme'), props.light ? 1 : 0);
   const uniforms = (Object.keys(DEFAULTS) as Key[]).map((key) => [key, gl.getUniformLocation(program, key)] as const);
 
   const resize = () => {
