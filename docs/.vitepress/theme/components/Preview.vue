@@ -1,8 +1,7 @@
 <script lang="ts">
 import { defineAsyncComponent, type Component } from 'vue';
 
-// The home page's demos are imported by HomeExample itself.
-const demos =import.meta.glob<Component>(['../../demos/**/*.vue', '!../../demos/home/*.vue'], { import: 'default' });
+const demos = import.meta.glob<Component>(['../../demos/**/*.vue', '!../../demos/home/*.vue'], { import: 'default' });
 
 const COLLAPSE_AFTER = 10;
 </script>
@@ -44,14 +43,21 @@ const long = computed(() => (props.lines[props.files.indexOf(active.value)] ?? 0
 </script>
 
 <template>
-  <div class="p-px" :class="inCard ? '' : 'rounded-[28px] bg-stage pattern-grid pb-3'">
+  <div
+    class="p-px"
+    :class="
+      inCard
+        ? ''
+        : 'rounded-docs-outer bg-docs-stage pattern-grid pb-2 border border-docs-border shadow-md shadow-black/5'
+    "
+  >
     <div
-      class="px-3 grid grid-cols-[minmax(0,1fr)] mb-3 relative rounded-[20px] place-items-center"
-      :class="inCard ? 'py-10' : 'py-14 m-3'"
+      class="px-2 grid grid-cols-[minmax(0,1fr)] mb-2 relative rounded-docs-inner place-items-center"
+      :class="inCard ? 'py-10' : 'py-14 m-2'"
     >
       <div
         v-if="!inCard"
-        class="uppercase absolute top-3 left-3 pointer-events-none font-mono text-[11px]/none text-current/40 tracking-wider"
+        class="uppercase absolute top-2 left-2 pointer-events-none font-mono text-[11px]/none text-current/40 tracking-wider"
       >
         Preview
       </div>
@@ -63,17 +69,21 @@ const long = computed(() => (props.lines[props.files.indexOf(active.value)] ?? 0
       <output
         v-show="outputs > 0"
         ref="output"
-        class="flex absolute flex-wrap gap-x-4 gap-y-1 left-3 bottom-3 text-current/50 hover:text-current font-mono text-[11px]/none"
+        class="flex absolute flex-wrap gap-x-4 gap-y-1 left-2 bottom-2 text-current/50 hover:text-current font-mono text-[11px]/none"
       />
     </div>
 
-    <TabsRoot v-model="active" class="inset-card relative flow-root overflow-clip" :class="inCard ? '' : 'mx-3'">
+    <TabsRoot
+      v-model="active"
+      class="inset-card relative flow-root overflow-clip"
+      :class="inCard ? '' : 'mx-2 bg-docs-bg-subtle'"
+    >
       <TabsList class="relative isolate flex gap-1 m-2 mb-0">
         <TabsTab
           v-for="(file, index) in files"
           :key="file"
           :value="file"
-          class="px-3 py-1.5 rounded-full font-mono text-xs text-muted duration-150 hover:text-surface data-selected:text-surface"
+          class="px-2 py-1.5 rounded-full font-mono text-xs text-docs-muted duration-150 hover:text-docs-text data-selected:text-docs-text"
         >
           <template v-if="index === 0">
             {{ file.includes('.vue') ? 'index.vue' : file }}
@@ -83,7 +93,7 @@ const long = computed(() => (props.lines[props.files.indexOf(active.value)] ?? 0
         </TabsTab>
 
         <TabsIndicator
-          class="absolute bg-chip duration-150 transition-[left,top] -z-1 rounded-full"
+          class="absolute bg-docs-chip duration-150 transition-[left,top] -z-1 rounded-full"
           :style="{
             width: 'var(--active-tab-width)',
             height: 'var(--active-tab-height)',
@@ -106,11 +116,12 @@ const long = computed(() => (props.lines[props.files.indexOf(active.value)] ?? 0
 
       <div
         v-if="long"
-        class="sticky bottom-0 z-1 flex items-center justify-center gap-3 p-2 bg-linear-0 from-canvas-strong"
+        class="sticky bottom-0 z-1 flex items-center justify-center gap-2 p-2 bg-linear-0 from-docs-bg-subtle"
       >
         <button
           type="button"
-          class="rounded-full bg-card px-3.5 py-1 text-sm text-surface/85 duration-150 hover:bg-chip"
+          class="rounded-full px-2.5 py-1 text-sm text-docs-text/70 duration-150 hover:text-docs-text"
+          :class="inCard ? 'bg-docs-bg' : 'bg-docs-chip'"
           @click="expanded = !expanded"
         >
           {{ expanded ? 'Collapse' : 'Expand' }}

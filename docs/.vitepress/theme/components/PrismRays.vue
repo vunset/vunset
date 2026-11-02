@@ -6,13 +6,13 @@
     aria-hidden="true"
   />
 
-  <div v-if="dev" class="fixed right-4 bottom-4 z-50 w-84 text-xs text-surface">
+  <div v-if="dev" class="fixed right-4 bottom-4 z-50 w-84 text-xs text-docs-text">
     <div
       v-if="panelOpen"
-      class="mb-2 max-h-[70vh] overflow-y-auto rounded-2xl border border-edge-subtle bg-canvas/90 p-4 backdrop-blur"
+      class="mb-2 max-h-[70vh] overflow-y-auto rounded-2xl border border-docs-border-subtle bg-docs-bg/90 p-4 backdrop-blur"
     >
       <div v-for="group in GROUPS" :key="group.title" class="mb-4 last:mb-0">
-        <div class="mb-2 font-medium text-muted">{{ group.title }}</div>
+        <div class="mb-2 font-medium text-docs-muted">{{ group.title }}</div>
 
         <label
           v-for="control in group.controls"
@@ -26,23 +26,29 @@
             :min="control.min"
             :max="control.max"
             :step="control.step"
-            class="accent-accent"
+            class="accent-docs-accent"
           />
-          <span class="text-right font-mono text-muted">{{ settings[control.key] }}</span>
+          <span class="text-right font-mono text-docs-muted">{{ settings[control.key] }}</span>
         </label>
       </div>
 
       <div class="mt-4 flex gap-2">
-        <button type="button" class="flex-1 rounded-full bg-accent px-3 py-1.5 font-medium text-canvas" @click="copy">
+        <button
+          type="button"
+          class="flex-1 rounded-full bg-docs-accent px-3 py-1.5 font-medium text-docs-bg"
+          @click="copy"
+        >
           {{ copied ? 'Copied' : 'Copy values' }}
         </button>
-        <button type="button" class="rounded-full border border-edge-subtle px-3 py-1.5" @click="reset">Reset</button>
+        <button type="button" class="rounded-full border border-docs-border-subtle px-3 py-1.5" @click="reset">
+          Reset
+        </button>
       </div>
     </div>
 
     <button
       type="button"
-      class="ml-auto block rounded-full border border-edge-subtle bg-canvas/90 px-3 py-1.5 backdrop-blur"
+      class="ml-auto block rounded-full border border-docs-border-subtle bg-docs-bg/90 px-3 py-1.5 backdrop-blur"
       @click="panelOpen = !panelOpen"
     >
       {{ panelOpen ? 'Hide rays panel' : 'Rays panel' }}
@@ -113,13 +119,13 @@ const DEFAULTS = {
 
 // Wider, stronger rainbows: on white, the colors carry the rays.
 const LIGHT_DEFAULTS: Partial<typeof DEFAULTS> = {
-  rays: 14,
-  dispersion: 0.55,
-  color: 1.2,
-  brightness: 1.1,
-  exposure: 1.6,
-  hazeStrength: 0.15,
-  corner: 0.15,
+  rays: 10,
+  // dispersion: 2.55,
+  color: 0.5,
+  brightness: 8,
+  // exposure: 1.6,
+  // hazeStrength: 20,
+  // corner: 2,
   grain: 0.02
 };
 

@@ -126,7 +126,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown, true));
 <template>
   <DialogRoot :open="open" outside-press @update:open="onOpen">
     <DialogTrigger
-      class="flex items-center gap-2 h-8 px-3 max-md:px-2 rounded-full hover:bg-chip text-muted duration-150 hover:text-surface"
+      class="flex items-center gap-2 h-8 px-3 max-md:px-2 rounded-full hover:bg-docs-chip text-docs-muted duration-150 hover:text-docs-text"
       aria-label="Search"
     >
       <svg class="size-4 md:hidden" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -141,7 +141,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown, true));
       <DialogBackdrop class="search-backdrop fixed inset-0 z-50 bg-black/60 backdrop-blur-sm" />
 
       <Popup
-        class="search-dialog fixed z-50 left-1/2 top-[12vh] -translate-x-1/2 w-[min(640px,calc(100vw-2rem))] flex flex-col max-h-[70vh] rounded-[20px] border border-edge bg-canvas-subtle text-surface shadow-[0_20px_60px_rgb(0_0_0/0.5)] overflow-hidden outline-none"
+        class="search-dialog fixed z-50 left-1/2 top-[12vh] -translate-x-1/2 w-[min(640px,calc(100vw-2rem))] flex flex-col max-h-[70vh] rounded-docs-inner border border-docs-border bg-docs-bg-subtle text-docs-text shadow-[0_20px_60px_rgb(0_0_0/0.5)] overflow-hidden outline-none"
       >
         <DialogTitle class="sr-only">Search the docs</DialogTitle>
 
@@ -156,31 +156,31 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown, true));
             aria-label="Search the docs"
             placeholder="Search the docs…"
             autocomplete="off"
-            class="w-full px-5 py-4 bg-transparent border-b border-edge text-base outline-none placeholder:text-muted"
+            class="w-full px-5 py-4 bg-transparent border-b border-docs-border text-base outline-none placeholder:text-docs-muted"
             @input="query = ($event.target as HTMLInputElement).value"
           />
 
           <Popup class="search-results flex flex-col flex-1 min-h-0 outline-none">
             <ComboboxList class="min-h-0 overflow-y-auto not-empty:p-2">
               <template #group="{ section }">
-                <span class="block px-3 pt-3 pb-1 font-mono text-[11px] uppercase tracking-wider text-muted">
+                <span class="block px-3 pt-3 pb-1 font-mono text-[11px] uppercase tracking-wider text-docs-muted">
                   {{ section.label }}
                 </span>
               </template>
 
               <template #option="{ label, option }">
-                <span class="block text-sm text-surface">{{ label }}</span>
+                <span class="block text-sm text-docs-text">{{ label }}</span>
 
-                <span class="block mt-0.5 text-xs/relaxed text-muted line-clamp-2">
+                <span class="block mt-0.5 text-xs/relaxed text-docs-muted line-clamp-2">
                   <template v-for="(part, i) in option.snippet as Part[]" :key="i">
-                    <mark v-if="part.match" class="bg-transparent text-accent">{{ part.text }}</mark>
+                    <mark v-if="part.match" class="bg-transparent text-docs-accent">{{ part.text }}</mark>
                     <template v-else>{{ part.text }}</template>
                   </template>
                 </span>
               </template>
             </ComboboxList>
 
-            <ComboboxEmpty class="px-3 py-6 text-center text-sm text-muted">
+            <ComboboxEmpty class="px-3 py-6 text-center text-sm text-docs-muted">
               {{ query ? `No results for: ${query}` : 'Components, props, keys, examples: type to search every page.' }}
             </ComboboxEmpty>
           </Popup>
@@ -197,7 +197,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown, true));
   @apply px-3 py-2 rounded-xl cursor-pointer;
 
   &[data-active] {
-    @apply bg-stage;
+    @apply bg-docs-stage;
   }
 }
 

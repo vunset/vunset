@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Header class="col-span-full sticky top-0 max-lg:pb-2 max-lg:bg-canvas/85 max-lg:backdrop-blur-md" />
+    <Header class="col-span-full sticky top-0 max-lg:pb-2 max-lg:bg-docs-bg/85 max-lg:backdrop-blur-md" />
 
     <main
       class="grid lg:grid-cols-[14rem_minmax(0,1fr)] xl:grid-cols-[14rem_minmax(0,1fr)_14rem] gap-x-6 max-w-370 mx-auto overflow-clip"
@@ -56,7 +56,7 @@ article {
   }
 
   h1 {
-    @apply text-4xl/none text-surface-strong;
+    @apply text-4xl/none text-docs-text;
   }
 
   h1 + p {
@@ -86,24 +86,24 @@ article {
   }
 
   ul {
-    @apply list-disc pl-5 space-y-2 text-sm/relaxed  marker:text-muted;
+    @apply list-disc pl-5 space-y-2 text-sm/relaxed  marker:text-docs-muted;
   }
 
   p a {
-    @apply text-surface border-current/30 hover:border-accent hover:text-accent duration-200;
+    @apply text-docs-text border-current/30 hover:border-docs-accent hover:text-docs-accent duration-200;
 
     &:not(:has(code)) {
       @apply border-b;
     }
 
     & code {
-      @apply hover:bg-accent/30 duration-200 border rounded border-dashed border-accent/30;
+      @apply hover:bg-docs-accent/30 duration-200 border rounded border-dashed border-docs-accent/30;
     }
   }
 
   :not(pre) > code {
-    @apply rounded px-1.5 py-0.5 bg-chip font-mono text-[0.85em] text-surface;
-    @apply whitespace-nowrap max-md:whitespace-normal max-md:[overflow-wrap:anywhere];
+    @apply rounded px-1.5 py-0.5 bg-current/10 font-mono text-[0.85em] text-docs-text;
+    @apply whitespace-nowrap max-md:whitespace-normal max-md:wrap-anywhere;
   }
 
   .line-numbers-mode {
@@ -125,10 +125,10 @@ article {
   }
 
   [class*='language-'] {
-    @apply relative p-4;
+    @apply relative py-3 px-4;
 
     &:not(:first-child) {
-      @apply inset-card border border-edge;
+      @apply inset-card bg-docs-stage border border-docs-border;
     }
 
     .lang {
@@ -136,7 +136,7 @@ article {
     }
 
     pre {
-      @apply font-mono text-xs/relaxed overflow-auto;
+      @apply font-mono text-xs/relaxed overflow-auto scrollbar-thin scrollbar-thumb-current/20;
     }
 
     .copy {

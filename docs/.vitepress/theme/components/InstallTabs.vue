@@ -42,19 +42,19 @@ const selected = computed({ get: () => manager.value, set: choose });
 </script>
 
 <template>
-  <TabsRoot v-model="selected" class="install-tabs inset-card border border-edge flow-root overflow-clip">
+  <TabsRoot v-model="selected" class="install-tabs inset-card border border-docs-border flow-root overflow-clip">
     <TabsList aria-label="Package manager" class="relative isolate flex gap-1 m-2 mb-0">
       <TabsTab
         v-for="name in MANAGERS"
         :key="name"
         :value="name"
-        class="px-3 py-1.5 rounded-full font-mono text-xs text-muted duration-150 hover:text-surface data-selected:text-surface"
+        class="px-3 py-1.5 rounded-full font-mono text-xs text-docs-muted duration-150 hover:text-docs-text data-selected:text-docs-text"
       >
         {{ name }}
       </TabsTab>
 
       <TabsIndicator
-        class="absolute bg-chip duration-150 transition-[left,top] -z-1 rounded-full"
+        class="absolute bg-docs-chip duration-150 transition-[left,top] -z-1 rounded-full"
         :style="{
           width: 'var(--active-tab-width)',
           height: 'var(--active-tab-height)',

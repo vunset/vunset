@@ -12,25 +12,23 @@
 @theme {
   --font-sans: 'Instrument Sans', system-ui, sans-serif;
 
-  /* light-dark(light, dark): the scheme is the one switch in the header. */
-  --color-accent: light-dark(#0a0a0a, #fafafa);
+  --radius-docs-outer: 28px;
+  --radius-docs-inner: 20px;
 
-  --color-canvas-subtle: light-dark(#f4f4f4, #181818);
-  --color-canvas: light-dark(#ffffff, #0f0f0f);
-  --color-canvas-strong: light-dark(#fafafa, #141414);
+  --color-docs-accent: light-dark(#74a34e, #a9c98f);
 
-  --color-stage: light-dark(#e9e9e9, #262626);
-  --color-card: light-dark(#ededed, #1f1f1f);
-  --color-chip: light-dark(#e4e4e4, #2a2a2a);
+  --color-docs-bg-subtle: light-dark(#fff, #121212);
+  --color-docs-bg: light-dark(#ffffff, #111111);
 
-  --color-surface: light-dark(#141414, #f2f2f2);
-  --color-surface-strong: light-dark(#000000, #f7f7f7);
-  --color-muted: light-dark(#6b6b6b, #9a9a9a);
-  --color-amber: light-dark(#8a6a12, #e8d7a6);
+  --color-docs-stage: light-dark(#f8f8f8, #191919);
+  --color-docs-chip: light-dark(#f4f4f4, #191919);
 
-  --color-edge-subtle: light-dark(#d9d9d9, #2e2e2e);
-  --color-edge: light-dark(#e2e2e2, #262626);
-  --color-edge-strong: light-dark(#ebebeb, #1f1f1f);
+  --color-docs-text: light-dark(#141414, #f2f2f2);
+  --color-docs-muted: light-dark(#6b6b6b, #9a9a9a);
+  --color-docs-amber: light-dark(#8a6a12, #e8d7a6);
+
+  --color-docs-border-subtle: light-dark(#d9d9d9, #2e2e2e);
+  --color-docs-border: light-dark(#e2e2e2, #262626);
 }
 
 @layer base {
@@ -39,15 +37,15 @@
     --scroll-offset: var(--header-height);
 
     @apply overscroll-none scheme-light;
-    @apply bg-canvas text-surface overflow-x-clip scroll-pt-24 antialiased;
+    @apply bg-docs-bg text-docs-text overflow-x-clip scroll-pt-24 antialiased;
   }
 
   * {
-    outline-color: var(--color-accent);
+    outline-color: var(--color-docs-accent);
   }
 
   ::selection {
-    @apply bg-accent text-canvas;
+    @apply bg-docs-accent text-docs-bg;
   }
 
   pre {
@@ -59,7 +57,7 @@
   }
 
   :root {
-    --demo-color-backdrop: var(--color-stage);
+    --demo-color-backdrop: var(--color-docs-stage);
   }
 
   .demo-toast-viewport,
@@ -73,21 +71,22 @@
   }
 }
 
+@custom-variant dark (&:is(.dark, :where(.dark *)));
+
 @utility panel {
-  @apply bg-canvas-subtle rounded-[28px];
+  @apply bg-docs-bg-subtle rounded-docs-outer;
 
   .panel {
-    @apply rounded-[20px];
+    @apply rounded-docs-inner;
   }
 }
 
 @utility inset-card {
-  @apply bg-canvas-strong rounded-[20px];
-  box-shadow: 0 10px 30px light-dark(rgb(0 0 0 / 0.06), rgb(0 0 0 / 0.3));
+  @apply bg-docs-stage rounded-docs-inner not-dark:border border-docs-border;
 }
 
 @utility pill {
-  @apply rounded-full bg-chip px-2.5 py-0.5 font-mono text-xs text-surface/85;
+  @apply rounded-full bg-docs-chip px-2.5 py-0.5 font-mono text-xs text-docs-text/85;
 }
 
 @utility side-title {
@@ -95,10 +94,10 @@
 }
 
 @utility side-link {
-  @apply block border-l-2 border-edge-subtle py-1.5 pl-3.5 text-sm text-muted duration-150 hover:text-surface;
+  @apply block border-l-2 border-docs-border-subtle py-1.5 pl-3.5 text-sm text-docs-muted duration-150 hover:text-docs-text;
 
   &[data-active] {
-    @apply border-accent font-medium text-surface;
+    @apply border-docs-accent font-medium text-docs-text;
   }
 
   &:not([data-active]) > * {
@@ -147,5 +146,5 @@
   [data-part='popup']:after,
 
 ) {
-  @apply pattern-diagonal backdrop-blur-2xl;
+  @apply pattern-diagonal;
 }

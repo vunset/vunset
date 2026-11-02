@@ -173,12 +173,12 @@ function render(md: MarkdownRenderer, meta: ComponentMeta, name: string): string
       row.type || row.default || row.required || row.note
         ? [
             '<span class="flex flex-wrap items-center gap-x-3 gap-y-1.5" v-pre>',
-            row.required ? '<span class="pill rounded-xl text-xs bg-accent text-canvas">required</span>' : '',
+            row.required ? '<span class="pill rounded-xl text-xs bg-docs-accent text-docs-bg">required</span>' : '',
             row.type
               ? `<code class="pill rounded-xl text-xs whitespace-normal wrap-break-word">${esc(row.type)}</code>`
               : '',
             row.default
-              ? `<span class="font-mono text-xs text-amber"><code class="p-0 bg-transparent text-amber text-xs">${esc(row.default)}</code></span>`
+              ? `<span class="font-mono text-xs text-docs-amber"><code class="p-0 bg-transparent text-docs-amber text-xs">${esc(row.default)}</code></span>`
               : '',
             row.note ? `<span class="text-xs text-current/50">${inline(row.note)}</span>` : '',
             '</span>'
@@ -188,7 +188,7 @@ function render(md: MarkdownRenderer, meta: ComponentMeta, name: string): string
     return [
       nested ? '<ApiRow nested>' : '<ApiRow>',
       '<template #head>',
-      `<span v-pre><code class="p-0 bg-transparent font-mono text-xs text-surface whitespace-normal group-hover:text-accent group-focus-visible:text-accent">${esc(row.name)}</code></span>`,
+      `<span v-pre><code class="p-0 bg-transparent font-mono text-xs text-docs-text whitespace-normal group-hover:text-docs-accent group-focus-visible:text-docs-accent">${esc(row.name)}</code></span>`,
       ...meta,
       '</template>',
       row.description
@@ -196,7 +196,7 @@ function render(md: MarkdownRenderer, meta: ComponentMeta, name: string): string
         : '',
       ...(row.fields?.length
         ? [
-            '<div class="mt-1 mb-3 pl-4 border-l border-edge-subtle">',
+            '<div class="mt-1 mb-3 pl-4 border-l border-docs-border-subtle">',
             ...row.fields.flatMap((field) => renderRow(field, true)),
             '</div>'
           ]
@@ -212,7 +212,7 @@ function render(md: MarkdownRenderer, meta: ComponentMeta, name: string): string
     ...all.flatMap((section) => [
       '<div>',
       '<div class="inset-card overflow-clip pb-1">',
-      `<div class="inline-block text-amber px-4 pt-4">${section.title}</div>`,
+      `<div class="inline-block text-docs-amber px-4 pt-4">${section.title}</div>`,
       section.intro ? `<div class="px-4 pb-3 text-sm" v-pre>${inline(section.intro)}</div>` : '',
       ...section.rows.flatMap((row) => renderRow(row)),
       '</div>',

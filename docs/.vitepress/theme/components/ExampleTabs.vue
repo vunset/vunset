@@ -8,11 +8,8 @@ defineProps<{ items: string[] }>();
 
 const selected = ref(0);
 const root = ref<HTMLElement>();
-// set by a followed link, which lands on its heading wherever the list is
 let toHeading = false;
 
-// a link to an example's heading (the outline, `#addons` from another page)
-// selects it, then scrolls to it: VitePress scrolled while it was still hidden
 function follow() {
   const id = decodeURIComponent(location.hash.slice(1));
   const panel = id && document.getElementById(id)?.closest<HTMLElement>('[data-example]');
@@ -23,8 +20,6 @@ function follow() {
   selected.value = index;
 }
 
-// the selected example is in the URL, to share; on a narrow page, where the
-// list is a row, its tab scrolls into view sideways
 watch(selected, async (index) => {
   const heading = root.value?.querySelector<HTMLElement>(`[data-example="${index}"] h3[id]`);
   if (heading && location.hash !== `#${heading.id}`) history.replaceState(history.state, '', `#${heading.id}`);
@@ -35,9 +30,6 @@ watch(selected, async (index) => {
   await nextTick();
   const tab = root.value?.querySelector<HTMLElement>('[role="tab"][data-selected]');
 
-  // every switch lands where its hash link would (the html's scroll-padding
-  // clears the header); where the list isn't sticky, on the list, so the
-  // tabs stay in reach. A frame later, once the panel is shown.
   requestAnimationFrame(() => {
     if (!heading?.offsetHeight) return;
     const list = tab?.closest<HTMLElement>('[role="tablist"]');
@@ -73,12 +65,8 @@ onUnmounted(() => window.removeEventListener('hashchange', follow));
               v-for="(label, index) in items"
               :key="index"
               :value="index"
-              class="group flex shrink-0 items-center gap-2 px-3 py-1.5 rounded-full text-left text-sm/snug text-muted duration-150 hover:text-surface data-selected:bg-stage data-selected:text-surface"
+              class="group flex shrink-0 items-center gap-2 px-3 py-1.5 rounded-full text-left text-sm/snug text-docs-muted duration-150 hover:text-docs-text data-selected:bg-docs-bg-subtle data-selected:text-docs-text"
             >
-              <span class="font-mono text-[11px]/none text-current/50 group-data-selected:text-accent">
-                {{ String(index + 1).padStart(2, '0') }}
-              </span>
-
               <span class="truncate">{{ label }}</span>
             </TabsTab>
           </TabsList>
@@ -96,6 +84,6 @@ onUnmounted(() => window.removeEventListener('hashchange', follow));
 @reference '../style.css';
 
 .examples-lead p {
-  @apply m-0 text-sm text-muted;
+  @apply m-0 text-sm text-docs-muted;
 }
 </style>

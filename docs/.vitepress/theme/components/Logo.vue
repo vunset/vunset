@@ -14,7 +14,7 @@ const pulse = (event: Event) => {
 <template>
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 165 42">
     <g
-      stroke-width="1"
+      stroke-width="1.2"
       stroke-linejoin="round"
       stroke="currentColor"
       fill="currentColor"

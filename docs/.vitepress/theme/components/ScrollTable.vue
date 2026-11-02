@@ -12,14 +12,14 @@ import { ScrollArea } from '@vunset/vue';
 @reference '../style.css';
 
 .article-table {
-  @apply border border-edge;
+  @apply border border-docs-border;
 
   table {
     @apply w-full text-sm;
   }
 
   th {
-    @apply px-4 py-2 text-left font-mono text-[11px] font-normal uppercase tracking-wider text-muted border-b border-edge-strong;
+    @apply px-4 py-2 text-left font-mono text-[11px] font-normal uppercase tracking-wider text-docs-muted border-b border-docs-border;
 
     &:nth-child(4) {
       @apply min-w-60;
@@ -27,7 +27,7 @@ import { ScrollArea } from '@vunset/vue';
   }
 
   tbody tr:not(:last-child) {
-    @apply border-b border-edge-strong;
+    @apply border-b border-docs-border;
   }
 
   td {
@@ -38,7 +38,7 @@ import { ScrollArea } from '@vunset/vue';
     }
 
     div {
-      @apply mt-1.5 text-xs text-muted;
+      @apply mt-1.5 text-xs text-docs-muted;
     }
   }
 }

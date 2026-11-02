@@ -11,9 +11,10 @@ import { provide } from 'vue';
 provide(IN_CARD, true);
 </script>
 
-<!-- Markdown in a green card -->
 <template>
-  <div class="section-card flow-root space-y-2 rounded-[22px] bg-stage pattern-grid p-2">
+  <div
+    class="section-card flow-root not-dark:border border-docs-border space-y-2 rounded-3xl bg-docs-bg-subtle pattern-grid p-2"
+  >
     <slot />
   </div>
 </template>
@@ -48,6 +49,10 @@ provide(IN_CARD, true);
 
   & > :last-child:is([class*='language-'], .article-table) {
     @apply mb-1;
+  }
+
+  .inset-card {
+    --color-docs-bg-subtle: var(--color-docs-stage);
   }
 }
 </style>

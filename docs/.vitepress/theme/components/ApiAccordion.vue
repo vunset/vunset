@@ -42,13 +42,13 @@ onUnmounted(() => window.removeEventListener('hashchange', open));
         v-for="(part, index) in parts"
         :key="part.label"
         :value="index"
-        class="api-part bg-card transition-[background-color,border-radius] duration-200 data-open:bg-stage data-open:first:mt-0 data-open:last:mb-0"
+        class="api-part bg-docs-chip transition-[background-color,border-radius] duration-200 data-open:bg-docs-stage data-open:first:mt-0 data-open:last:mb-0"
       >
         <AccordionHeader as="div">
           <CollapsibleTrigger class="group flex items-center w-full gap-4 px-5 py-4 text-left">
             <span class="flex items-baseline gap-2.5 mr-auto">
               <span class="text-lg/none font-medium">{{ part.label }}</span>
-              <span v-if="part.renders" class="text-xs/none font-mono text-muted">&lt;{{ part.renders }}&gt;</span>
+              <span v-if="part.renders" class="text-xs/none font-mono text-docs-muted">&lt;{{ part.renders }}&gt;</span>
             </span>
 
             <PlusIcon />
@@ -75,13 +75,13 @@ onUnmounted(() => window.removeEventListener('hashchange', open));
   &:first-child,
   &[data-open],
   &[data-open] + & {
-    @apply rounded-t-[28px];
+    @apply rounded-t-docs-outer;
   }
 
   &:last-child,
   &[data-open],
   &:has(+ [data-open]) {
-    @apply rounded-b-[28px];
+    @apply rounded-b-docs-outer;
   }
 }
 

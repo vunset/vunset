@@ -10,7 +10,7 @@ const props = defineProps<{
 
 defineSlots<{ head(): unknown; default?(): unknown }>();
 
-const row = computed(() => ['not-last:border-b border-edge-strong', !props.nested && 'mx-4 py-1.5']);
+const row = computed(() => ['not-last:border-b border-docs-border', !props.nested && 'mx-4 py-1.5']);
 const head = computed(() => [
   'group grid w-full items-center gap-x-4 gap-y-1 text-left outline-none grid-cols-[minmax(0,1fr)_0.75rem]',
   props.nested
@@ -45,6 +45,6 @@ const head = computed(() => [
 @reference '../style.css';
 
 .api-description a {
-  @apply border-b border-current/30 duration-200 hover:border-accent;
+  @apply border-b border-current/30 duration-200 hover:border-docs-accent;
 }
 </style>
