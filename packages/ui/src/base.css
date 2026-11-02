@@ -42,8 +42,8 @@
     --ui-text: light-dark(#18181b, #fafafa);
     --ui-muted: color-mix(in srgb, var(--ui-text) 50%, transparent);
 
-    --ui-accent: light-dark(#81a266, #a9c98f);
-    --ui-on-accent: #111111;
+    --ui-accent: light-dark(#2563eb, #3b82f6);
+    --ui-on-accent: #fff;
     --ui-neutral: var(--ui-text);
     --ui-on-neutral: var(--ui-bg);
     --ui-danger: light-dark(#d42525, #ff4d4d);

@@ -102,18 +102,28 @@ export function useInput(options: UseInputOptions = {}): UseInputReturn {
   const outsideLimits = () =>
     numeric() &&
     outOfRange(value.value, { min: toValue(options.min), max: toValue(options.max), step: toValue(options.step) });
-  const invalid = () =>
-    (toValue(options.invalid) ?? false) || (field?.state.value.invalid ?? false) || outsideLimits();
+  const invalid = () => (toValue(options.invalid) ?? false) || (field?.state.value.invalid ?? false) || outsideLimits();
 
   // `null`, a database's empty field, reads as nothing typed rather than the text "null".
   const normalize = (raw: string | number | null | undefined) => (raw == null ? undefined : String(raw));
 
+  // The last text typed. `v-model.number` hands back `1` for "1." or "1.0"; while the model still holds
+  // the typed text's number, that text stays, as Vue's own `v-model.number` leaves an `<input>`'s.
+  const typed = ref<string>();
   const value = useControlled<string>({
-    value: () => normalize(toValue(options.value)),
+    value: () => {
+      const raw = toValue(options.value);
+      return typeof raw === 'number' && typed.value !== undefined && parseFloat(typed.value) === raw
+        ? typed.value
+        : normalize(raw);
+    },
     defaultValue: () => normalize(toValue(options.defaultValue)) ?? '',
     prop: 'modelValue',
     empty: '',
-    onChange: options.onChange,
+    onChange: (next) => {
+      typed.value = next;
+      options.onChange?.(next);
+    },
     name: 'useInput',
     label: 'value'
   });
@@ -129,7 +139,11 @@ export function useInput(options: UseInputOptions = {}): UseInputReturn {
     focused: focused.value
   }));
 
-  watch(() => value.value, (next) => field?.setFilled(next !== ''), { immediate: true });
+  watch(
+    () => value.value,
+    (next) => field?.setFilled(next !== ''),
+    { immediate: true }
+  );
   watch(outsideLimits, (next) => field?.setControlInvalid(next), { immediate: true });
   onScopeDispose(() => field?.setControlInvalid(false));
 
@@ -216,7 +230,17 @@ export function useInput(options: UseInputOptions = {}): UseInputReturn {
       if (inserted === null) return;
 
       const next = prospectiveValue(element, inserted) ?? element.value + inserted;
-      if (!accepts(next)) event.preventDefault();
+      if (accepts(next)) return;
+      event.preventDefault();
+
+      // grouping commas and spaces dropped, the dot kept.
+      if (!numeric() || !/^insertFrom(Paste|Drop)/.test(event.inputType)) return;
+      const cleaned = inserted.replace(/[,\s]/g, '');
+      const start = element.selectionStart ?? element.value.length;
+      const end = element.selectionEnd ?? element.value.length;
+      if (!accepts(element.value.slice(0, start) + cleaned + element.value.slice(end))) return;
+      element.setRangeText(cleaned, start, end, 'end');
+      handleInput({ target: element } as unknown as Event);
     },
     onInput(event: Event) {
       if (composing) return;

@@ -74,7 +74,9 @@ export function useInfinityFetch<T>(url: string, options: UseInfinityFetchOption
       const target = value instanceof Element ? value : value?.$el;
       if (!(target instanceof Element)) return;
 
-      const offset = options.offset ?? 0;
+      // +1: zoomed, `scrollTop` and rects are fractional while `scrollHeight`/`clientHeight`/`innerHeight`
+      // are rounded, so the fully scrolled end can sit a fraction of a pixel short of 0.
+      const offset = (options.offset ?? 0) + 1;
       // A list that doesn't scroll itself has nothing left to scroll, so only the window counts; a box capped
       // to a height is always in the window, so only its own scroll counts.
       const inWindow = target.getBoundingClientRect().bottom <= window.innerHeight + offset;

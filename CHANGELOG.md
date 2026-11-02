@@ -2,6 +2,19 @@
 
 All four packages are released together under one version.
 
+## 1.0.0-rc.3
+
+### @vunset/vue
+
+- `Input` with `v-model.number` keeps a decimal as it's typed. `1.` and `1.0`
+  no longer collapse to `1` mid-keystroke, so `1.05` can be typed. A
+  different number set from outside still replaces the text.
+
+### @vunset/nuxt
+
+- `useInfinityFetch` loads the next page on a zoomed page. Zoomed, the
+  scrolled-to end could sit a fraction of a pixel short, and nothing loaded.
+
 ## 1.0.0-rc.2
 
 ### @vunset/vue

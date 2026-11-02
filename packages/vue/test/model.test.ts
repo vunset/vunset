@@ -258,3 +258,33 @@ describe('v-model.optional', () => {
     expect(writes).toEqual([['a'], []]);
   });
 });
+
+describe('v-model.number', () => {
+  const number = { modelModifiers: { number: true }, type: 'number' };
+  const type = async (text: string) => {
+    input().value = text;
+    input().dispatchEvent(new Event('input'));
+    await nextTick();
+  };
+
+  it('keeps the dot and trailing zeros the number drops while typing', async () => {
+    const { writes } = mountModel(Input, 1, number);
+    await type('1.');
+    expect(input().value).toBe('1.');
+    await type('1.0');
+    expect(input().value).toBe('1.0');
+    await type('1.05');
+    expect(input().value).toBe('1.05');
+
+    expect(writes).toEqual([1, 1, 1.05]);
+  });
+
+  it('takes a different number set from outside', async () => {
+    const { model } = mountModel(Input, 1, number);
+    await type('1.');
+    model.value = 2;
+    await nextTick();
+
+    expect(input().value).toBe('2');
+  });
+});

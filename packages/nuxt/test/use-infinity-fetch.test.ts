@@ -102,6 +102,21 @@ describe('useInfinityFetch', () => {
     expect(api().data.value).toEqual([1, 2]);
   });
 
+  it('loads at the end of a zoomed page, where the scroll stops a fraction short', async () => {
+    fetcher.pages = [[1], [2], [3]];
+    const { api, wrapper } = mountList({}, 100.4);
+    const box = wrapper.element;
+    Object.defineProperty(box, 'scrollHeight', { get: () => api().data.value.length * 1000 });
+    Object.defineProperty(box, 'clientHeight', { value: 300 });
+    await settle();
+    expect(api().data.value).toEqual([1]);
+
+    Object.defineProperty(box, 'scrollTop', { value: 699.55 }); // the end, rounded
+    window.dispatchEvent(new Event('scroll'));
+    await settle();
+    expect(api().data.value).toEqual([1, 2]);
+  });
+
   it('takes a component as `el`, watching its root element', async () => {
     fetcher.pages = [[1], [2], [3]];
     const Box = defineComponent(() => () => h('div', { class: 'box' }));

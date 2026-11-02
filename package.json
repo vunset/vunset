@@ -19,7 +19,8 @@
     "test:watch": "vitest",
     "typecheck": "vue-tsc --noEmit",
     "bump": "node scripts/version.mjs",
-    "release": "node scripts/release.mjs"
+    "release": "node scripts/release.mjs",
+    "tag": "node scripts/tag.mjs"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",

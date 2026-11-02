@@ -533,6 +533,20 @@ describe('Field', () => {
         expect(await typeChars('5')).toBe('10.5');
       });
 
+      it('pastes a grouped number without its commas, keeping the dot', async () => {
+        const onUpdate = vi.fn();
+        mountField({ type: 'number', 'onUpdate:modelValue': onUpdate });
+        expect(beforeInput('31,023.41 ', 'insertFromPaste').defaultPrevented).toBe(true);
+        expect(input().value).toBe('31023.41');
+        expect(onUpdate).toHaveBeenLastCalledWith('31023.41');
+      });
+
+      it('refuses a paste that is no number even without its commas', () => {
+        mountField({ type: 'number' });
+        expect(beforeInput('1,2a', 'insertFromPaste').defaultPrevented).toBe(true);
+        expect(input().value).toBe('');
+      });
+
       it('drops letters mid-word without disturbing the digits', async () => {
         mountField({ type: 'number' });
         expect(await typeChars('1a2')).toBe('12');
