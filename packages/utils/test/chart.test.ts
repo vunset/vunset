@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { toChartRows } from '../src/chart';
+import { chartColors, toChartRows } from '../src/chart';
 
 const KEYS = { x: 'date', series: 'node', value: 'load' };
 
@@ -42,5 +42,23 @@ describe('toChartRows', () => {
       KEYS
     );
     expect(rows.map((row) => row.date)).toEqual(['Mar', 'Jan']);
+  });
+});
+
+describe('chartColors', () => {
+  it('names a palette color per series', () => {
+    expect(chartColors(2)).toEqual(['var(--chart-color-0, currentColor)', 'var(--chart-color-1, currentColor)']);
+  });
+
+  it('starts over past the palette, eight by default', () => {
+    const colors = chartColors(10);
+    expect(colors[8]).toBe(colors[0]);
+    expect(colors[9]).toBe(colors[1]);
+  });
+
+  it('cycles at the size given', () => {
+    const colors = chartColors(13, undefined, undefined, 11);
+    expect(colors[10]).toBe('var(--chart-color-10, currentColor)');
+    expect(colors[11]).toBe(colors[0]);
   });
 });

@@ -107,6 +107,88 @@ describe('the cartesian charts', () => {
     expect(ticks(chart, 'x')).not.toEqual(['0', '1', '10']);
   });
 
+  it('draws solid bands without a line when asked', async () => {
+    const chart = await mountChart(AppChartArea, { line: false, gradient: false });
+
+    expect(marks(chart, 'line')).toHaveLength(0);
+    expect(marks(chart, 'area').map((band) => band.attributes('fill'))).toEqual([
+      'var(--chart-color-0, currentColor)',
+      'var(--chart-color-1, currentColor)'
+    ]);
+  });
+
+  it('cycles its colors at `palette-size`', async () => {
+    const chart = await mountChart(AppChartLine, { paletteSize: 1 });
+
+    expect(marks(chart, 'line').map((line) => line.attributes('stroke'))).toEqual([
+      'var(--chart-color-0, currentColor)',
+      'var(--chart-color-0, currentColor)'
+    ]);
+  });
+
+  it('puts its legend below the drawing when asked', async () => {
+    const chart = await mountChart(AppChartArea, { legendPlacement: 'bottom' });
+    const legend = chart.find('[data-part="legend"]').element;
+    const plot = chart.find('[data-part="chart-plot"]').element;
+
+    expect(plot.compareDocumentPosition(legend) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it('puts its legend classes on the legend and each button', async () => {
+    const chart = await mountChart(AppChartLine, { legendClass: 'keys', legendItemClass: 'chip' });
+
+    expect(chart.find('[data-part="legend"]').classes()).toContain('keys');
+    expect(legendItems(chart).every((item) => item.classes('chip'))).toBe(true);
+
+    wrapper?.unmount();
+    wrapper = mount(AppChartDonut as any, {
+      props: {
+        data: [
+          { s: 'a', n: 1 },
+          { s: 'b', n: 2 }
+        ],
+        categoryKey: 's',
+        valueKey: 'n',
+        legend: true,
+        legendItemClass: 'chip'
+      },
+      attachTo: document.body
+    });
+    await nextTick();
+    expect(legendItems(wrapper).map((item) => item.classes('chip'))).toEqual([true, true]);
+  });
+
+  it('hands its legend slots on', async () => {
+    const chart = await mountChart(
+      AppChartArea,
+      {},
+      {
+        slots: { 'legend-item': ({ label, index }: any) => h('em', { class: 'mine' }, `${index}-${label}`) }
+      }
+    );
+    expect(chart.findAll('.mine').map((node) => node.text())).toEqual(['0-visits', '1-signups']);
+    expect(legendItems(chart)).toHaveLength(2);
+
+    const replaced = await mountChart(
+      AppChartBar,
+      {},
+      {
+        slots: {
+          legend: ({ items }: any) => h('p', { class: 'whole' }, items.map((item: any) => item.label).join('+'))
+        }
+      }
+    );
+    expect(replaced.find('.whole').text()).toBe('visits+signups');
+    expect(legendItems(replaced)).toHaveLength(0);
+  });
+
+  it('draws the axes’ own lines when asked', async () => {
+    const chart = await mountChart(AppChartLine, { xAxisLine: true });
+
+    expect(chart.findAll('.ts-chart__axes line[data-ts-key^="x-axis"]')).toHaveLength(1);
+    expect(chart.findAll('.ts-chart__axes line[data-ts-key^="y-axis"]')).toHaveLength(0);
+  });
+
   it('puts its class on the chart and leaves its own props off it', async () => {
     const chart = await mountChart(AppChartArea, {}, { attrs: { class: 'mine' } });
     const root = chart.find('[data-part="chart"]');
@@ -184,6 +266,17 @@ describe('AppChartDonut', () => {
 
     await legendItems(wrapper)[0]!.trigger('click');
     expect(marks(wrapper, 'arc')).toHaveLength(1);
+  });
+
+  it('hands the legend’s item slot on to its own legend', async () => {
+    wrapper = mount(AppChartDonut as any, {
+      props: { data: SOURCES, categoryKey: 'source', valueKey: 'total', legend: true },
+      slots: { 'legend-item': ({ category }: any) => h('em', { class: 'mine' }, category) },
+      attachTo: document.body
+    });
+    await nextTick();
+
+    expect(wrapper.findAll('.mine').map((node) => node.text())).toEqual(['Search', 'Direct']);
   });
 
   it('leaves the legend out unless asked', async () => {

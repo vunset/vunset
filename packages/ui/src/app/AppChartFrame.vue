@@ -6,6 +6,7 @@ import {
   ChartCrosshair,
   ChartGrid,
   ChartLegend,
+  type ChartLegendItem,
   ChartRoot,
   ChartTooltip,
   type ChartTooltipSlotProps
@@ -37,6 +38,10 @@ const emit = defineEmits<{ 'update:hidden': [hidden: string[]] }>();
 defineSlots<{
   default(): unknown;
   tooltip?(props: ChartTooltipSlotProps): unknown;
+  /** Replaces the legend's buttons: `items`, each with a `toggle()`, and the `hidden` list. */
+  legend?(props: { items: ChartLegendItem[]; hidden: string[] }): unknown;
+  /** Replaces what each legend button shows; the button and its toggling stay. */
+  'legend-item'?(props: ChartLegendItem & { index: number }): unknown;
 }>();
 
 const showLegend = computed(() => props.legend ?? props.series > 1);
@@ -47,6 +52,7 @@ const showLegend = computed(() => props.legend ?? props.series > 1);
     :data="props.data"
     :x-key="props.xKey"
     :x-scale="props.xScale"
+    :palette-size="props.paletteSize"
     :height="props.height"
     :orientation="props.orientation"
     :stacked="props.stacked"
@@ -54,7 +60,15 @@ const showLegend = computed(() => props.legend ?? props.series > 1);
     v-bind="hiddenBound ? { hidden: props.hidden } : {}"
     @update:hidden="emit('update:hidden', $event)"
   >
-    <ChartLegend v-if="showLegend" />
+    <ChartLegend
+      v-if="showLegend"
+      :placement="props.legendPlacement"
+      :class="props.legendClass"
+      :item-class="props.legendItemClass"
+    >
+      <template v-if="$slots.legend" #default="scope"><slot name="legend" v-bind="scope" /></template>
+      <template v-if="$slots['legend-item']" #item="scope"><slot name="legend-item" v-bind="scope" /></template>
+    </ChartLegend>
     <ChartAxis
       v-if="props.xAxis"
       type="x"
@@ -62,8 +76,9 @@ const showLegend = computed(() => props.legend ?? props.series > 1);
       :num-ticks="props.numTicks"
       :trim-labels="props.trimLabels"
       :label="props.xLabel"
+      :line="props.xAxisLine"
     />
-    <ChartAxis v-if="props.yAxis" type="y" :format="props.yFormat" :label="props.yLabel" />
+    <ChartAxis v-if="props.yAxis" type="y" :format="props.yFormat" :label="props.yLabel" :line="props.yAxisLine" />
     <ChartGrid v-if="props.grid" />
     <slot />
     <ChartCrosshair v-if="props.crosshair" />

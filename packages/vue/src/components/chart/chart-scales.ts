@@ -16,7 +16,7 @@ export function rowTicks(length: number, count: number | undefined): number[] | 
 /** TanStack's own tick label size, in px, until `--chart-tick-font-size` sets one. */
 export const TICK_FONT_SIZE = 11;
 
-/** Tweens a redraw for new data or a toggled series; off under reduced motion, never on resize. */
+/** Tweens a cartesian chart's redraw for new data or a toggled series; off under reduced motion, never on resize. */
 export const SVG_ANIMATION = { duration: 240, easing: 'ease-out' } as const;
 
 /** An axis' tick labels at `size` px; TanStack lays the axis out for it. */

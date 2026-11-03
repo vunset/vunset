@@ -16,6 +16,8 @@ export interface ChartSeriesPart {
   curve?: ChartCurve;
   points?: boolean;
   gradient?: boolean;
+  /** Areas only: the line along the band's top. */
+  line?: boolean;
   roundedCorners?: number;
   padding?: number;
 }
@@ -28,6 +30,8 @@ export interface ChartAxisPart {
   numTicks?: number;
   trimLabels?: boolean;
   label?: string;
+  line?: boolean;
+  tickMarks?: boolean;
 }
 
 export interface ChartGridPart {
@@ -171,6 +175,8 @@ const props = withDefaults(
     hidden?: string[];
     /** The chart's accessible name. Defaults to its series. */
     label?: string;
+    /** How many `--chart-color-N` the theme defines: series past it start over at the first. @default 8 */
+    paletteSize?: number;
   }>(),
   { height: '20rem', orientation: 'vertical', hidden: undefined, xScale: 'category' }
 );
@@ -217,7 +223,7 @@ const labelOf = (key: string) => series.value.find((entry) => entry.yKey === key
 const { colors, visible } = useChartSeries({
   categories: () => keys.value,
   colors: () => {
-    const palette = chartColors(keys.value.length);
+    const palette = chartColors(keys.value.length, undefined, undefined, props.paletteSize);
     return keys.value.map(
       (key, index) => series.value.find((entry) => entry.yKey === key && entry.color)?.color ?? palette[index]!
     );
@@ -379,13 +385,15 @@ function seriesMarks(entry: ChartSeriesPart) {
   const line = (horizontal.value ? lineX : lineY)(points, { ...channels, strokeWidth: 2, points: entry.points } as any);
   if (entry.kind === 'line') return [line];
 
-  // The band only paints; the line over it owns the focus.
   const area = (horizontal.value ? areaX : areaY)(points, {
     ...channels,
-    fill: `url(#${areaGradient(entry.yKey)})`,
-    fillOpacity: 1
+    ...(entry.gradient === false
+      ? // A solid band, at the strength the fade starts from; CSS's `fill-opacity` overrides it.
+        { fill: colors.value[colorIndex(entry.yKey)], fillOpacity: 0.25 }
+      : { fill: `url(#${areaGradient(entry.yKey)})`, fillOpacity: 1 })
   } as any);
-  return [decorative(area), line];
+  // With a line, the band only paints and the line owns the focus; without one, the band does.
+  return entry.line === false ? [area] : [decorative(area), line];
 }
 
 const fade = computed(() => (horizontal.value ? { x1: 1, y1: 0, x2: 0, y2: 0 } : { x1: 0, y1: 0, x2: 0, y2: 1 }));
@@ -394,7 +402,7 @@ function gradients() {
   const found = new Map<string, object>();
   for (const entry of shown.value) {
     const color = colors.value[colorIndex(entry.yKey)];
-    if (entry.kind === 'area') {
+    if (entry.kind === 'area' && entry.gradient !== false) {
       found.set(areaGradient(entry.yKey), {
         id: areaGradient(entry.yKey),
         x1: 0,
@@ -443,6 +451,8 @@ const definition = computed(() => {
   const x = xAxis.value;
   const firstBar = series.value.find((entry) => entry.kind === 'bar');
   const titled = (axis: ChartAxisPart | undefined) => (axis?.label ? { label: axis.label } : {});
+  // TanStack draws a short mark at each tick; `tick-marks` off keeps only the labels.
+  const stubs = (axis: ChartAxisPart) => (axis.tickMarks === false ? { line: false as const } : {});
 
   const rowScale = continuous.value
     ? {
@@ -450,13 +460,14 @@ const definition = computed(() => {
         grid: grids.value.some((entry) => entry.type === 'x'),
         axis: x
           ? {
-              line: false,
+              line: x.line === true,
               ...tickLabels(tickSize.value),
               ...titled(x),
               ticks: {
                 // Without a format, the scale's own reads best: a time scale's names the hour or the day.
                 ...(x.format && { format: x.format }),
-                ...(x.numTicks !== undefined && { count: x.numTicks })
+                ...(x.numTicks !== undefined && { count: x.numTicks }),
+                ...stubs(x)
               }
             }
           : false
@@ -468,13 +479,14 @@ const definition = computed(() => {
         grid: grids.value.some((entry) => entry.type === 'x'),
         axis: x
           ? {
-              line: false,
+              line: x.line === true,
               ...tickLabels(tickSize.value),
               ...titled(x),
               ticks: {
                 format: (index: number) => trim(xText(props.data[index]), budget),
                 // With every series hidden the scale has no rows, and fixed positions throw.
-                values: shown.value.length ? rowTicks(props.data.length, x.numTicks) : undefined
+                values: shown.value.length ? rowTicks(props.data.length, x.numTicks) : undefined,
+                ...stubs(x)
               }
             }
           : false
@@ -495,12 +507,13 @@ const definition = computed(() => {
           axis:
             axis && axisShown(scale)
               ? {
-                  line: false,
+                  line: axis.line === true,
                   ...tickLabels(tickSize.value),
                   ...titled(axis),
                   ticks: {
                     format: (raw: number) => valueLabel(raw, axis.format),
-                    ...(axis.numTicks !== undefined && { count: axis.numTicks })
+                    ...(axis.numTicks !== undefined && { count: axis.numTicks }),
+                    ...stubs(axis)
                   }
                 }
               : false

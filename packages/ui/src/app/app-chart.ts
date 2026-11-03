@@ -22,6 +22,8 @@ export interface AppChartProps {
   yLabel?: string;
   /** One per category. Defaults to `var(--chart-color-N)`. */
   colors?: string[];
+  /** How many `--chart-color-N` the theme defines: series past it start over at the first. @default 8 */
+  paletteSize?: number;
   /** A number means pixels. @default '20rem' */
   height?: number | string;
   /** Categories not drawn, for `v-model:hidden`. */
@@ -34,12 +36,22 @@ export interface AppChartProps {
   xAxis?: boolean;
   /** @default true */
   yAxis?: boolean;
+  /** Draw the x axis' own line along the plot's edge. */
+  xAxisLine?: boolean;
+  /** Draw the value axis' own line along the plot's edge. */
+  yAxisLine?: boolean;
   /** Lines across at the value ticks. @default true */
   grid?: boolean;
   /** Shows the values under the pointer. @default true */
   tooltip?: boolean;
   /** A class for the tooltip's box. */
   tooltipClass?: HTMLAttributes['class'];
+  /** Where the legend sits: above the drawing, or below it. @default 'top' */
+  legendPlacement?: 'top' | 'bottom';
+  /** A class for the legend. */
+  legendClass?: HTMLAttributes['class'];
+  /** A class for each legend button. */
+  legendItemClass?: HTMLAttributes['class'];
   /** `row`: every series at the row under the pointer. `point`: the one point nearest it. @default 'row' */
   tooltipMode?: 'row' | 'point';
   /** A click, Enter or Space pins the tooltip in place. @default true */

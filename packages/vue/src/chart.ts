@@ -14,6 +14,6 @@ export { default as ChartAxis } from './components/chart/ChartAxis.vue';
 export { default as ChartGrid } from './components/chart/ChartGrid.vue';
 export { default as ChartCrosshair } from './components/chart/ChartCrosshair.vue';
 export { default as ChartTooltip } from './components/chart/ChartTooltip.vue';
-export { default as ChartLegend } from './components/chart/ChartLegend.vue';
+export { default as ChartLegend, type ChartLegendItem } from './components/chart/ChartLegend.vue';
 export { default as ChartDonut } from './components/chart/ChartDonut.vue';
 export { type ChartSeries } from './components/chart/use-chart-series';

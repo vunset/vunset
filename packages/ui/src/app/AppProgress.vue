@@ -1,12 +1,6 @@
 <script setup lang="ts">
 import type { HTMLAttributes } from 'vue';
-import {
-  ProgressRoot,
-  ProgressLabel,
-  ProgressValue,
-  ProgressTrack,
-  ProgressIndicator
-} from '@vunset/vue';
+import { ProgressRoot, ProgressLabel, ProgressValue, ProgressTrack, ProgressIndicator } from '@vunset/vue';
 import type { AppTone } from './AppButton.vue';
 
 defineOptions({ name: 'AppProgress' });

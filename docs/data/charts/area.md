@@ -28,6 +28,17 @@ line curves smoothly through the rows without overshooting them;
 Bands don't stack: each one fades down to zero, and a later one is drawn over
 an earlier one.
 
+`:gradient="false"` fills the band evenly in its color instead of fading it,
+and `:line="false"` leaves out the line along its top, the band then taking
+the pointer and the keyboard itself. A solid band sits at a quarter of its
+color's strength; set `fill-opacity` on `.ts-chart__area path` for another.
+
+```vue
+<template>
+  <ChartArea y-key="load" :line="false" :gradient="false" />
+</template>
+```
+
 ## API Reference
 
 ### ChartArea

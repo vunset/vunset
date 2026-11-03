@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { mount, type VueWrapper } from '@vue/test-utils';
-import { defineComponent, h, nextTick, ref, type VNode } from 'vue';
+import { defineComponent, Fragment, h, nextTick, ref, type VNode } from 'vue';
 import {
   ChartArea,
   ChartAxis,
@@ -161,6 +161,24 @@ describe('the area', () => {
     expect(fills(wrapper, 'area')).toEqual(ids);
   });
 
+  it('fills a band evenly in its own color without `gradient`', () => {
+    const wrapper = mountChart({}, () => [h(ChartArea, { yKey: 'visits', gradient: false })]);
+    const band = marks(wrapper, 'area')[0]!;
+
+    expect(band.attributes('fill')).toBe('var(--chart-color-0, currentColor)');
+    expect(band.attributes('fill-opacity')).toBe('0.25');
+    expect(gradients(wrapper)).toHaveLength(0);
+  });
+
+  it('draws the band alone without `line`, the band taking the focus', async () => {
+    const wrapper = mountChart({}, () => [h(ChartArea, { yKey: 'visits', line: false }), h(ChartTooltip)]);
+
+    expect(marks(wrapper, 'area')).toHaveLength(1);
+    expect(marks(wrapper, 'line')).toHaveLength(0);
+    await focusSecond(wrapper);
+    expect(wrapper.find('[data-part="tooltip-value"]').text()).toBe('20');
+  });
+
   it('gives two charts on one page ids of their own', () => {
     const chart = () => h(ChartRoot as any, { data: DATA, xKey: 'date' }, () => [h(ChartArea, { yKey: 'visits' })]);
     const Host = defineComponent({ setup: () => () => [chart(), chart()] });
@@ -209,6 +227,35 @@ describe('colors', () => {
   });
 });
 
+describe('the palette', () => {
+  const many = (props: Record<string, any> = {}) => {
+    const keys = Array.from({ length: 12 }, (_, index) => `s${index}`);
+    const row = Object.fromEntries(keys.map((key, index) => [key, index + 1]));
+    return mountChart(
+      {
+        data: [
+          { date: 'Mon', ...row },
+          { date: 'Tue', ...row }
+        ],
+        ...props
+      },
+      () => keys.map((key) => h(ChartLine, { yKey: key }))
+    );
+  };
+
+  it('starts over after eight colors', () => {
+    const colors = strokes(many());
+    expect(colors[8]).toBe(colors[0]);
+    expect(colors[7]).toBe('var(--chart-color-7, currentColor)');
+  });
+
+  it('cycles at `palette-size`', () => {
+    const colors = strokes(many({ paletteSize: 11 }));
+    expect(colors[10]).toBe('var(--chart-color-10, currentColor)');
+    expect(colors[11]).toBe(colors[0]);
+  });
+});
+
 describe('the axes and grid', () => {
   it('labels the x axis from the row, and the y axis with a grouped number', () => {
     const wrapper = mountChart({
@@ -237,6 +284,29 @@ describe('the axes and grid', () => {
     const wrapper = mountChart({}, () => [h(ChartAxis, { type: 'x', numTicks: 2 }), h(ChartLine, { yKey: 'visits' })]);
 
     expect(ticks(wrapper, 'x')).toEqual(['Mon', 'Wed']);
+  });
+
+  it('draws an axis’ own line only when asked, and its tick marks unless told not to', () => {
+    const axes = (props: Record<string, any>) =>
+      mountChart({}, () => [
+        h(ChartAxis, { type: 'x', ...props }),
+        h(ChartAxis, { type: 'y', ...props }),
+        h(ChartLine, { yKey: 'visits' })
+      ]);
+    const count = (wrapper: VueWrapper<any>, key: string) =>
+      wrapper.findAll(`.ts-chart__axes line[data-ts-key^="${key}"]`).length;
+
+    const plain = axes({});
+    expect(count(plain, 'x-axis') + count(plain, 'y-axis')).toBe(0);
+    expect(count(plain, 'x-tick-rule')).toBeGreaterThan(0);
+
+    const lined = axes({ line: true });
+    expect(count(lined, 'x-axis')).toBe(1);
+    expect(count(lined, 'y-axis')).toBe(1);
+
+    const bare = axes({ tickMarks: false });
+    expect(count(bare, 'x-tick-rule') + count(bare, 'y-tick-rule')).toBe(0);
+    expect(ticks(bare, 'x')).toEqual(['Mon', 'Tue', 'Wed']);
   });
 
   it('draws the grid only when asked', () => {
@@ -505,6 +575,71 @@ describe('the legend', () => {
     ]);
 
   const entries = (wrapper: VueWrapper<any>) => wrapper.findAll('[data-part="legend-item"]');
+
+  // Where the legend sits in the page, against the drawing.
+  const afterPlot = (wrapper: VueWrapper<any>) => {
+    const legend = wrapper.find('[data-part="legend"]').element;
+    const plot = wrapper.find('[data-part="chart-plot"]').element;
+    return !!(plot.compareDocumentPosition(legend) & Node.DOCUMENT_POSITION_FOLLOWING);
+  };
+
+  it('sits above the drawing, or below it with `placement="bottom"`', async () => {
+    const top = withLegend();
+    await nextTick();
+    expect(afterPlot(top)).toBe(false);
+    expect(top.find('[data-part="legend"]').attributes('data-placement')).toBe('top');
+
+    const bottom = withLegend({ placement: 'bottom' });
+    await nextTick();
+    expect(afterPlot(bottom)).toBe(true);
+    expect(bottom.find('[data-part="legend"]').attributes('data-placement')).toBe('bottom');
+
+    // Below, it still drives the chart, and the parts draw once.
+    expect(marks(bottom, 'line')).toHaveLength(2);
+    await entries(bottom)[0]!.trigger('click');
+    expect(marks(bottom, 'line')).toHaveLength(1);
+  });
+
+  it('goes below from inside a `v-if` too', async () => {
+    const wrapper = mountChart({}, () => [
+      h(ChartLine, { yKey: 'visits' }),
+      h(Fragment, null, [h(ChartLegend, { placement: 'bottom' })])
+    ]);
+    await nextTick();
+
+    expect(afterPlot(wrapper)).toBe(true);
+    expect(wrapper.findAll('[data-part="legend"]')).toHaveLength(1);
+  });
+
+  it('puts `item-class` on every button', async () => {
+    const wrapper = withLegend({ itemClass: ['chip', { on: true }] });
+    await nextTick();
+
+    expect(entries(wrapper).map((entry) => entry.classes())).toEqual([
+      ['chip', 'on'],
+      ['chip', 'on']
+    ]);
+  });
+
+  it('takes content of the caller’s own in each button, keeping the button', async () => {
+    const wrapper = mountChart({}, () => [
+      h(ChartLegend, null, {
+        item: ({ label, color, hidden, index }: any) =>
+          h('em', { class: 'mine', style: { color } }, `${index}:${label}:${hidden}`)
+      }),
+      h(ChartLine, { yKey: 'visits', label: 'Visits', color: '#f00' }),
+      h(ChartLine, { yKey: 'signups' })
+    ]);
+    await nextTick();
+    expect(wrapper.findAll('.mine').map((node) => node.text())).toEqual(['0:Visits:false', '1:signups:false']);
+    expect(wrapper.find('.mine').attributes('style')).toBe('color: rgb(255, 0, 0);');
+    expect(wrapper.find('[data-part="legend-swatch"]').exists()).toBe(false);
+
+    await entries(wrapper)[0]!.trigger('click');
+    expect(entries(wrapper)[0]!.attributes('aria-pressed')).toBe('false');
+    expect(wrapper.find('.mine').text()).toBe('0:Visits:true');
+    expect(marks(wrapper, 'line')).toHaveLength(1);
+  });
 
   it('names every series by its label, in its color', async () => {
     const wrapper = withLegend({}, [{ label: 'Visits', color: '#f00' }, { color: '#0f0' }]);

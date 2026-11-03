@@ -17,7 +17,13 @@ const text = computed(() => String(props.value));
   <!-- Read once, whole; the characters that animate are hidden from assistive technology. -->
   <span class="app-number-flow">
     <span class="app-number-flow-text">{{ text }}</span>
-    <TransitionGroup tag="span" name="app-number-flow" class="app-number-flow-chars" aria-hidden="true" :appear="appear">
+    <TransitionGroup
+      tag="span"
+      name="app-number-flow"
+      class="app-number-flow-chars"
+      aria-hidden="true"
+      :appear="appear"
+    >
       <span
         v-for="(char, index) in text"
         :key="text + index"

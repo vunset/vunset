@@ -11,8 +11,12 @@ How a chart is colored: the series palette, the axes and grid, and
 A series is colored `var(--chart-color-N)`, where `N` is its place among the
 chart's series (or a slice's place in the data), counting from 0. Define the
 variables once in your theme. To give one series another color, pass it a
-`color`. A series keeps its color when another one is hidden. A series past
-the variables your theme defines falls back to `currentColor`, the chart's
+`color`. A series keeps its color when another one is hidden.
+
+Past the palette, the colors start over: the ninth series takes
+`--chart-color-0` again. The palette is eight colors unless the chart's
+`palette-size` says otherwise, so a theme defining more sets it to match.
+A color your theme leaves undefined falls back to `currentColor`, the chart's
 text color, rather than to nothing.
 
 ```css
@@ -22,6 +26,15 @@ text color, rather than to nothing.
   --chart-color-2: #ffa94d;
 }
 ```
+
+```vue
+<template>
+  <!-- A theme of eleven colors: the twelfth series takes the first again. -->
+  <ChartRoot :data="rows" x-key="time" :palette-size="11">…</ChartRoot>
+</template>
+```
+
+`ChartDonut` and a `ChartLegend` beside a chart take `palette-size` too.
 
 ## Axes and grid
 
@@ -47,6 +60,7 @@ import { chartColors } from '@vunset/utils';
 
 chartColors(2); // ['var(--chart-color-0, currentColor)', 'var(--chart-color-1, currentColor)']
 chartColors(2, '--series-', '#888'); // ['var(--series-0, #888)', 'var(--series-1, #888)']
+chartColors(3, undefined, undefined, 2); // --chart-color-0, -1, then -0 again
 ```
 
 They are `var()` references, not colors: they follow whatever your CSS sets
@@ -58,7 +72,8 @@ the variables to, light and dark mode included. It comes from
 
 ### chartColors
 
-`(count: number, prefix?: string, fallback?: string) => string[]`: `count`
-CSS variable references, from `0`, each falling back to `fallback`. `prefix`
-is `CHART_COLOR_PREFIX`, `'--chart-color-'`, by default, and `fallback`
-`'currentColor'`.
+`(count: number, prefix?: string, fallback?: string, size?: number) => string[]`:
+`count` CSS variable references, from `0`, starting over after `size`, each
+falling back to `fallback`. `prefix` is `CHART_COLOR_PREFIX`,
+`'--chart-color-'`, by default, `fallback` `'currentColor'`, and `size`
+`CHART_PALETTE_SIZE`, `8`.

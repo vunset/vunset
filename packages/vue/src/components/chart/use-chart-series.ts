@@ -35,6 +35,8 @@ export const {
 export interface UseChartSeriesOptions {
   categories: () => string[];
   colors: () => string[] | undefined;
+  /** How many palette colors the default cycles through. */
+  paletteSize?: () => number | undefined;
   labels?: () => string[];
   /** Supplying this makes the hidden list controlled. */
   hidden: () => string[] | undefined;
@@ -60,7 +62,9 @@ export interface UseChartSeriesReturn {
  * happens to be showing.
  */
 export function useChartSeries(options: UseChartSeriesOptions): UseChartSeriesReturn {
-  const colors = computed(() => options.colors() ?? chartColors(options.categories().length));
+  const colors = computed(
+    () => options.colors() ?? chartColors(options.categories().length, undefined, undefined, options.paletteSize?.())
+  );
 
   const hidden = useControlled<string[]>({
     value: options.hidden,

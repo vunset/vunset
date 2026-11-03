@@ -19,6 +19,8 @@
      `--chart-tick-font-size` sizes the tick labels, and the axes make room. */
   :where([data-part='chart']) {
     --chart-tick-font-size: var(--ui-font-size-xs);
+    /* A donut's `gap` is a line in the page's color. */
+    --chart-gap-color: var(--ui-bg);
     display: block;
     width: 100%;
     color: var(--ui-text);
@@ -50,6 +52,12 @@
     flex-wrap: wrap;
     gap: 0.25rem;
     margin-bottom: 0.75rem;
+  }
+
+  /* Below the drawing, the gap goes above it. */
+  :where([data-part='legend'][data-placement='bottom']) {
+    margin-top: 0.75rem;
+    margin-bottom: 0;
   }
 
   :where([data-part='legend-item']) {

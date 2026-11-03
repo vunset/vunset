@@ -25,13 +25,27 @@ import { ChartDonut, ChartLegend } from '@vunset/vue/chart';
 `category-key` names each slice and `value-key` holds its size. The middle
 shows the total of the slices showing, through `value-format`;
 `central-label` and `central-sub-label` replace it, and an empty string leaves
-it out. `arc-width`, `pad-angle` and `corner-radius` shape the ring.
+it out, as does `false`. `arc-width`, `pad-angle` and `corner-radius` shape
+the ring.
 
 ## Examples
 
 ### Pie
 
-`arc-width="0"` fills the ring in.
+`arc-width="0"` fills the ring in. A pie has no middle, so it shows no total
+unless you give it a `central-label`.
+
+`pad-angle` parts the slices by an angle, so on a pie its gaps narrow to
+nothing at the center. `gap` parts them by a width in pixels instead, the same
+from the center to the edge, and `:gap="0"` leaves no space at all. The slices
+touch, and a line that wide in `--chart-gap-color` divides them: set it to the
+color behind the chart, the page's own by default.
+
+```css
+[data-part='chart'] {
+  --chart-gap-color: #fff;
+}
+```
 
 ::: preview chart/Pie
 :::

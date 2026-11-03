@@ -19,8 +19,12 @@ const props = withDefaults(
     curve?: ChartCurve;
     /** Mark each row with a dot. */
     points?: boolean;
+    /** Draw the line along the band's top. Without it, the band alone takes the focus. @default true */
+    line?: boolean;
+    /** Fade the band towards the axis, or fill it evenly. @default true */
+    gradient?: boolean;
   }>(),
-  { scale: 'y', curve: 'smooth' }
+  { scale: 'y', curve: 'smooth', line: true, gradient: true }
 );
 
 useChartPart('series', () => ({ kind: 'area', ...props }));

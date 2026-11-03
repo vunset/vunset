@@ -33,6 +33,9 @@ row axis is down the side.
   `trim-labels` cuts long row labels to fit instead.
 - `side` moves an axis to another edge.
 - `label` writes a title along the axis, such as its unit.
+- `line` draws the axis' own line along the edge of the plot, under its
+  labels. Each label has a short tick mark beside it; `:tick-marks="false"`
+  leaves them out.
 
 `ChartGrid` draws a line at each value tick; `type="x"` draws one per row.
 `ChartCrosshair` draws a guide through the row under the pointer.

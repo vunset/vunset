@@ -44,7 +44,9 @@ defineSlots<{
     >
       <slot name="header">
         <div class="app-card-heading">
-          <p v-if="title || $slots.title" class="app-card-title"><slot name="title">{{ title }}</slot></p>
+          <p v-if="title || $slots.title" class="app-card-title">
+            <slot name="title">{{ title }}</slot>
+          </p>
           <p v-if="description || $slots.description" class="app-card-description">
             <slot name="description">{{ description }}</slot>
           </p>

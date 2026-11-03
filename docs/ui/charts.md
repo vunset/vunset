@@ -45,6 +45,10 @@ both axes, a grid, a tooltip and a legend. For anything else, add parts in
 its slot, such as a target line over the bars, or compose a `ChartRoot`
 yourself, as above: two value axes, bars beside a line.
 
+Each AppChart passes its legend [slots](/data/charts/legend#content-of-your-own)
+on: `#legend-item` replaces what each button shows, keeping the button, and
+`#legend` replaces the buttons.
+
 ## Styling
 
 <<< ../../packages/ui/src/app/app-chart.css

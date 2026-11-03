@@ -1,6 +1,15 @@
 <script setup lang="ts">
 import type { HTMLAttributes } from 'vue';
-import { ContextMenuRoot, ContextMenuTrigger, Portal, Positioner, Popup, type Align, type Side, isPropBound } from '@vunset/vue';
+import {
+  ContextMenuRoot,
+  ContextMenuTrigger,
+  Portal,
+  Positioner,
+  Popup,
+  type Align,
+  type Side,
+  isPropBound
+} from '@vunset/vue';
 
 // Every other attribute — `class` too — lands on the area that opens the menu.
 defineOptions({ name: 'AppContextMenu', inheritAttrs: false });

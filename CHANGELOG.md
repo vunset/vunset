@@ -2,6 +2,24 @@
 
 All four packages are released together under one version.
 
+## 1.0.0-rc.5
+
+### @vunset/vue
+
+- `ChartDonut` takes `gap`: an even gap between slices, in pixels, the same
+  width from the center to the edge, pie or ring; `:gap="0"` for none. It's a
+  line in `--chart-gap-color`, the page's background by default; ui sets it to
+  its own. `pad-angle`'s gaps, by an angle, still narrow towards the center.
+- A pie (`arc-width="0"`) shows no total in its middle unless given a
+  `central-label`, and `false` leaves out either line, as an empty string
+  does.
+- `ChartDonut` redraws at once again when a slice is toggled. Tweening its
+  arcs swung a slice the long way round for a few frames.
+- `ChartArea` takes `:gradient="false"` for an evenly filled band, and
+  `:line="false"` to leave out the line along its top.
+- `ChartAxis` takes `line`, drawing the axis' own line along the plot's edge,
+  and `:tick-marks="false"`, leaving out the short mark at each label.
+
 ## 1.0.0-rc.4
 
 ### @vunset/vue

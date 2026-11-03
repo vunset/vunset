@@ -1,11 +1,20 @@
 export const CHART_COLOR_PREFIX = '--chart-color-';
 
+/** How many `--chart-color-N` a theme defines, unless told otherwise: ui's eight. */
+export const CHART_PALETTE_SIZE = 8;
+
 /**
- * One `var()` per series. Past the palette a theme defines, a series falls back
- * to the text color rather than to nothing.
+ * One `var()` per series, starting over after `size` of them. A color the theme
+ * leaves undefined falls back to the text color rather than to nothing.
  */
-export function chartColors(count: number, prefix = CHART_COLOR_PREFIX, fallback = 'currentColor'): string[] {
-  return Array.from({ length: count }, (_, index) => `var(${prefix}${index}, ${fallback})`);
+export function chartColors(
+  count: number,
+  prefix = CHART_COLOR_PREFIX,
+  fallback = 'currentColor',
+  size = CHART_PALETTE_SIZE
+): string[] {
+  const cycle = Math.max(1, Math.floor(size));
+  return Array.from({ length: count }, (_, index) => `var(${prefix}${index % cycle}, ${fallback})`);
 }
 
 export interface ChartRowsKeys {

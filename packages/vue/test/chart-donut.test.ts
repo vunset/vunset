@@ -3,12 +3,12 @@ import { mount, type VueWrapper } from '@vue/test-utils';
 import { h, nextTick } from 'vue';
 import { ChartDonut, ChartLegend } from '../src/chart';
 import { resetLayout, setLayout } from './layout';
-import { fills, marks, wait } from './chart-dom';
+import { fills, marks, reduceMotion, wait } from './chart-dom';
 
 const SLICES = [
   { source: 'Search', total: 60 },
   { source: 'Social', total: 30 },
-  { source: 'Direct', total: 10 },
+  { source: 'Direct', total: 10 }
 ];
 
 beforeEach(() => setLayout({ width: 600, height: 300 }));
@@ -18,7 +18,7 @@ async function mountDonut(props: Record<string, any> = {}, options: Record<strin
   const wrapper = mount(ChartDonut as any, {
     props: { data: SLICES, categoryKey: 'source', valueKey: 'total', ...props },
     attachTo: document.body,
-    ...options,
+    ...options
   });
   // The middle is placed over the plot once the chart has measured it.
   await wait();
@@ -28,7 +28,7 @@ async function mountDonut(props: Record<string, any> = {}, options: Record<strin
 const arcs = (wrapper: VueWrapper<any>) => marks(wrapper, 'arc');
 const middle = (wrapper: VueWrapper<any>) => ({
   label: wrapper.find('[data-part="chart-center-label"]'),
-  sub: wrapper.find('[data-part="chart-center-sub-label"]'),
+  sub: wrapper.find('[data-part="chart-center-sub-label"]')
 });
 
 /** Keyboard focus, which needs no pointer geometry. It lands on Social, the second slice. */
@@ -52,7 +52,11 @@ describe('the donut', () => {
     const wrapper = await mountDonut();
 
     expect(arcs(wrapper)).toHaveLength(3);
-    expect(fills(wrapper, 'arc')).toEqual(['var(--chart-color-0, currentColor)', 'var(--chart-color-1, currentColor)', 'var(--chart-color-2, currentColor)']);
+    expect(fills(wrapper, 'arc')).toEqual([
+      'var(--chart-color-0, currentColor)',
+      'var(--chart-color-1, currentColor)',
+      'var(--chart-color-2, currentColor)'
+    ]);
   });
 
   it('sizes the slices by the value key', async () => {
@@ -82,7 +86,7 @@ describe('the donut', () => {
     expect(middle(await mountDonut({ centralLabel: 'Q3' })).label.text()).toBe('Q3');
     expect(middle(await mountDonut({ centralSubLabel: '' })).sub.exists()).toBe(false);
     expect(
-      (await mountDonut({ centralLabel: '', centralSubLabel: '' })).find('[data-part="chart-center"]').exists(),
+      (await mountDonut({ centralLabel: '', centralSubLabel: '' })).find('[data-part="chart-center"]').exists()
     ).toBe(false);
   });
 
@@ -111,6 +115,33 @@ describe('the donut’s legend', () => {
   const withLegend = (props: Record<string, any> = {}, legend: Record<string, any> = {}) =>
     mountDonut(props, { slots: { default: () => h(ChartLegend as any, legend) } });
 
+  it('sits below the ring with `placement="bottom"`', async () => {
+    const wrapper = await withLegend({}, { placement: 'bottom' });
+    const legend = wrapper.find('[data-part="legend"]').element;
+    const plot = wrapper.find('[data-part="chart-plot"]').element;
+
+    expect(plot.compareDocumentPosition(legend) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(arcs(wrapper)).toHaveLength(3);
+  });
+
+  it('redraws at once rather than tweening the arcs, even with motion on', async () => {
+    reduceMotion(false);
+    try {
+      const wrapper = await withLegend();
+      await wrapper.findAll('[data-part="legend-item"]')[0]!.trigger('click');
+      await nextTick();
+      const drawn = () => marks(wrapper, 'arc').map((arc) => arc.attributes('d'));
+      const first = drawn();
+
+      // A tween would still be moving them: an arc's large-arc flag can't be blended.
+      await wait(400);
+      expect(drawn()).toEqual(first);
+      expect(first).toHaveLength(2);
+    } finally {
+      reduceMotion();
+    }
+  });
+
   it('drops a slice, and re-totals', async () => {
     const wrapper = await withLegend();
 
@@ -132,6 +163,62 @@ describe('the donut’s legend', () => {
   });
 });
 
+describe('even gaps', () => {
+  it('parts the slices with a line the gap’s width, in the background’s color', async () => {
+    const wrapper = await mountDonut({ gap: 4, arcWidth: 0 });
+
+    expect(arcs(wrapper).every((arc) => arc.attributes('stroke') === 'var(--chart-gap-color, Canvas)')).toBe(true);
+    expect(arcs(wrapper).every((arc) => arc.attributes('stroke-width') === '4')).toBe(true);
+  });
+
+  it('lets the slices touch beneath the line, rather than parting them by an angle', async () => {
+    const lined = arcs(await mountDonut({ gap: 4 })).map((arc) => arc.attributes('d'));
+    const touching = arcs(await mountDonut({ gap: 0 })).map((arc) => arc.attributes('d'));
+    const angled = arcs(await mountDonut()).map((arc) => arc.attributes('d'));
+
+    expect(lined).toEqual(touching);
+    expect(lined).not.toEqual(angled);
+  });
+
+  it('draws no line with `:gap="0"`', async () => {
+    const wrapper = await mountDonut({ gap: 0 });
+    expect(arcs(wrapper).some((arc) => arc.attributes('stroke') !== undefined)).toBe(false);
+  });
+
+  it('keeps the legend and the tooltip working', async () => {
+    const wrapper = await mountDonut({ gap: 4 }, { slots: { default: () => h(ChartLegend as any) } });
+    await wrapper.findAll('[data-part="legend-item"]')[0]!.trigger('click');
+    await wait();
+    expect(arcs(wrapper)).toHaveLength(2);
+
+    const tipped = await mountDonut({ gap: 4 });
+    await focusFirst(tipped);
+    expect(tipped.find('[data-part="tooltip-label"]').text()).toBe('Social');
+  });
+});
+
+describe('the middle', () => {
+  const texts = (wrapper: VueWrapper<any>) =>
+    wrapper.findAll('[data-part="chart-center"] span').map((node) => node.text());
+
+  it('shows the total on a ring, and nothing on a pie', async () => {
+    expect(texts(await mountDonut())).toEqual(['100', 'Total']);
+    expect((await mountDonut({ arcWidth: 0 })).find('[data-part="chart-center"]').exists()).toBe(false);
+  });
+
+  it('shows text it’s given, even on a pie', async () => {
+    expect(texts(await mountDonut({ arcWidth: 0, centralLabel: 'Users' }))).toEqual(['Users']);
+  });
+
+  it('leaves a line out with `false`, or an empty string', async () => {
+    expect(texts(await mountDonut({ centralSubLabel: false }))).toEqual(['100']);
+    expect(texts(await mountDonut({ centralLabel: '' }))).toEqual(['Total']);
+    expect(
+      (await mountDonut({ centralLabel: false, centralSubLabel: false })).find('[data-part="chart-center"]').exists()
+    ).toBe(false);
+  });
+});
+
 describe('the donut’s tooltip', () => {
   it('shows the slice in focus', async () => {
     const wrapper = await mountDonut();
@@ -145,7 +232,7 @@ describe('the donut’s tooltip', () => {
   it('renames a slice and formats its size', async () => {
     const wrapper = await mountDonut({
       labelFormat: (category: string) => category.toUpperCase(),
-      valueFormat: (value: number) => `${value}%`,
+      valueFormat: (value: number) => `${value}%`
     });
     await focusFirst(wrapper);
 
@@ -156,7 +243,12 @@ describe('the donut’s tooltip', () => {
   it('hands the slice to a tooltip of the caller’s own', async () => {
     const wrapper = await mountDonut(
       {},
-      { slots: { tooltip: '<template #tooltip="{ slice }"><b class="mine">{{ slice.category }}:{{ slice.value }}</b></template>' } },
+      {
+        slots: {
+          tooltip:
+            '<template #tooltip="{ slice }"><b class="mine">{{ slice.category }}:{{ slice.value }}</b></template>'
+        }
+      }
     );
     await focusFirst(wrapper);
 

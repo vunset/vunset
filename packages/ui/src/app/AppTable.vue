@@ -25,7 +25,13 @@ defineSlots<{
 </script>
 
 <template>
-  <TableRoot :sticky-header="stickyHeader" :sticky-footer="stickyFooter" :row-count="rowCount" :table-class="tableClass" class="app-table">
+  <TableRoot
+    :sticky-header="stickyHeader"
+    :sticky-footer="stickyFooter"
+    :row-count="rowCount"
+    :table-class="tableClass"
+    class="app-table"
+  >
     <slot />
   </TableRoot>
 </template>

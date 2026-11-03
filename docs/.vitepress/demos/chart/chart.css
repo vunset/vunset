@@ -87,6 +87,11 @@
   gap: 0.25rem;
   margin-bottom: 1rem;
 
+  &[data-placement='bottom'] {
+    margin-top: 1rem;
+    margin-bottom: 0;
+  }
+
   [data-part='legend-item'] {
     display: inline-flex;
     align-items: center;

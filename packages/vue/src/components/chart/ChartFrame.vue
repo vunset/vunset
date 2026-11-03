@@ -11,8 +11,19 @@ export interface ChartRender {
 </script>
 
 <script setup lang="ts">
-import { computed, defineComponent, h, mergeProps, onMounted, shallowRef, useTemplateRef } from 'vue';
+import {
+  computed,
+  defineComponent,
+  Fragment,
+  h,
+  mergeProps,
+  onMounted,
+  shallowRef,
+  useTemplateRef,
+  type VNode
+} from 'vue';
 import { Chart, type ChartDefinition, type ChartPoint } from '@tanstack/charts/vue';
+import ChartLegend from './ChartLegend.vue';
 
 defineOptions({ name: 'ChartFrame' });
 
@@ -80,10 +91,29 @@ const tooltipBody = ({ primaryPoint, pinned }: { primaryPoint?: ChartPoint<any>;
   primaryPoint
     ? h(
         'div',
-        mergeProps({ 'data-part': 'chart-tooltip', 'data-pinned': pinned ? '' : undefined }, props.tooltipAttrs?.() ?? {}),
+        mergeProps(
+          { 'data-part': 'chart-tooltip', 'data-pinned': pinned ? '' : undefined },
+          props.tooltipAttrs?.() ?? {}
+        ),
         [h('div', { 'data-part': 'tooltip' }, slots.tooltip({ point: primaryPoint, pinned }) as any)]
       )
     : null;
+
+// A legend asked to sit below the drawing, among the slot's own nodes (not one inside a component of yours).
+const below = (node: VNode) => node.type === ChartLegend && node.props?.placement === 'bottom';
+
+function flat(nodes: VNode[]): VNode[] {
+  return nodes.flatMap((node) =>
+    node.type === Fragment && Array.isArray(node.children) ? flat(node.children as VNode[]) : [node]
+  );
+}
+
+// The slot's nodes either side of the drawing, so the page reads in the order it shows.
+const Content = (own: { bottom?: boolean }) => {
+  const nodes = flat((slots.default?.() ?? []) as VNode[]);
+  return nodes.filter((node) => below(node) === (own.bottom ?? false));
+};
+Content.props = { bottom: Boolean };
 
 // A component of its own, so it renders after the slot rather than with the frame.
 const Drawing = defineComponent({
@@ -99,7 +129,7 @@ const Drawing = defineComponent({
 
 <template>
   <div data-part="chart" :data-chart="props.kind">
-    <slot />
+    <Content />
 
     <div data-part="chart-plot" :style="{ position: 'relative' }">
       <span
@@ -125,5 +155,7 @@ const Drawing = defineComponent({
         <slot name="center" />
       </div>
     </div>
+
+    <Content bottom />
   </div>
 </template>

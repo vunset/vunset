@@ -32,8 +32,8 @@ const heading = (date: Date) =>
     class="demo-chart"
   >
     <ChartLegend />
-    <ChartAxis type="x" label="Time" :num-ticks="6" />
-    <ChartAxis type="y" label="CPU load" :format="percent" />
+    <ChartAxis type="x" label="Time" :num-ticks="6" line />
+    <ChartAxis type="y" label="CPU load" :format="percent" line />
     <ChartGrid />
     <ChartArea v-for="node in series" :key="node" :y-key="node" curve="linear" />
     <ChartTooltip mode="point" :heading-format="heading" />

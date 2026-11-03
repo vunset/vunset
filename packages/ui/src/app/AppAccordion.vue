@@ -12,7 +12,14 @@ export interface AppAccordionSection {
 
 <script setup lang="ts">
 import type { HTMLAttributes } from 'vue';
-import { AccordionRoot, AccordionItem, AccordionHeader, AccordionTrigger, AccordionPanel, isPropBound } from '@vunset/vue';
+import {
+  AccordionRoot,
+  AccordionItem,
+  AccordionHeader,
+  AccordionTrigger,
+  AccordionPanel,
+  isPropBound
+} from '@vunset/vue';
 import AppIcon from './AppIcon.vue';
 
 defineOptions({ name: 'AppAccordion' });

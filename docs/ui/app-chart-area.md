@@ -24,7 +24,10 @@ Each key in `categories` becomes a series. `label-format` names them,
 `x-format` and `y-format` format the axes and the tooltip. The legend shows
 for more than one series; `legend` or `:legend="false"` decides it yourself.
 `:x-axis`, `:y-axis`, `:grid` and `:tooltip` set to `false` leave those out.
-`x-label` and `y-label` title the axes.
+`x-label` and `y-label` title the axes, and `x-axis-line` and `y-axis-line`
+draw each axis' own line along the plot's edge. `:gradient="false"` fills each band
+evenly, and `:line="false"` leaves out the lines along their tops.
+`palette-size` matches a theme of more or fewer than eight colors.
 
 ## Examples
 

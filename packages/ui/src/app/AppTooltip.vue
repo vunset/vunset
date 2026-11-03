@@ -79,13 +79,7 @@ const wrapsChild = () => !props.as && !props.trigger && singleChild(slots.defaul
     @update:open="emit('update:open', $event)"
   >
     <!-- An `as` or a child that isn't a button may not be focusable, and a tooltip must be reachable by keyboard. -->
-    <TooltipTrigger
-      v-if="wrapsChild()"
-      as="child"
-      :tabindex="0"
-      :class="triggerClass"
-      v-bind="$attrs"
-    >
+    <TooltipTrigger v-if="wrapsChild()" as="child" :tabindex="0" :class="triggerClass" v-bind="$attrs">
       <slot />
     </TooltipTrigger>
     <TooltipTrigger

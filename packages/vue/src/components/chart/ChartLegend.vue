@@ -1,6 +1,19 @@
+<script lang="ts">
+/** One entry in a legend. */
+export interface ChartLegendItem {
+  category: string;
+  label: string;
+  color: string;
+  /** Its series isn't drawn. */
+  hidden: boolean;
+  /** Hides it, or shows it again. */
+  toggle: () => void;
+}
+</script>
+
 <script setup lang="ts">
 import { Part } from '../../shared/part';
-import { computed, useAttrs } from 'vue';
+import { computed, useAttrs, type HTMLAttributes } from 'vue';
 import { mergeProps } from '../../shared/merge-props';
 import { useControlled } from '../../shared/use-controlled';
 import { useOptionalChartContext } from './use-chart-series';
@@ -16,12 +29,18 @@ const props = withDefaults(
     categories?: string[];
     /** One per category; taken from the chart this sits inside, or `var(--chart-color-N)`. */
     colors?: string[];
+    /** How many `--chart-color-N` the theme defines: series past it start over at the first. @default 8 */
+    paletteSize?: number;
     /** Renames a category for the reader. Inside a chart, each series' `label` already does. */
     labelFormat?: (category: string) => string;
+    /** Inside a chart: above the drawing, or below it. @default 'top' */
+    placement?: 'top' | 'bottom';
+    /** A class for each button, beside its `data-part="legend-item"`. */
+    itemClass?: HTMLAttributes['class'];
     /** Element or component to render. */
     as?: string | object;
   }>(),
-  { modelValue: undefined, as: 'div' }
+  { modelValue: undefined, as: 'div', placement: 'top' }
 );
 
 const emit = defineEmits<{
@@ -36,10 +55,12 @@ defineSlots<{
    */
   default(props: {
     /** One per category, with its `category`, `label`, `color`, whether it is `hidden`, and a `toggle()`. */
-    items: { category: string; label: string; color: string; hidden: boolean; toggle: () => void }[];
+    items: ChartLegendItem[];
     /** The hidden categories. */
     hidden: string[];
   }): unknown;
+  /** Replaces what each button shows, a swatch and the label; the button and its toggling stay. */
+  item?(props: ChartLegendItem & { index: number }): unknown;
 }>();
 
 const chart = useOptionalChartContext();
@@ -54,7 +75,10 @@ const own = useControlled<string[]>({
 });
 
 const categories = computed(() => props.categories ?? chart?.categories.value ?? []);
-const colors = computed(() => props.colors ?? chart?.colors.value ?? chartColors(categories.value.length));
+const colors = computed(
+  () =>
+    props.colors ?? chart?.colors.value ?? chartColors(categories.value.length, undefined, undefined, props.paletteSize)
+);
 const hidden = computed(() => (driven ? chart!.hidden.value : own.value));
 
 function toggle(category: string): void {
@@ -67,10 +91,12 @@ function toggle(category: string): void {
     : [...hidden.value, category];
 }
 
-const items = computed(() =>
+const items = computed<ChartLegendItem[]>(() =>
   categories.value.map((category, index) => ({
     category,
-    label: props.labelFormat ? props.labelFormat(category) : ((props.categories ? undefined : chart?.labels?.value[index]) ?? category),
+    label: props.labelFormat
+      ? props.labelFormat(category)
+      : ((props.categories ? undefined : chart?.labels?.value[index]) ?? category),
     color: colors.value[index] ?? '',
     hidden: hidden.value.includes(category),
     toggle: () => toggle(category)
@@ -78,23 +104,26 @@ const items = computed(() =>
 );
 
 const attrs = useAttrs();
-const merged = computed(() => mergeProps({ 'data-part': 'legend' }, attrs));
+const merged = computed(() => mergeProps({ 'data-part': 'legend', 'data-placement': props.placement }, attrs));
 </script>
 
 <template>
   <Part :as="props.as" v-bind="merged">
     <slot v-bind="{ items, hidden }">
       <button
-        v-for="item in items"
+        v-for="(item, index) in items"
         :key="item.category"
         type="button"
         data-part="legend-item"
+        :class="props.itemClass"
         :data-hidden="item.hidden ? '' : undefined"
         :aria-pressed="!item.hidden"
         @click="item.toggle()"
       >
-        <span data-part="legend-swatch" :style="{ background: item.color }" />
-        <span data-part="legend-label">{{ item.label }}</span>
+        <slot name="item" v-bind="{ ...item, index }">
+          <span data-part="legend-swatch" :style="{ background: item.color }" />
+          <span data-part="legend-label">{{ item.label }}</span>
+        </slot>
       </button>
     </slot>
   </Part>

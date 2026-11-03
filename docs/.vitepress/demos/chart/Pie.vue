@@ -15,8 +15,7 @@ const plans = [
     category-key="plan"
     value-key="users"
     :arc-width="0"
-    central-label=""
-    central-sub-label=""
+    :gap="4"
     height="12rem"
     class="demo-chart"
   >

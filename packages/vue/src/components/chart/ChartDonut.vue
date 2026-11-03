@@ -6,7 +6,7 @@ import { pie, polar, radialArc } from '@tanstack/charts/polar';
 import { tooltip as tooltipExtension } from '@tanstack/charts/tooltip';
 import { scaleOrdinal } from '@tanstack/charts/scales/ordinal';
 import { useChartSeries } from './use-chart-series';
-import { chartName, SVG_ANIMATION } from './chart-scales';
+import { chartName } from './chart-scales';
 import ChartFrame from './ChartFrame.vue';
 import { formatNumber } from '@vunset/utils';
 
@@ -26,20 +26,27 @@ const props = withDefaults(
     labelFormat?: (category: string) => string;
     /** One per slice. Defaults to `var(--chart-color-N)`. */
     colors?: string[];
+    /** How many `--chart-color-N` the theme defines: series past it start over at the first. @default 8 */
+    paletteSize?: number;
     /** Slices not drawn. `v-model:hidden` pairs it with a `ChartLegend`. */
     hidden?: string[];
     /** A number means pixels. @default '20rem' */
     height?: number | string;
-    /** Gap between slices, in radians. @default 0.04 */
+    /** Gap between slices, in radians: a wedge, widening towards the edge. @default 0.04 */
     padAngle?: number;
+    /**
+     * Gap between slices, in pixels, the same width from the center to the edge; `0` for none. Replaces
+     * `pad-angle`. It's drawn as a line in `--chart-gap-color`, the page's background by default.
+     */
+    gap?: number;
     /** The radius of each slice's corners, in pixels. @default 6 */
     cornerRadius?: number;
     /** How thick the ring is. `0` fills it in, making a pie. @default 12 */
     arcWidth?: number;
-    /** Defaults to the total of what is showing. Empty string for nothing. */
-    centralLabel?: string;
-    /** The line under the central label. @default 'Total' */
-    centralSubLabel?: string;
+    /** Defaults to the total of what is showing; a pie, with no middle, shows none. `false` for nothing. */
+    centralLabel?: string | false;
+    /** The line under the central label. Defaults to 'Total', or none on a pie. `false` for nothing. */
+    centralSubLabel?: string | false;
     /** Shows the slice under the pointer. @default true */
     tooltip?: boolean;
     /** A class for the tooltip's box. */
@@ -52,6 +59,7 @@ const props = withDefaults(
     padAngle: 0.04,
     cornerRadius: 6,
     arcWidth: 12,
+    // Spelled out: a prop that can be `false` is otherwise cast to `false` when left off.
     centralLabel: undefined,
     centralSubLabel: undefined,
     tooltip: undefined
@@ -83,6 +91,7 @@ const slices = computed(() =>
 const { visible } = useChartSeries({
   categories: () => slices.value.map((slice) => slice.category),
   colors: () => props.colors,
+  paletteSize: () => props.paletteSize,
   hidden: () => props.hidden,
   onHiddenChange: (next) => emit('update:hidden', next)
 });
@@ -118,18 +127,24 @@ const definition = computed(() => {
   // its callbacks read later changes.
   const width = props.arcWidth;
   const cornerRadius = props.cornerRadius;
+  const gap = props.gap;
 
   return defineChart({
-    svgAnimation: SVG_ANIMATION,
+    // No redraw tween: it blends each arc's path text, and an arc's large-arc flag can't be blended,
+    // so a slice would swing the long way round. The donut redraws at once.
+    svgAnimation: false,
     marks: [
       polar({
         marks: [
-          radialArc(pie(shown.value, { value: 'size', gapAngle: props.padAngle }), {
+          radialArc(pie(shown.value, { value: 'size', gapAngle: gap === undefined ? props.padAngle : 0 }), {
             color: 'category',
             key: 'category',
             // A ring of no thickness is a pie.
             innerRadius: ({ radius }: { radius: number }) => (width > 0 ? Math.max(radius - width, 0) : 0),
-            cornerRadius
+            cornerRadius,
+            // An even gap: the slices touch, and a line the gap's width in the background's color parts them.
+            // An angle's gap would narrow to nothing at a pie's center.
+            ...(gap !== undefined && gap > 0 && { stroke: 'var(--chart-gap-color, Canvas)', strokeWidth: gap })
           })
         ],
         scales: { angle: null, radius: null }
@@ -153,11 +168,19 @@ const definition = computed(() => {
   } as any) as ChartDefinition<any, any, any>;
 });
 
-const centralLabel = computed(() => props.centralLabel ?? format(total.value));
-const centralSubLabel = computed(() => props.centralSubLabel ?? 'Total');
+// A pie has no hole to write in, so its middle stays empty unless given text.
+const filled = computed(() => props.arcWidth <= 0);
+const centralLabel = computed(() => props.centralLabel ?? (filled.value ? false : format(total.value)));
+const centralSubLabel = computed(() => props.centralSubLabel ?? (filled.value ? false : 'Total'));
 
 const ariaLabel = computed(
-  () => props.label ?? chartName(shown.value.map((slice) => slice.category), props.labelFormat, 'Donut chart')
+  () =>
+    props.label ??
+    chartName(
+      shown.value.map((slice) => slice.category),
+      props.labelFormat,
+      'Donut chart'
+    )
 );
 </script>
 

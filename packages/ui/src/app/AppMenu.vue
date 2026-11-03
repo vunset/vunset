@@ -1,6 +1,16 @@
 <script setup lang="ts">
 import type { Component, HTMLAttributes } from 'vue';
-import { MenuRoot, MenuTrigger, MenuArrow, Portal, Positioner, Popup, type Align, type Side, isPropBound } from '@vunset/vue';
+import {
+  MenuRoot,
+  MenuTrigger,
+  MenuArrow,
+  Portal,
+  Positioner,
+  Popup,
+  type Align,
+  type Side,
+  isPropBound
+} from '@vunset/vue';
 import AppMenuItems from './AppMenuItems.vue';
 import type { AppMenuAction, AppMenuEntry } from './app-menu';
 
