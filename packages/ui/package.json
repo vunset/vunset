@@ -1,6 +1,6 @@
 {
   "name": "@vunset/ui",
-  "version": "1.0.0-rc.3",
+  "version": "1.0.0-rc.4",
   "description": "Pre-styled Vue 3 components built on @vunset/vue's headless parts.",
   "keywords": [
     "vue",
@@ -52,7 +52,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@vunset/vue": "1.0.0-rc.3"
+    "@vunset/vue": "1.0.0-rc.4"
   },
   "peerDependencies": {
     "@tanstack/charts": "^1.1.0",
