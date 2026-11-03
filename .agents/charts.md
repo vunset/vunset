@@ -21,3 +21,12 @@ number, so `ChartFrame` reads `--chart-tick-font-size` off a hidden probe and
 the root passes it on; it paints every tick label alike, so with two value
 axes the root colors each after every draw. `trimLabels` is ours, sized from
 the measured row width. A focused point keeps TanStack's own focus ring.
+
+The row axis is TanStack's band/point scale over row indexes, unless
+`x-scale` names a continuous one: then each point's `at` is its `x-key` value,
+and ticks keep the scale's own format unless the axis has one. Bars stay on
+the band scale (a dev warning leaves them out otherwise). `x-scale` takes a
+factory rather than a name, so a time scale comes from the app's d3-scale,
+never from a dependency of ours. `ChartTooltip`'s `mode="point"` swaps
+`rowFocus` for `pointFocus`; pinning is TanStack's `sticky`, with `pinned`
+passed through `ChartFrame` as `data-pinned` and a slot prop.

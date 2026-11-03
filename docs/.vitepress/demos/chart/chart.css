@@ -21,6 +21,11 @@
   font-size: 0.75rem;
 }
 
+/* The focus ring on the point shows where focus is. */
+.demo-chart [data-part='chart-plot'] svg:focus {
+  outline: none;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .demo-chart .ts-chart-tooltip {
     transition:

@@ -18,15 +18,36 @@ without one shows none.
 </template>
 ```
 
-The heading is the row's `x-key` value through the x axis' `format`. Each
+The heading is the row's `x-key` value through the tooltip's
+`heading-format`, or else the x axis' `format`: on a time axis ticking by the
+hour, `heading-format` can still give the full date. Each
 series' value goes through its own `format`, or its axis'. Its attributes,
 `class` among them, land on the box.
+
+## One point, or the whole row
+
+`mode="row"`, the default, shows every series at the row under the pointer.
+`mode="point"` shows only the point nearest it, which reads better with many
+series close together.
+
+```vue
+<template>
+  <ChartTooltip mode="point" />
+</template>
+```
+
+## Pinning it
+
+A click, Enter or Space pins the tooltip where it is, so its text can be
+selected; another click, or Escape, lets it go. While pinned, the box carries
+`data-pinned`. `:sticky="false"` turns pinning off.
 
 ## Content of your own
 
 The default slot replaces the content. It gets the `row` under the pointer,
 its `heading`, and the `series` showing, each with its `key`, `label`,
-`color`, raw `value` and formatted `text`.
+`color`, raw `value` and formatted `text`: in `point` mode, only the point's.
+`pinned` says whether it's pinned.
 
 ```vue
 <template>
@@ -48,6 +69,7 @@ parts too:
 
 | Part | Element |
 | --- | --- |
+| `data-part="chart-tooltip"` | The box, with `data-pinned` while pinned. |
 | `data-part="tooltip"` | The content. |
 | `data-part="tooltip-heading"` | The row's `x-key` value. |
 | `data-part="tooltip-rows"` | The list of series. |

@@ -12,8 +12,9 @@ import {
   ChartRoot,
   ChartTooltip
 } from '../src/chart';
+import { scaleUtc } from 'd3-scale';
 import { resetLayout, setLayout } from './layout';
-import { fills, focusSecond, gradients, marks, strokes, ticks, wait } from './chart-dom';
+import { fills, focusSecond, gradients, marks, reduceMotion, strokes, ticks, wait } from './chart-dom';
 
 const DATA = [
   { date: 'Mon', visits: 10, signups: 4 },
@@ -145,7 +146,9 @@ describe('the area', () => {
 
   it('marks each row with a dot when asked', () => {
     expect(mountChart().findAll('.ts-chart__line circle')).toHaveLength(0);
-    expect(mountChart({}, () => [h(ChartArea, { yKey: 'visits', points: true })]).findAll('.ts-chart__line circle')).toHaveLength(3);
+    expect(
+      mountChart({}, () => [h(ChartArea, { yKey: 'visits', points: true })]).findAll('.ts-chart__line circle')
+    ).toHaveLength(3);
   });
 
   it('fades each band out towards the bottom, with a gradient of its own chart', () => {
@@ -197,7 +200,10 @@ describe('colors', () => {
   });
 
   it('takes a literal when a series is given one', () => {
-    const wrapper = mountChart({}, () => [h(ChartLine, { yKey: 'visits' }), h(ChartLine, { yKey: 'signups', color: '#0f0' })]);
+    const wrapper = mountChart({}, () => [
+      h(ChartLine, { yKey: 'visits' }),
+      h(ChartLine, { yKey: 'signups', color: '#0f0' })
+    ]);
 
     expect(strokes(wrapper)).toEqual(['var(--chart-color-0, currentColor)', '#0f0']);
   });
@@ -205,7 +211,12 @@ describe('colors', () => {
 
 describe('the axes and grid', () => {
   it('labels the x axis from the row, and the y axis with a grouped number', () => {
-    const wrapper = mountChart({ data: [{ date: 'Mon', visits: 1200 }, { date: 'Tue', visits: 1400 }] });
+    const wrapper = mountChart({
+      data: [
+        { date: 'Mon', visits: 1200 },
+        { date: 'Tue', visits: 1400 }
+      ]
+    });
 
     expect(ticks(wrapper, 'x')).toEqual(['Mon', 'Tue']);
     expect(ticks(wrapper, 'y')).toContain('1,200');
@@ -230,7 +241,86 @@ describe('the axes and grid', () => {
 
   it('draws the grid only when asked', () => {
     expect(gridLines(mountChart())).not.toHaveLength(0);
-    expect(gridLines(mountChart({}, () => [h(ChartAxis, { type: 'y' }), h(ChartLine, { yKey: 'visits' })]))).toHaveLength(0);
+    expect(
+      gridLines(mountChart({}, () => [h(ChartAxis, { type: 'y' }), h(ChartLine, { yKey: 'visits' })]))
+    ).toHaveLength(0);
+  });
+});
+
+describe('axis titles', () => {
+  it('writes a `label` along each axis', () => {
+    const wrapper = mountChart({}, () => [
+      h(ChartAxis, { type: 'x', label: 'Day' }),
+      h(ChartAxis, { type: 'y', label: 'Visits' }),
+      h(ChartLine, { yKey: 'visits' })
+    ]);
+    const texts = wrapper.findAll('svg text').map((text) => text.text());
+
+    expect(texts).toContain('Day');
+    expect(texts).toContain('Visits');
+  });
+});
+
+describe('a continuous x axis', () => {
+  const xs = (wrapper: VueWrapper<any>) =>
+    [
+      ...marks(wrapper, 'line')[0]!
+        .attributes('d')!
+        .matchAll(/[ML]\s*([\d.]+)/g)
+    ].map((match) => Number(match[1]));
+
+  const linear = (xScale: unknown, data: Record<string, any>[]) =>
+    mountChart({ data, xScale }, () => [
+      h(ChartAxis, { type: 'x' }),
+      h(ChartLine, { yKey: 'visits', curve: 'linear' })
+    ]);
+
+  it('spaces the rows evenly by default', () => {
+    const [a, b, c] = xs(
+      linear('category', [
+        { date: 0, visits: 1 },
+        { date: 1, visits: 2 },
+        { date: 10, visits: 3 }
+      ])
+    );
+    expect(b! - a!).toBeCloseTo(c! - b!);
+  });
+
+  it('places them by their `x-key` number with `linear`', () => {
+    const [a, b, c] = xs(
+      linear('linear', [
+        { date: 0, visits: 1 },
+        { date: 1, visits: 2 },
+        { date: 10, visits: 3 }
+      ])
+    );
+    expect((c! - b!) / (b! - a!)).toBeCloseTo(9);
+  });
+
+  it('takes a scale factory, such as a time scale for dates', () => {
+    const day = (n: number) => new Date(Date.UTC(2026, 0, n));
+    const wrapper = linear(scaleUtc, [
+      { date: day(1), visits: 1 },
+      { date: day(2), visits: 2 },
+      { date: day(5), visits: 3 }
+    ]);
+    const [a, b, c] = xs(wrapper);
+
+    expect((c! - b!) / (b! - a!)).toBeCloseTo(3);
+    // Unformatted, the ticks read as the scale writes them.
+    expect(ticks(wrapper, 'x').length).toBeGreaterThan(1);
+    expect(ticks(wrapper, 'x').some((label) => /\d/.test(label))).toBe(true);
+  });
+
+  it('leaves bars out, with a warning', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const wrapper = mountChart({ xScale: 'linear', data: [{ date: 0, visits: 1 }] }, () => [
+      h(ChartBar, { yKey: 'visits' })
+    ]);
+
+    expect(marks(wrapper, 'bar')).toHaveLength(0);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('x-scale="category"'));
+    warn.mockRestore();
   });
 });
 
@@ -293,6 +383,18 @@ describe('the tooltip', () => {
     expect(wrapper.find('[data-part="tooltip-label"]').text()).toBe('Visits');
   });
 
+  it('heads with its own `heading-format` before the x axis’', async () => {
+    const wrapper = mountChart({}, () => [
+      h(ChartAxis, { type: 'x', format: (value: string) => `on ${value}` }),
+      h(ChartLine, { yKey: 'visits' }),
+      h(ChartTooltip, { headingFormat: (value: string) => `${value}day` })
+    ]);
+    await focusSecond(wrapper);
+
+    expect(wrapper.find('[data-part="tooltip-heading"]').text()).toBe('Tueday');
+    expect(ticks(wrapper, 'x')[1]).toBe('on Tue');
+  });
+
   it('reads a missing value as zero rather than as nothing', async () => {
     const wrapper = mountChart({ data: [DATA[0], { date: 'Thu', visits: 5 }] });
     await focusSecond(wrapper);
@@ -336,6 +438,63 @@ describe('the tooltip', () => {
   });
 });
 
+describe('the tooltip’s mode', () => {
+  it('reads out the one point nearest in `point` mode', async () => {
+    const wrapper = mountChart({}, () => [
+      h(ChartLine, { yKey: 'visits' }),
+      h(ChartLine, { yKey: 'signups' }),
+      h(ChartTooltip, { mode: 'point' })
+    ]);
+    await focusSecond(wrapper);
+
+    expect(wrapper.findAll('[data-part="tooltip-row"]')).toHaveLength(1);
+  });
+
+  it('hands that one series to content of the caller’s own', async () => {
+    const wrapper = mountChart({}, () => [
+      h(ChartLine, { yKey: 'visits' }),
+      h(ChartLine, { yKey: 'signups' }),
+      h(ChartTooltip, { mode: 'point' }, { default: ({ series }: any) => h('p', { class: 'mine' }, series.length) })
+    ]);
+    await focusSecond(wrapper);
+
+    expect(wrapper.find('.mine').text()).toBe('1');
+  });
+});
+
+describe('pinning the tooltip', () => {
+  const press = async (wrapper: VueWrapper<any>, key: string) => {
+    await wrapper.find('svg').trigger('keydown', { key });
+    await wait();
+    await nextTick();
+  };
+
+  it('holds it in place on Enter, and lets it go on Escape', async () => {
+    const wrapper = mountChart({}, () => [
+      h(ChartLine, { yKey: 'visits' }),
+      h(ChartTooltip, null, { default: ({ pinned }: any) => h('p', { class: 'mine' }, String(pinned)) })
+    ]);
+    await focusSecond(wrapper);
+    const box = () => wrapper.find('[data-part="chart-tooltip"]');
+    expect(box().attributes('data-pinned')).toBeUndefined();
+
+    await press(wrapper, 'Enter');
+    expect(box().attributes('data-pinned')).toBe('');
+    expect(wrapper.find('.mine').text()).toBe('true');
+
+    await press(wrapper, 'Escape');
+    expect(box().exists() && box().attributes('data-pinned')).toBeFalsy();
+  });
+
+  it('never pins when not `sticky`', async () => {
+    const wrapper = mountChart({}, () => [h(ChartLine, { yKey: 'visits' }), h(ChartTooltip, { sticky: false })]);
+    await focusSecond(wrapper);
+    await press(wrapper, 'Enter');
+
+    expect(wrapper.find('[data-part="chart-tooltip"]').attributes('data-pinned')).toBeUndefined();
+  });
+});
+
 describe('the legend', () => {
   const withLegend = (legend: Record<string, any> = {}, series: Record<string, any>[] = [{}, {}]) =>
     mountChart({}, () => [
@@ -371,6 +530,46 @@ describe('the legend', () => {
 
     await entries(wrapper)[0]!.trigger('click');
     expect(marks(wrapper, 'line')).toHaveLength(2);
+  });
+
+  it('tweens the redraw, unless motion is reduced', async () => {
+    reduceMotion(false);
+    try {
+      const wrapper = withLegend();
+      await nextTick();
+      await entries(wrapper)[0]!.trigger('click');
+
+      const drawn = () => marks(wrapper, 'line').map((line) => line.attributes('d'));
+      const started = drawn();
+      await new Promise((resolve) => setTimeout(resolve, 400));
+      // Mid-tween right after the click, settled once it has run.
+      expect(drawn()).not.toEqual(started);
+      const settled = drawn();
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      expect(drawn()).toEqual(settled);
+    } finally {
+      reduceMotion();
+    }
+  });
+
+  it('hides every series without an error, `num-ticks` and all', async () => {
+    const errors: unknown[] = [];
+    const wrapper = mountChart(
+      {},
+      () => [
+        h(ChartLegend),
+        h(ChartAxis, { type: 'x', numTicks: 2 }),
+        h(ChartLine, { yKey: 'visits' }),
+        h(ChartLine, { yKey: 'signups' })
+      ],
+      { global: { config: { errorHandler: (error: unknown) => errors.push(error) } } }
+    );
+    await nextTick();
+    for (const entry of entries(wrapper)) await entry.trigger('click');
+    await wait();
+
+    expect(errors).toEqual([]);
+    expect(marks(wrapper, 'line')).toHaveLength(0);
   });
 
   it('leaves the remaining series the color they had', async () => {
@@ -452,8 +651,9 @@ describe('the tick labels', () => {
     });
   }
 
-  const sizes = (wrapper: VueWrapper<any>) =>
-    [...new Set(wrapper.findAll('text[data-ts-key*="-tick-label"]').map((label) => label.attributes('font-size')))];
+  const sizes = (wrapper: VueWrapper<any>) => [
+    ...new Set(wrapper.findAll('text[data-ts-key*="-tick-label"]').map((label) => label.attributes('font-size')))
+  ];
 
   afterEach(() => vi.restoreAllMocks());
 

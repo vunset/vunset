@@ -29,7 +29,7 @@ export interface ChartContext {
 export const {
   provideContext: provideChartContext,
   useContext: useChartContext,
-  useOptionalContext: useOptionalChartContext,
+  useOptionalContext: useOptionalChartContext
 } = createContext<ChartContext>('Chart');
 
 export interface UseChartSeriesOptions {
@@ -68,14 +68,14 @@ export function useChartSeries(options: UseChartSeriesOptions): UseChartSeriesRe
     prop: options.prop,
     onChange: options.onHiddenChange,
     name: 'Chart',
-    label: 'hidden',
+    label: 'hidden'
   });
 
   const visible = computed<ChartSeries[]>(() =>
     options
       .categories()
       .map((category, index) => ({ category, index, color: colors.value[index] ?? '' }))
-      .filter((series) => !hidden.value.includes(series.category)),
+      .filter((series) => !hidden.value.includes(series.category))
   );
 
   function toggle(category: string): void {
@@ -91,7 +91,7 @@ export function useChartSeries(options: UseChartSeriesOptions): UseChartSeriesRe
     colors,
     labels: options.labels && computed(options.labels),
     hidden: computed(() => hidden.value),
-    toggle,
+    toggle
   });
 
   return { colors, hidden: computed(() => hidden.value), visible, toggle };

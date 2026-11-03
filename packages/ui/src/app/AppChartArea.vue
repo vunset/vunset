@@ -3,7 +3,7 @@ import { ChartArea, type ChartCurve, type ChartTooltipSlotProps } from '@vunset/
 import { computed } from 'vue';
 import { isPropBound } from '@vunset/vue';
 import AppChartFrame from './AppChartFrame.vue';
-import { APP_CHART_DEFAULTS, type AppChartProps } from './app-chart';
+import { APP_CHART_DEFAULTS, type AppChartProps, type AppChartXScaleProps } from './app-chart';
 
 defineOptions({ name: 'AppChartArea' });
 
@@ -12,14 +12,15 @@ const hiddenBound = isPropBound('hidden');
 
 const props = withDefaults(
   defineProps<
-    AppChartProps & {
-      /** Mark each row with a dot. */
-      points?: boolean;
-      /** Bend the lines through the points, or run them straight. @default 'smooth' */
-      curve?: ChartCurve;
-    }
+    AppChartProps &
+      AppChartXScaleProps & {
+        /** Mark each row with a dot. */
+        points?: boolean;
+        /** Bend the lines through the points, or run them straight. @default 'smooth' */
+        curve?: ChartCurve;
+      }
   >(),
-  { ...APP_CHART_DEFAULTS, curve: 'smooth' }
+  { ...APP_CHART_DEFAULTS, curve: 'smooth', xScale: 'category' }
 );
 
 // What the frame takes: the series' own props stay here.

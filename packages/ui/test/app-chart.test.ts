@@ -83,6 +83,30 @@ describe('the cartesian charts', () => {
     expect(chart.find('[data-part="tooltip-value"]').text()).toBe('20!');
   });
 
+  it('titles its axes, and hands the tooltip its mode', async () => {
+    const chart = await mountChart(AppChartLine, { xLabel: 'Day', yLabel: 'Visits', tooltipMode: 'point' });
+    const texts = chart.findAll('svg text').map((text) => text.text());
+
+    expect(texts).toEqual(expect.arrayContaining(['Day', 'Visits']));
+    await focusSecond(chart);
+    expect(chart.findAll('[data-part="tooltip-row"]')).toHaveLength(1);
+  });
+
+  it('places the rows by value on a `linear` x axis', async () => {
+    const chart = await mountChart(AppChartArea, {
+      data: [
+        { at: 0, visits: 1 },
+        { at: 1, visits: 2 },
+        { at: 10, visits: 3 }
+      ],
+      categories: ['visits'],
+      xKey: 'at',
+      xScale: 'linear'
+    });
+
+    expect(ticks(chart, 'x')).not.toEqual(['0', '1', '10']);
+  });
+
   it('puts its class on the chart and leaves its own props off it', async () => {
     const chart = await mountChart(AppChartArea, {}, { attrs: { class: 'mine' } });
     const root = chart.find('[data-part="chart"]');
@@ -113,7 +137,11 @@ describe('the cartesian charts', () => {
   });
 
   it('takes more parts in its slot', async () => {
-    const chart = await mountChart(AppChartBar, { categories: ['visits'], legend: true }, { slots: { default: () => h(ChartLine, { yKey: 'signups' }) } });
+    const chart = await mountChart(
+      AppChartBar,
+      { categories: ['visits'], legend: true },
+      { slots: { default: () => h(ChartLine, { yKey: 'signups' }) } }
+    );
 
     expect(marks(chart, 'bar')).toHaveLength(3);
     expect(marks(chart, 'line')).toHaveLength(1);

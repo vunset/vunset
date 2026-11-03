@@ -40,7 +40,8 @@ import { ChartRoot, ChartArea, ChartAxis, ChartGrid, ChartTooltip } from '@vunse
 ```
 
 `data` is the rows and `x-key` the key along the x axis. Each series part
-plots one key, its `y-key`. The root draws only what its parts ask for: no
+plots one key, its `y-key`. The rows sit evenly along the axis, unless
+`x-scale` places them by value, as on a [time axis](/data/charts/axis#a-time-axis). The root draws only what its parts ask for: no
 axis without a `ChartAxis`, no tooltip without a `ChartTooltip`.
 
 Series paint in template order, so a later one sits on top. A bar, band or

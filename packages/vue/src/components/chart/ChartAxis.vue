@@ -16,6 +16,8 @@ const props = defineProps<{
   numTicks?: number;
   /** Cut long row labels rather than dropping the ones that would collide. */
   trimLabels?: boolean;
+  /** A title along the axis, such as its unit. */
+  label?: string;
 }>();
 
 useChartPart('axis', () => ({ ...props }));

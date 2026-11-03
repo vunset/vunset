@@ -1,10 +1,5 @@
 <script lang="ts">
-import {
-  getCurrentInstance,
-  onBeforeUnmount,
-  onMounted,
-  type ComponentInternalInstance
-} from 'vue';
+import { getCurrentInstance, onBeforeUnmount, onMounted, type ComponentInternalInstance } from 'vue';
 import { createContext } from '../../shared/context';
 
 export type ChartCurve = 'smooth' | 'linear';
@@ -32,6 +27,7 @@ export interface ChartAxisPart {
   format?: (value: any) => string;
   numTicks?: number;
   trimLabels?: boolean;
+  label?: string;
 }
 
 export interface ChartGridPart {
@@ -55,13 +51,18 @@ export interface ChartTooltipSlotProps<T = Record<string, any>> {
   row: T;
   /** Its `x-key` value, through the x axis' formatter. */
   heading: string;
-  /** The series showing, in order. */
+  /** The series showing, in order; in `point` mode, only the point's. */
   series: ChartTooltipSeries[];
+  /** Pinned in place by a click, Enter or Space. */
+  pinned: boolean;
 }
 
 export interface ChartTooltipPart {
   attrs: Record<string, unknown>;
   slot?: (props: ChartTooltipSlotProps) => unknown;
+  mode: 'row' | 'point';
+  sticky: boolean;
+  headingFormat?: (value: any) => string;
 }
 
 interface Parts {
@@ -131,7 +132,18 @@ import { scaleOrdinal } from '@tanstack/charts/scales/ordinal';
 import { scalePoint } from '@tanstack/charts/scales/point';
 import { chartColors, formatNumber } from '@vunset/utils';
 import { useChartSeries } from './use-chart-series';
-import { curveOf, plotted, rowFocus, rowLabel, rowTicks, tickLabels, TICK_FONT_SIZE, valueLabel } from './chart-scales';
+import {
+  curveOf,
+  plotted,
+  pointFocus,
+  rowFocus,
+  rowLabel,
+  rowTicks,
+  SVG_ANIMATION,
+  tickLabels,
+  TICK_FONT_SIZE,
+  valueLabel
+} from './chart-scales';
 import ChartFrame, { type ChartRender } from './ChartFrame.vue';
 
 defineOptions({ name: 'ChartRoot', inheritAttrs: false });
@@ -142,6 +154,13 @@ const props = withDefaults(
     data: T[];
     /** The key naming each row, along the x axis. */
     xKey: keyof T & string;
+    /**
+     * Where the rows sit along the x axis. `category` spaces them evenly, in
+     * order; `linear` places them by their `x-key` number; or pass a scale
+     * factory, such as d3-scale's `scaleUtc` for dates. Bars need `category`.
+     * @default 'category'
+     */
+    xScale?: 'category' | 'linear' | (() => unknown);
     /** A number means pixels. @default '20rem' */
     height?: number | string;
     /** Which way the bars grow, and so which way the rows run. @default 'vertical' */
@@ -153,7 +172,7 @@ const props = withDefaults(
     /** The chart's accessible name. Defaults to its series. */
     label?: string;
   }>(),
-  { height: '20rem', orientation: 'vertical', hidden: undefined }
+  { height: '20rem', orientation: 'vertical', hidden: undefined, xScale: 'category' }
 );
 
 const emit = defineEmits<{
@@ -199,7 +218,9 @@ const { colors, visible } = useChartSeries({
   categories: () => keys.value,
   colors: () => {
     const palette = chartColors(keys.value.length);
-    return keys.value.map((key, index) => series.value.find((entry) => entry.yKey === key && entry.color)?.color ?? palette[index]!);
+    return keys.value.map(
+      (key, index) => series.value.find((entry) => entry.yKey === key && entry.color)?.color ?? palette[index]!
+    );
   },
   labels: () => keys.value.map(labelOf),
   hidden: () => props.hidden,
@@ -208,6 +229,8 @@ const { colors, visible } = useChartSeries({
 });
 
 const horizontal = computed(() => props.orientation === 'horizontal');
+// Rows placed by their `x-key` value rather than spaced by index.
+const continuous = computed(() => props.xScale !== 'category');
 const shownKeys = computed(() => visible.value.map((entry) => entry.category));
 const shownColors = computed(() => visible.value.map((entry) => entry.color));
 const shown = computed(() => series.value.filter((entry) => shownKeys.value.includes(entry.yKey)));
@@ -223,7 +246,10 @@ const axisOf = (scale: string) => axes.value.find((axis) => axis.type === 'y' &&
 
 /** Every value scale a series or an axis names, `y` first. */
 const scales = computed(() => {
-  const named = [...series.value.map((entry) => entry.scale), ...axes.value.filter((axis) => axis.type === 'y').map((axis) => axis.scale ?? 'y')];
+  const named = [
+    ...series.value.map((entry) => entry.scale),
+    ...axes.value.filter((axis) => axis.type === 'y').map((axis) => axis.scale ?? 'y')
+  ];
   return [...new Set(['y', ...named])].filter((scale) => scale === 'y' || named.includes(scale));
 });
 
@@ -240,10 +266,16 @@ const valueGrid = computed(() => {
 
 const formatOf = (entry: ChartSeriesPart | undefined) => entry?.format ?? axisOf(entry?.scale ?? 'y')?.format;
 const xText = (row: T | undefined) => rowLabel(row, props.xKey, xAxis.value?.format);
+// The tooltip's heading: its own format first, so a time axis can tick by the hour yet head with the date.
+const headingText = (row: T | undefined) =>
+  rowLabel(row, props.xKey, tooltips.value[0]?.headingFormat ?? xAxis.value?.format);
 
-/** The row's series for the tooltip, one per key showing. */
-function tooltipSeries(row: T): ChartTooltipSeries[] {
-  return shownKeys.value.map((key, index) => {
+const tooltip = computed(() => tooltips.value[0]);
+const pointMode = computed(() => tooltip.value?.mode === 'point');
+
+/** The row's series for the tooltip, one per key showing; in `point` mode, only `key`'s. */
+function tooltipSeries(row: T, only?: string): ChartTooltipSeries[] {
+  const list = shownKeys.value.map((key, index) => {
     const value = row[key];
     const format = formatOf(series.value.find((entry) => entry.yKey === key));
     return {
@@ -255,9 +287,15 @@ function tooltipSeries(row: T): ChartTooltipSeries[] {
       text: format ? format(value) : formatNumber(Number(value) || 0)
     };
   });
+  return pointMode.value && only !== undefined ? list.filter((entry) => entry.key === only) : list;
 }
 
-const tooltipProps = (row: T): ChartTooltipSlotProps<T> => ({ row, heading: xText(row), series: tooltipSeries(row) });
+const tooltipProps = (point: ChartPoint<Point>, pinned: boolean): ChartTooltipSlotProps<T> => ({
+  row: point.datum.row,
+  heading: headingText(point.datum.row),
+  series: tooltipSeries(point.datum.row, point.datum.category),
+  pinned
+});
 
 // The width each row gets, measured on render, for cutting its label to fit.
 const band = shallowRef<number>();
@@ -266,7 +304,7 @@ const tickSize = shallowRef<number>();
 
 // A character averages about 0.6em of the tick labels' size.
 const fits = computed(() =>
-  xAxis.value?.trimLabels && !horizontal.value && band.value !== undefined
+  xAxis.value?.trimLabels && !horizontal.value && !continuous.value && band.value !== undefined
     ? Math.max(1, Math.floor(band.value / ((tickSize.value ?? TICK_FONT_SIZE) * 0.6)))
     : undefined
 );
@@ -280,14 +318,25 @@ const barGradient = (key: string) => `bar-${colorIndex(key)}`;
 interface Point {
   row: T;
   index: number;
+  /** Where it sits along the row axis: its index, or its `x-key` value on a continuous scale. */
+  at: unknown;
   category: string;
   value: number | undefined;
   /** Bars only: its series' gradient, or none. */
   fill?: string;
 }
 
+const at = (row: T, index: number) => (continuous.value ? row[props.xKey] : index);
+
 const pointsOf = (key: string, fill?: string) =>
-  props.data.map<Point>((row, index) => ({ row, index, category: key, value: plotted(row[key]), fill }));
+  props.data.map<Point>((row, index) => ({
+    row,
+    index,
+    at: at(row, index),
+    category: key,
+    value: plotted(row[key]),
+    fill
+  }));
 
 function barMark() {
   const bars = shown.value.filter((entry) => entry.kind === 'bar');
@@ -297,6 +346,7 @@ function barMark() {
     bars.map<Point>((entry) => ({
       row,
       index,
+      at: index,
       category: entry.yKey,
       value: plotted(row[entry.yKey]),
       fill: entry.gradient ? `url(#${barGradient(entry.yKey)})` : undefined
@@ -312,16 +362,16 @@ function barMark() {
     layout: props.stacked ? stack() : group({ padding: 0.05 })
   };
   return horizontal.value
-    ? barX(data, { ...options, x: 'value', y: 'index', xScale: valueId(first.scale) } as any)
-    : barY(data, { ...options, x: 'index', y: 'value', yScale: valueId(first.scale) } as any);
+    ? barX(data, { ...options, x: 'value', y: 'at', xScale: valueId(first.scale) } as any)
+    : barY(data, { ...options, x: 'at', y: 'value', yScale: valueId(first.scale) } as any);
 }
 
 function seriesMarks(entry: ChartSeriesPart) {
   const points = pointsOf(entry.yKey);
   const channels = {
     ...(horizontal.value
-      ? { x: 'value', y: 'index', xScale: valueId(entry.scale) }
-      : { x: 'index', y: 'value', yScale: valueId(entry.scale) }),
+      ? { x: 'value', y: 'at', xScale: valueId(entry.scale) }
+      : { x: 'at', y: 'value', yScale: valueId(entry.scale) }),
     z: 'category',
     color: 'category',
     curve: curveOf(entry.curve ?? 'smooth')
@@ -375,34 +425,60 @@ const definition = computed(() => {
   let bars = false;
   for (const entry of shown.value) {
     if (entry.kind !== 'bar') marks.push(...seriesMarks(entry));
-    else if (!bars) {
+    else if (continuous.value) {
+      if (process.env.NODE_ENV !== 'production' && !bars) {
+        console.warn('[vunset] ChartBar needs `x-scale="category"`: bars are left out on a continuous x axis.');
+      }
+      bars = true;
+    } else if (!bars) {
       marks.push(barMark());
       bars = true;
     }
   }
-  if (crosshairs.value.length) marks.push(crosshairMark(horizontal.value ? { x: false, y: true } : { x: true, y: false }));
+  if (crosshairs.value.length)
+    marks.push(crosshairMark(horizontal.value ? { x: false, y: true } : { x: true, y: false }));
 
   // Read here rather than in the formatter: the chart only redraws for a new definition.
   const budget = fits.value;
   const x = xAxis.value;
   const firstBar = series.value.find((entry) => entry.kind === 'bar');
+  const titled = (axis: ChartAxisPart | undefined) => (axis?.label ? { label: axis.label } : {});
 
-  const rowScale = {
-    scale: firstBar
-      ? () => scaleBand<number>().padding(firstBar.padding ?? 0.1)
-      : () => scalePoint<number>().padding(0),
-    grid: grids.value.some((entry) => entry.type === 'x'),
-    axis: x
-      ? {
-          line: false,
-          ...tickLabels(tickSize.value),
-          ticks: {
-            format: (index: number) => trim(xText(props.data[index]), budget),
-            values: rowTicks(props.data.length, x.numTicks)
-          }
-        }
-      : false
-  };
+  const rowScale = continuous.value
+    ? {
+        scale: props.xScale === 'linear' ? scaleLinear : props.xScale,
+        grid: grids.value.some((entry) => entry.type === 'x'),
+        axis: x
+          ? {
+              line: false,
+              ...tickLabels(tickSize.value),
+              ...titled(x),
+              ticks: {
+                // Without a format, the scale's own reads best: a time scale's names the hour or the day.
+                ...(x.format && { format: x.format }),
+                ...(x.numTicks !== undefined && { count: x.numTicks })
+              }
+            }
+          : false
+      }
+    : {
+        scale: firstBar
+          ? () => scaleBand<number>().padding(firstBar.padding ?? 0.1)
+          : () => scalePoint<number>().padding(0),
+        grid: grids.value.some((entry) => entry.type === 'x'),
+        axis: x
+          ? {
+              line: false,
+              ...tickLabels(tickSize.value),
+              ...titled(x),
+              ticks: {
+                format: (index: number) => trim(xText(props.data[index]), budget),
+                // With every series hidden the scale has no rows, and fixed positions throw.
+                values: shown.value.length ? rowTicks(props.data.length, x.numTicks) : undefined
+              }
+            }
+          : false
+      };
 
   const valueScales = Object.fromEntries(
     scales.value.map((scale) => {
@@ -421,6 +497,7 @@ const definition = computed(() => {
               ? {
                   line: false,
                   ...tickLabels(tickSize.value),
+                  ...titled(axis),
                   ticks: {
                     format: (raw: number) => valueLabel(raw, axis.format),
                     ...(axis.numTicks !== undefined && { count: axis.numTicks })
@@ -433,20 +510,26 @@ const definition = computed(() => {
   );
 
   return defineChart({
+    svgAnimation: SVG_ANIMATION,
     marks,
     scales: { [rowId.value]: rowScale, ...valueScales },
     color: { scale: scaleOrdinal<string, string>().domain(shownKeys.value).range(shownColors.value) },
     gradients: gradients(),
-    ...rowFocus(horizontal.value),
-    tooltip: tooltips.value.length > 0 && {
+    ...(pointMode.value ? pointFocus : rowFocus(horizontal.value)),
+    tooltip: tooltip.value && {
       use: tooltipExtension,
+      sticky: tooltip.value.sticky,
       content: (points: readonly ChartPoint<Point>[]) => {
         const row = points[0]?.datum.row;
         if (!row) return { rows: [] };
         // The same row as text, which TanStack Charts reads out to assistive technology.
         return {
-          title: row[props.xKey] !== undefined ? xText(row) : undefined,
-          rows: tooltipSeries(row).map((entry) => ({ label: entry.label, value: entry.text, color: entry.color }))
+          title: row[props.xKey] !== undefined ? headingText(row) : undefined,
+          rows: tooltipSeries(row, points[0]!.datum.category).map((entry) => ({
+            label: entry.label,
+            value: entry.text,
+            color: entry.color
+          }))
         };
       }
     }
@@ -472,8 +555,6 @@ function onRender({ scene, svg }: ChartRender) {
   }
 }
 
-const tooltip = computed(() => tooltips.value[0]);
-
 // Renders what a function returns, for the caller's tooltip slot.
 const Render = (own: { render: () => VNodeChild }) => own.render();
 </script>
@@ -492,14 +573,18 @@ const Render = (own: { render: () => VNodeChild }) => own.render();
   >
     <slot />
 
-    <template #tooltip="{ point }">
-      <Render v-if="tooltip?.slot" :render="() => tooltip!.slot!(tooltipProps(point.datum.row)) as VNodeChild" />
+    <template #tooltip="{ point, pinned }">
+      <Render v-if="tooltip?.slot" :render="() => tooltip!.slot!(tooltipProps(point, pinned)) as VNodeChild" />
       <template v-else>
         <div v-if="point.datum.row[props.xKey] !== undefined" data-part="tooltip-heading">
-          {{ xText(point.datum.row) }}
+          {{ headingText(point.datum.row) }}
         </div>
         <div data-part="tooltip-rows">
-          <div v-for="entry in tooltipSeries(point.datum.row)" :key="entry.key" data-part="tooltip-row">
+          <div
+            v-for="entry in tooltipSeries(point.datum.row, point.datum.category)"
+            :key="entry.key"
+            data-part="tooltip-row"
+          >
             <span data-part="tooltip-swatch" :style="{ background: entry.color }" />
             <span data-part="tooltip-label">{{ entry.label }}</span>
             <span data-part="tooltip-value">{{ entry.text }}</span>

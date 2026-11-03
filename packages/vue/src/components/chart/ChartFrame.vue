@@ -37,8 +37,8 @@ const emit = defineEmits<{
 const slots = defineSlots<{
   /** Content before the drawing, such as a `ChartLegend`. */
   default(): unknown;
-  /** The tooltip's content, for the point in focus. */
-  tooltip(props: { point: ChartPoint<any> }): unknown;
+  /** The tooltip's content, for the point in focus; `pinned` once a click holds it. */
+  tooltip(props: { point: ChartPoint<any>; pinned: boolean }): unknown;
   /** Content laid over the plot, centered on it. */
   center?(): unknown;
 }>();
@@ -76,11 +76,13 @@ function onRender(context: ChartRender) {
 // The adapter sets its own size without a unit, which the browser drops.
 const height = computed(() => (typeof props.height === 'number' ? `${props.height}px` : props.height));
 
-const tooltipBody = ({ primaryPoint }: { primaryPoint?: ChartPoint<any> }) =>
+const tooltipBody = ({ primaryPoint, pinned }: { primaryPoint?: ChartPoint<any>; pinned: boolean }) =>
   primaryPoint
-    ? h('div', mergeProps({ 'data-part': 'chart-tooltip' }, props.tooltipAttrs?.() ?? {}), [
-        h('div', { 'data-part': 'tooltip' }, slots.tooltip({ point: primaryPoint }) as any)
-      ])
+    ? h(
+        'div',
+        mergeProps({ 'data-part': 'chart-tooltip', 'data-pinned': pinned ? '' : undefined }, props.tooltipAttrs?.() ?? {}),
+        [h('div', { 'data-part': 'tooltip' }, slots.tooltip({ point: primaryPoint, pinned }) as any)]
+      )
     : null;
 
 // A component of its own, so it renders after the slot rather than with the frame.

@@ -25,6 +25,12 @@
     font-size: var(--ui-font-size-sm);
   }
 
+  /* The plot takes focus for its keyboard navigation; the focus ring on the
+     point shows where focus is, so the browser's outline round it goes. */
+  :where([data-part='chart-plot'] svg:focus) {
+    outline: none;
+  }
+
   /* The donut's middle: the total, and a line under it. */
   :where([data-part='chart-center-label']) {
     color: var(--ui-text);

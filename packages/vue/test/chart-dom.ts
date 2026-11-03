@@ -7,6 +7,17 @@ import type { VueWrapper } from '@vue/test-utils';
  * `test/layout.ts` sizes, so a chart runs for real in jsdom.
  */
 
+// Redraws tween over frames unless motion is reduced; the tests read the end state.
+export function reduceMotion(reduce = true) {
+  window.matchMedia = ((query: string) => ({
+    matches: reduce && query === '(prefers-reduced-motion: reduce)',
+    media: query,
+    addEventListener() {},
+    removeEventListener() {}
+  })) as any;
+}
+reduceMotion();
+
 export const marks = (wrapper: VueWrapper<any>, kind: 'bar' | 'area' | 'line' | 'arc') =>
   wrapper.findAll(`.ts-chart__${kind} path`);
 

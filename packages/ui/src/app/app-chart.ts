@@ -16,6 +16,10 @@ export interface AppChartProps {
   labelFormat?: (category: string) => string;
   /** How many row labels the x axis aims for. */
   numTicks?: number;
+  /** A title along the x axis. */
+  xLabel?: string;
+  /** A title along the value axis. */
+  yLabel?: string;
   /** One per category. Defaults to `var(--chart-color-N)`. */
   colors?: string[];
   /** A number means pixels. @default '20rem' */
@@ -36,6 +40,22 @@ export interface AppChartProps {
   tooltip?: boolean;
   /** A class for the tooltip's box. */
   tooltipClass?: HTMLAttributes['class'];
+  /** `row`: every series at the row under the pointer. `point`: the one point nearest it. @default 'row' */
+  tooltipMode?: 'row' | 'point';
+  /** A click, Enter or Space pins the tooltip in place. @default true */
+  tooltipSticky?: boolean;
+  /** Formats the tooltip's heading apart from the x axis' ticks. Defaults to `x-format`. */
+  tooltipHeadingFormat?: (value: any) => string;
+}
+
+/** AppChartArea's and AppChartLine's: bars need rows spaced evenly. */
+export interface AppChartXScaleProps {
+  /**
+   * Where the rows sit along the x axis: evenly, in order; by their `x-key`
+   * number with `linear`; or on a scale factory, such as d3-scale's `scaleUtc`.
+   * @default 'category'
+   */
+  xScale?: 'category' | 'linear' | (() => unknown);
 }
 
 export const APP_CHART_DEFAULTS = {
@@ -45,5 +65,7 @@ export const APP_CHART_DEFAULTS = {
   xAxis: true,
   yAxis: true,
   grid: true,
-  tooltip: true
+  tooltip: true,
+  tooltipMode: 'row',
+  tooltipSticky: true
 } as const;

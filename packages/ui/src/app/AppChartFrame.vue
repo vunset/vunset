@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { isPropBound } from '@vunset/vue';
-import { ChartAxis, ChartCrosshair, ChartGrid, ChartLegend, ChartRoot, ChartTooltip, type ChartTooltipSlotProps } from '@vunset/vue/chart';
+import {
+  ChartAxis,
+  ChartCrosshair,
+  ChartGrid,
+  ChartLegend,
+  ChartRoot,
+  ChartTooltip,
+  type ChartTooltipSlotProps
+} from '@vunset/vue/chart';
 import { APP_CHART_DEFAULTS, type AppChartProps } from './app-chart';
 
 // What the three cartesian charts share: the root, the legend, axes, grid and
@@ -18,9 +26,10 @@ const props = withDefaults(
       stacked?: boolean;
       trimLabels?: boolean;
       crosshair?: boolean;
+      xScale?: 'category' | 'linear' | (() => unknown);
     }
   >(),
-  APP_CHART_DEFAULTS
+  { ...APP_CHART_DEFAULTS, xScale: 'category' }
 );
 
 const emit = defineEmits<{ 'update:hidden': [hidden: string[]] }>();
@@ -37,6 +46,7 @@ const showLegend = computed(() => props.legend ?? props.series > 1);
   <ChartRoot
     :data="props.data"
     :x-key="props.xKey"
+    :x-scale="props.xScale"
     :height="props.height"
     :orientation="props.orientation"
     :stacked="props.stacked"
@@ -45,12 +55,25 @@ const showLegend = computed(() => props.legend ?? props.series > 1);
     @update:hidden="emit('update:hidden', $event)"
   >
     <ChartLegend v-if="showLegend" />
-    <ChartAxis v-if="props.xAxis" type="x" :format="props.xFormat" :num-ticks="props.numTicks" :trim-labels="props.trimLabels" />
-    <ChartAxis v-if="props.yAxis" type="y" :format="props.yFormat" />
+    <ChartAxis
+      v-if="props.xAxis"
+      type="x"
+      :format="props.xFormat"
+      :num-ticks="props.numTicks"
+      :trim-labels="props.trimLabels"
+      :label="props.xLabel"
+    />
+    <ChartAxis v-if="props.yAxis" type="y" :format="props.yFormat" :label="props.yLabel" />
     <ChartGrid v-if="props.grid" />
     <slot />
     <ChartCrosshair v-if="props.crosshair" />
-    <ChartTooltip v-if="props.tooltip" :class="props.tooltipClass">
+    <ChartTooltip
+      v-if="props.tooltip"
+      :class="props.tooltipClass"
+      :mode="props.tooltipMode"
+      :sticky="props.tooltipSticky"
+      :heading-format="props.tooltipHeadingFormat"
+    >
       <template v-if="$slots.tooltip" #default="scope">
         <slot name="tooltip" v-bind="scope" />
       </template>

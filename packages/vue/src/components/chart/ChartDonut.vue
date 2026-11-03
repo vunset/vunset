@@ -6,7 +6,7 @@ import { pie, polar, radialArc } from '@tanstack/charts/polar';
 import { tooltip as tooltipExtension } from '@tanstack/charts/tooltip';
 import { scaleOrdinal } from '@tanstack/charts/scales/ordinal';
 import { useChartSeries } from './use-chart-series';
-import { chartName } from './chart-scales';
+import { chartName, SVG_ANIMATION } from './chart-scales';
 import ChartFrame from './ChartFrame.vue';
 import { formatNumber } from '@vunset/utils';
 
@@ -120,6 +120,7 @@ const definition = computed(() => {
   const cornerRadius = props.cornerRadius;
 
   return defineChart({
+    svgAnimation: SVG_ANIMATION,
     marks: [
       polar({
         marks: [

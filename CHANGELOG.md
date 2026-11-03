@@ -2,6 +2,29 @@
 
 All four packages are released together under one version.
 
+## 1.0.0-rc.4
+
+### @vunset/vue
+
+- `ChartRoot`'s `x-scale` places the rows by their `x-key` value: `linear` for
+  numbers, or a scale factory such as d3-scale's `scaleUtc` for a time axis.
+  Bars stay on the default, `category`.
+- `ChartAxis` takes a `label`, a title along the axis.
+- `ChartTooltip` takes `mode="point"`, the one point nearest the pointer rather
+  than the whole row, and `heading-format`, for a heading apart from the x
+  axis' ticks.
+
+### @vunset/ui
+
+- AppChartArea, AppChartLine and AppChartBar take `x-label`, `y-label`,
+  `tooltip-mode`, `tooltip-sticky` and `tooltip-heading-format`; AppChartArea
+  and AppChartLine take `x-scale` too.
+
+### @vunset/utils
+
+- `toChartRows` turns records of one value each (a time, a node, a load)
+  into a chart's rows: one per `x`, a key per series.
+
 ## 1.0.0-rc.3
 
 ### @vunset/vue
