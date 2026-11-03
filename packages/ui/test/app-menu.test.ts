@@ -10,6 +10,16 @@ afterEach(() => {
   wrapper = undefined;
 });
 
+/** Vue's warnings that it rendered a component wrapped in a reactive proxy. */
+function watchReactiveComponents() {
+  const warn = vi.spyOn(console, 'warn');
+  return () => {
+    const found = warn.mock.calls.filter((call) => String(call[0]).includes('made a reactive object'));
+    warn.mockRestore();
+    return found.length;
+  };
+}
+
 // See app-button.test.ts: a click in the millisecond of the mount can be dropped.
 const later = () => new Promise((resolve) => setTimeout(resolve, 2));
 
@@ -25,7 +35,9 @@ const key = (el: Element, k: string) => el.dispatchEvent(new KeyboardEvent('keyd
 const trigger = () => document.querySelector<HTMLElement>('[aria-haspopup="menu"]')!;
 const menus = () => [...document.querySelectorAll<HTMLElement>('[role="menu"]')];
 const item = (label: string) =>
-  [...document.querySelectorAll<HTMLElement>('[role^="menuitem"]')].find((el) => el.textContent!.trim().startsWith(label))!;
+  [...document.querySelectorAll<HTMLElement>('[role^="menuitem"]')].find((el) =>
+    el.textContent!.trim().startsWith(label)
+  )!;
 
 async function mountMenu(props: Record<string, unknown>, slots: Record<string, any> = {}) {
   wrapper = mount(AppMenu as any, { props, slots, attachTo: document.body });
@@ -75,7 +87,9 @@ describe('AppMenu', () => {
         render: () =>
           h(AppMenu as any, {
             trigger: 'View',
-            items: [{ type: 'checkbox', label: 'Word wrap', checked: wrap.value, onChange: (v: boolean) => (wrap.value = v) }]
+            items: [
+              { type: 'checkbox', label: 'Word wrap', checked: wrap.value, onChange: (v: boolean) => (wrap.value = v) }
+            ]
           })
       }),
       { attachTo: document.body }
@@ -137,12 +151,20 @@ describe('AppMenu', () => {
   });
 
   it('renders its trigger as the given component, with its attributes', async () => {
-    await mountMenu({ trigger: 'More', as: AppButton, items: [{ label: 'A' }], variant: 'outline', 'aria-label': 'More actions' });
+    const reactiveWarnings = watchReactiveComponents();
+    await mountMenu({
+      trigger: 'More',
+      as: AppButton,
+      items: [{ label: 'A' }],
+      variant: 'outline',
+      'aria-label': 'More actions'
+    });
 
     expect(trigger().classList.contains('app-button')).toBe(true);
     expect(trigger().classList.contains('app-menu-trigger')).toBe(false);
     expect(trigger().dataset.variant).toBe('outline');
     expect(trigger().getAttribute('aria-label')).toBe('More actions');
+    expect(reactiveWarnings()).toBe(0);
   });
 
   it('takes trigger-, popup- and item-class, the popup class on submenus too', async () => {
@@ -151,7 +173,10 @@ describe('AppMenu', () => {
       triggerClass: 't',
       popupClass: 'p',
       itemClass: 'i',
-      items: [{ label: 'Plain', class: 'own' }, { label: 'More', items: [{ label: 'Deep' }] }]
+      items: [
+        { label: 'Plain', class: 'own' },
+        { label: 'More', items: [{ label: 'Deep' }] }
+      ]
     });
 
     expect(trigger().classList.contains('t')).toBe(true);

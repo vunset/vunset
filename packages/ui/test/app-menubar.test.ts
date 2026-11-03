@@ -44,6 +44,16 @@ async function mountBar(props: Record<string, unknown> = {}, slots: Record<strin
   return wrapper;
 }
 
+/** Vue's warnings that it rendered a component wrapped in a reactive proxy. */
+function watchReactiveComponents() {
+  const warn = vi.spyOn(console, 'warn');
+  return () => {
+    const found = warn.mock.calls.filter((call) => String(call[0]).includes('made a reactive object'));
+    warn.mockRestore();
+    return found.length;
+  };
+}
+
 describe('AppMenubar', () => {
   it('is a menubar with a trigger per menu', async () => {
     await mountBar();
@@ -118,7 +128,10 @@ describe('AppMenubar', () => {
     // Stands in for RouterLink / NuxtLink: an `<a>` built from its `to`.
     const RouteLink = defineComponent({
       props: { to: { type: String, required: true } },
-      setup: (props, { slots }) => () => h('a', { href: `/app${props.to}`, 'data-route': props.to }, slots.default?.())
+      setup:
+        (props, { slots }) =>
+        () =>
+          h('a', { href: `/app${props.to}`, 'data-route': props.to }, slots.default?.())
     });
 
     const BAR: AppMenubarEntry[] = [
@@ -136,6 +149,7 @@ describe('AppMenubar', () => {
     });
 
     it('renders links, in the bar and in its menus, as the `link` component given', async () => {
+      const reactiveWarnings = watchReactiveComponents();
       await mountBar({ items: BAR, link: RouteLink });
       expect(barLink('Logger').dataset.route).toBe('/logger');
 
@@ -145,6 +159,7 @@ describe('AppMenubar', () => {
       expect(item('Reports').getAttribute('role')).toBe('menuitem');
       // A plain item stays one.
       expect(item('New').tagName).toBe('DIV');
+      expect(reactiveWarnings()).toBe(0);
     });
 
     it('falls back to configureLink’s component, as the Nuxt module sets NuxtLink', async () => {
@@ -172,6 +187,7 @@ describe('AppMenubar', () => {
   });
 
   it('draws an icon given by name with AppIcon, and a component or h() as it is', async () => {
+    const reactiveWarnings = watchReactiveComponents();
     const Star = defineComponent({ setup: () => () => h('b', { class: 'star' }) });
     await mountBar({
       items: [
@@ -193,5 +209,7 @@ describe('AppMenubar', () => {
     expect(icon('Component').classList.contains('star')).toBe(true);
     expect(icon('Vnode').classList.contains('mine')).toBe(true);
     expect(icon('Vnode').getAttribute('aria-hidden')).toBe('true');
+    // The items came in as props, so reactive: the component is rendered from behind the proxy.
+    expect(reactiveWarnings()).toBe(0);
   });
 });

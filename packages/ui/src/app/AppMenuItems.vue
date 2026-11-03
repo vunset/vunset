@@ -15,7 +15,7 @@ import {
   Positioner,
   Popup
 } from '@vunset/vue';
-import type { Component } from 'vue';
+import { toRaw, type Component } from 'vue';
 import { linkProps, type AppMenuAction, type AppMenuEntry } from './app-menu';
 import AppIcon from './AppIcon.vue';
 
@@ -117,7 +117,7 @@ function choose(item: AppMenuAction, event: Event) {
         :data-tone="entry.tone"
       >
         <AppIcon v-if="typeof entry.icon === 'string'" :name="entry.icon" class="app-menu-icon" />
-        <component :is="entry.icon" v-else-if="entry.icon" class="app-menu-icon" aria-hidden="true" />
+        <component :is="toRaw(entry.icon)" v-else-if="entry.icon" class="app-menu-icon" aria-hidden="true" />
 
         <span class="app-menu-text">
           <slot name="item" :item="entry">{{ entry.label }}</slot>
@@ -154,7 +154,7 @@ function choose(item: AppMenuAction, event: Event) {
       @select="choose(entry, $event)"
     >
       <AppIcon v-if="typeof entry.icon === 'string'" :name="entry.icon" class="app-menu-icon" />
-      <component :is="entry.icon" v-else-if="entry.icon" class="app-menu-icon" aria-hidden="true" />
+      <component :is="toRaw(entry.icon)" v-else-if="entry.icon" class="app-menu-icon" aria-hidden="true" />
 
       <span class="app-menu-text">
         <slot name="item" :item="entry">{{ entry.label }}</slot>

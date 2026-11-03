@@ -1,4 +1,14 @@
-import { cloneVNode, Comment, Fragment, h, Text, type Component, type FunctionalComponent, type VNode } from 'vue';
+import {
+  cloneVNode,
+  Comment,
+  Fragment,
+  h,
+  Text,
+  toRaw,
+  type Component,
+  type FunctionalComponent,
+  type VNode
+} from 'vue';
 import { mergeProps } from './merge-props';
 
 /** The one element or component among `nodes`, past fragments, comments and blank text; `undefined` for none or several. */
@@ -40,7 +50,9 @@ export const Part: FunctionalComponent<{ as: string | Component }> = (props, { a
     }
     return null;
   }
-  return typeof props.as === 'string' ? h(props.as, attrs, slots.default?.()) : h(props.as, attrs, slots);
+  // A component that arrived through reactive state (props, a `ref` of items) is a proxy: render what's behind it.
+  const as = toRaw(props.as);
+  return typeof as === 'string' ? h(as, attrs, slots.default?.()) : h(as, attrs, slots);
 };
 
 Part.props = ['as'];
