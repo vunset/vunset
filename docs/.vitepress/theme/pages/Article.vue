@@ -1,13 +1,13 @@
 <template>
   <div>
-    <Header class="col-span-full sticky top-0 max-lg:pb-2 max-lg:bg-docs-bg/85 max-lg:backdrop-blur-md" />
+    <Header class="sticky top-0" />
 
     <main
-      class="grid lg:grid-cols-[14rem_minmax(0,1fr)] xl:grid-cols-[14rem_minmax(0,1fr)_14rem] gap-x-6 max-w-370 mx-auto overflow-clip"
+      class="grid lg:grid-cols-[14rem_minmax(0,1fr)] xl:grid-cols-[minmax(12rem,1fr)_minmax(0,48rem)_minmax(12rem,1fr)] gap-x-8 max-w-7xl mx-auto overflow-clip"
     >
       <AsideLeft class="max-lg:hidden" />
 
-      <article class="px-4 py-12 w-full min-w-0 max-w-232 mx-auto">
+      <article class="px-4 xl:px-0 py-6 w-full min-w-0 max-w-200 xl:max-w-3xl mx-auto">
         <Content />
         <PageNav />
       </article>
@@ -34,41 +34,36 @@ article {
     }
 
     & > * + * {
-      @apply mt-4;
+      @apply mt-6;
     }
 
-    & > :is(p, ul, ol) + :is(p, ul, ol),
+    & > :is(p, ul, ol) + :is(p, ul, ol) {
+      @apply mt-[1lh];
+    }
+
     & > h1 + * {
-      @apply mt-2;
+      @apply mt-1;
     }
 
     & > :is(h2, h3) + * {
       @apply mt-3;
     }
+  }
 
-    & > h3:not(:first-child) {
-      @apply mt-6;
-    }
-
-    & > :is(h2, .section-frame, :has(.section-frame)):not(:first-child) {
-      @apply mt-10;
-    }
+  & > div > div > :is(p, ul, ol) {
+    @apply text-base/[1.4];
   }
 
   h1 {
-    @apply text-4xl/none text-docs-text;
-  }
-
-  h1 + p {
-    @apply text-base/relaxed mb-5;
+    @apply text-4xl/normal font-normal text-docs-text;
   }
 
   h2 {
-    @apply text-2xl;
+    @apply text-2xl font-normal;
   }
 
   h3 {
-    @apply text-xl;
+    @apply text-xl font-normal;
   }
 
   :where(h1, h2, h3, h4, h5, h6)[id] {
@@ -76,7 +71,7 @@ article {
   }
 
   :is(h1, h2, h3) {
-    @apply relative font-medium hover:[&_.header-anchor]:opacity-30;
+    @apply relative hover:[&_.header-anchor]:opacity-30;
 
     .header-anchor {
       @apply before:content-['#'];
@@ -86,7 +81,7 @@ article {
   }
 
   ul {
-    @apply list-disc pl-5 space-y-2 text-sm/relaxed  marker:text-docs-muted;
+    @apply list-disc pl-5 space-y-2 marker:text-docs-text/50;
   }
 
   p a {
@@ -125,11 +120,7 @@ article {
   }
 
   [class*='language-'] {
-    @apply relative py-3 px-4;
-
-    &:not(:first-child) {
-      @apply inset-card bg-docs-stage border border-docs-border;
-    }
+    @apply card relative py-3 px-4;
 
     .lang {
       @apply hidden;
@@ -140,16 +131,17 @@ article {
     }
 
     .copy {
-      @apply absolute top-4 right-4 size-3.5 opacity-50 duration-200 cursor-copy;
+      @apply absolute top-3.5 right-3.5 size-3.5 opacity-50 duration-200 cursor-copy hover:opacity-100;
 
-      background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIxLjUiPjxyZWN0IHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgeD0iOCIgeT0iOCIgcng9IjIiIHJ5PSIyIi8+PHBhdGggZD0iTTQgMTZjLTEuMSAwLTItLjktMi0yVjRjMC0xLjEuOS0yIDItMmgxMGMxLjEgMCAyIC45IDIgMiIvPjwvc3ZnPg==');
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: cover;
+      background-color: currentColor;
+      mask-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIxLjUiPjxyZWN0IHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgeD0iOCIgeT0iOCIgcng9IjIiIHJ5PSIyIi8+PHBhdGggZD0iTTQgMTZjLTEuMSAwLTItLjktMi0yVjRjMC0xLjEuOS0yIDItMmgxMGMxLjEgMCAyIC45IDIgMiIvPjwvc3ZnPg==');
+      mask-repeat: no-repeat;
+      mask-position: center;
+      mask-size: cover;
 
       &.copied {
         @apply opacity-100;
-        background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIxLjUiPjxwYXRoIGQ9Im0xMiAxNSAyIDIgNC00Ii8+PHJlY3Qgd2lkdGg9IjE0IiBoZWlnaHQ9IjE0IiB4PSI4IiB5PSI4IiByeD0iMiIgcnk9IjIiLz48cGF0aCBkPSJNNCAxNmMtMS4xIDAtMi0uOS0yLTJWNGMwLTEuMS45LTIgMi0yaDEwYzEuMSAwIDIgLjkgMiAyIi8+PC9zdmc+');
+        mask-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIxLjUiPjxwYXRoIGQ9Im0xMiAxNSAyIDIgNC00Ii8+PHJlY3Qgd2lkdGg9IjE0IiBoZWlnaHQ9IjE0IiB4PSI4IiB5PSI4IiByeD0iMiIgcnk9IjIiLz48cGF0aCBkPSJNNCAxNmMtMS4xIDAtMi0uOS0yLTJWNGMwLTEuMS45LTIgMi0yaDEwYzEuMSAwIDIgLjkgMiAyIi8+PC9zdmc+');
       }
     }
   }

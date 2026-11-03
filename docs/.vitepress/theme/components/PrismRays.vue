@@ -9,10 +9,10 @@
   <div v-if="dev" class="fixed right-4 bottom-4 z-50 w-84 text-xs text-docs-text">
     <div
       v-if="panelOpen"
-      class="mb-2 max-h-[70vh] overflow-y-auto rounded-2xl border border-docs-border-subtle bg-docs-bg/90 p-4 backdrop-blur"
+      class="mb-2 max-h-[70vh] overflow-y-auto rounded-2xl border border-docs-border bg-docs-bg/90 p-4 backdrop-blur"
     >
       <div v-for="group in GROUPS" :key="group.title" class="mb-4 last:mb-0">
-        <div class="mb-2 font-medium text-docs-muted">{{ group.title }}</div>
+        <div class="mb-2 font-medium text-docs-text/50">{{ group.title }}</div>
 
         <label
           v-for="control in group.controls"
@@ -28,7 +28,7 @@
             :step="control.step"
             class="accent-docs-accent"
           />
-          <span class="text-right font-mono text-docs-muted">{{ settings[control.key] }}</span>
+          <span class="text-right font-mono text-docs-text/50">{{ settings[control.key] }}</span>
         </label>
       </div>
 
@@ -40,7 +40,7 @@
         >
           {{ copied ? 'Copied' : 'Copy values' }}
         </button>
-        <button type="button" class="rounded-full border border-docs-border-subtle px-3 py-1.5" @click="reset">
+        <button type="button" class="rounded-full border border-docs-border px-3 py-1.5" @click="reset">
           Reset
         </button>
       </div>
@@ -48,7 +48,7 @@
 
     <button
       type="button"
-      class="ml-auto block rounded-full border border-docs-border-subtle bg-docs-bg/90 px-3 py-1.5 backdrop-blur"
+      class="ml-auto block rounded-full border border-docs-border bg-docs-bg/90 px-3 py-1.5 backdrop-blur"
       @click="panelOpen = !panelOpen"
     >
       {{ panelOpen ? 'Hide rays panel' : 'Rays panel' }}

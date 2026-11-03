@@ -7,7 +7,7 @@
         <a
           v-if="release"
           :href="withBase('/changelog')"
-          class="mb-6 inline-flex items-center gap-2.5 rounded-full border border-docs-border-subtle bg-docs-bg/60 py-1 pr-3 pl-1 text-sm text-docs-muted duration-150 hover:border-docs-accent/40 hover:text-docs-text"
+          class="mb-6 inline-flex items-center gap-2.5 rounded-full border border-docs-border bg-docs-bg/60 py-1 pr-3 pl-1 text-sm text-docs-text/50 duration-150 hover:border-docs-accent/40 hover:text-docs-text"
         >
           <span class="rounded-full bg-docs-accent/15 px-2 py-0.5 font-mono text-xs font-medium text-docs-accent">
             v{{ release.version }}
@@ -17,7 +17,7 @@
         </a>
 
         <h1 class="text-4xl font-semibold tracking-tight text-docs-text sm:text-5xl">{{ hero.text }}</h1>
-        <p v-if="hero.tagline" class="mt-5 text-lg text-docs-muted">{{ hero.tagline }}</p>
+        <p v-if="hero.tagline" class="mt-5 text-lg text-docs-text/50">{{ hero.tagline }}</p>
       </section>
 
       <section v-if="packages.length" class="mt-10 grid gap-3 md:grid-cols-3" @mouseleave="hovered = undefined">
@@ -25,7 +25,7 @@
           v-for="item in packages"
           :key="item.name"
           class="flex flex-col gap-4 rounded-2xl border p-5 bg-docs-bg/50 duration-150 backdrop-blur-xl"
-          :class="item.name === active ? 'border-docs-accent/50' : 'border-docs-border-subtle/50'"
+          :class="item.name === active ? 'border-docs-accent/50' : 'border-docs-border/50'"
           @mouseenter="hovered = item.name"
         >
           <div class="flex items-center justify-between gap-3">
@@ -36,26 +36,26 @@
             <span
               v-if="item.badge"
               class="rounded-full px-2 py-0.5 text-xs font-medium"
-              :class="item.name === active ? 'bg-docs-accent/15 text-docs-accent' : 'bg-docs-chip text-docs-muted'"
+              :class="item.name === active ? 'bg-docs-accent/15 text-docs-accent' : 'bg-docs-border text-docs-text/50'"
             >
               {{ item.badge }}
             </span>
           </div>
 
-          <p class="text-sm text-docs-muted">{{ item.details }}</p>
+          <p class="text-sm text-docs-text/50">{{ item.details }}</p>
 
           <div
             v-if="item.install"
-            class="mt-auto flex items-center gap-2 rounded-lg border border-docs-border bg-docs-bg-subtle py-1.5 pr-1.5 pl-3"
+            class="mt-auto flex items-center gap-2 rounded-lg border border-docs-border bg-docs-surface py-1.5 pr-1.5 pl-3"
           >
             <code class="min-w-0 flex-1 font-mono text-xs leading-5 text-docs-text">
-              <span class="text-docs-muted select-none">$ </span>{{ item.install }}
+              <span class="text-docs-text/50 select-none">$ </span>{{ item.install }}
             </code>
 
             <Copy
               :value="item.install"
               :aria-label="`Copy ${item.install}`"
-              class="home-copy grid size-7 shrink-0 place-items-center rounded-md text-docs-muted duration-150 hover:bg-docs-chip hover:text-docs-text data-copied:text-docs-accent"
+              class="home-copy grid size-7 shrink-0 place-items-center rounded-md text-docs-text/50 duration-150 hover:bg-docs-border hover:text-docs-text data-copied:text-docs-accent"
             />
           </div>
 
@@ -65,7 +65,7 @@
             :class="
               item.name === active
                 ? 'border-docs-accent bg-docs-accent text-docs-bg hover:bg-docs-accent/85'
-                : 'border-docs-border-subtle text-docs-text hover:bg-docs-bg-subtle'
+                : 'border-docs-border text-docs-text hover:bg-docs-surface'
             "
           >
             {{ item.action ?? 'Get started' }}
@@ -75,7 +75,7 @@
 
       <section class="mt-24">
         <h2 class="text-2xl font-semibold tracking-tight text-docs-text">Style it your way</h2>
-        <p class="mt-2 mb-6 text-docs-muted">One switch, written three ways.</p>
+        <p class="mt-2 mb-6 text-docs-text/50">One switch, written three ways.</p>
         <article><Content /></article>
       </section>
     </main>

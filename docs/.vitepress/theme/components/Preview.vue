@@ -7,10 +7,10 @@ const COLLAPSE_AFTER = 10;
 </script>
 
 <script setup lang="ts">
-import { computed, inject, provide, ref } from 'vue';
+import { computed, provide, ref } from 'vue';
 import { PREVIEW_OUTPUT } from '../preview-output';
-import { TabsIndicator, TabsList, TabsPanel, TabsRoot, TabsTab } from '@vunset/vue';
-import { IN_CARD } from './SectionCard.vue';
+import Frame from './Frame.vue';
+import CodeTabs from './CodeTabs.vue';
 
 const props = defineProps<{
   src?: string;
@@ -24,7 +24,13 @@ const demo = computed(() => {
   return load ? defineAsyncComponent(load) : null;
 });
 
-const active = ref(props.files[0]);
+const tabs = computed(() =>
+  props.files.map((file, index) => ({
+    value: `file-${index}`,
+    label: index === 0 && file.endsWith('.vue') ? 'index.vue' : file,
+    long: (props.lines[index] ?? 0) > COLLAPSE_AFTER
+  }))
+);
 
 const output = ref<HTMLElement | null>(null);
 const outputs = ref(0);
@@ -35,32 +41,12 @@ provide(PREVIEW_OUTPUT, {
     return () => (outputs.value -= 1);
   }
 });
-
-const inCard = inject(IN_CARD, false);
-
-const expanded = ref(false);
-const long = computed(() => (props.lines[props.files.indexOf(active.value)] ?? 0) > COLLAPSE_AFTER);
 </script>
 
 <template>
-  <div
-    class="p-px"
-    :class="
-      inCard
-        ? ''
-        : 'rounded-docs-outer bg-docs-stage pattern-grid pb-2 border border-docs-border shadow-md shadow-black/5'
-    "
-  >
-    <div
-      class="px-2 grid grid-cols-[minmax(0,1fr)] mb-2 relative rounded-docs-inner place-items-center"
-      :class="inCard ? 'py-10' : 'py-14 m-2'"
-    >
-      <div
-        v-if="!inCard"
-        class="uppercase absolute top-2 left-2 pointer-events-none font-mono text-[11px]/none text-current/40 tracking-wider"
-      >
-        Preview
-      </div>
+  <Frame>
+    <div class="card pattern-grid relative grid grid-cols-[minmax(0,1fr)] place-items-center px-2 py-14">
+      <div class="absolute top-2 left-3 pointer-events-none text-[10px]/none uppercase text-current/20">Preview</div>
 
       <slot>
         <component :is="demo" v-if="demo" />
@@ -69,72 +55,14 @@ const long = computed(() => (props.lines[props.files.indexOf(active.value)] ?? 0
       <output
         v-show="outputs > 0"
         ref="output"
-        class="flex absolute flex-wrap gap-x-4 gap-y-1 left-2 bottom-2 text-current/50 hover:text-current font-mono text-[11px]/none"
+        class="absolute left-3 bottom-2 flex flex-wrap gap-x-4 gap-y-1 text-xs/none text-current/20 hover:text-current duration-150"
       />
     </div>
 
-    <TabsRoot
-      v-model="active"
-      class="inset-card relative flow-root overflow-clip"
-      :class="inCard ? '' : 'mx-2 bg-docs-bg-subtle'"
-    >
-      <TabsList class="relative isolate flex gap-1 m-2 mb-0">
-        <TabsTab
-          v-for="(file, index) in files"
-          :key="file"
-          :value="file"
-          class="px-2 py-1.5 rounded-full font-mono text-xs text-docs-muted duration-150 hover:text-docs-text data-selected:text-docs-text"
-        >
-          <template v-if="index === 0">
-            {{ file.includes('.vue') ? 'index.vue' : file }}
-          </template>
-
-          <template v-else>{{ file }}</template>
-        </TabsTab>
-
-        <TabsIndicator
-          class="absolute bg-docs-chip duration-150 transition-[left,top] -z-1 rounded-full"
-          :style="{
-            width: 'var(--active-tab-width)',
-            height: 'var(--active-tab-height)',
-            left: 'var(--active-tab-left)',
-            top: 'var(--active-tab-top)'
-          }"
-        />
-      </TabsList>
-
-      <TabsPanel
-        v-for="(file, index) in files"
-        :key="file"
-        :value="file"
-        keep-mounted
-        class="preview-code"
-        :class="long && !expanded && 'max-h-40 overflow-hidden mask-b-from-50%'"
-      >
-        <slot :name="`file-${index}`" />
-      </TabsPanel>
-
-      <div
-        v-if="long"
-        class="sticky bottom-0 z-1 flex items-center justify-center gap-2 p-2 bg-linear-0 from-docs-bg-subtle"
-      >
-        <button
-          type="button"
-          class="rounded-full px-2.5 py-1 text-sm text-docs-text/70 duration-150 hover:text-docs-text"
-          :class="inCard ? 'bg-docs-bg' : 'bg-docs-chip'"
-          @click="expanded = !expanded"
-        >
-          {{ expanded ? 'Collapse' : 'Expand' }}
-        </button>
-      </div>
-    </TabsRoot>
-  </div>
+    <CodeTabs :tabs="tabs">
+      <template v-for="tab in tabs" :key="tab.value" #[tab.value]>
+        <slot :name="tab.value" />
+      </template>
+    </CodeTabs>
+  </Frame>
 </template>
-
-<style>
-@reference '../style.css';
-
-.preview-code [class*='language-'] {
-  @apply px-6 py-4;
-}
-</style>

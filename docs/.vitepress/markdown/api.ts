@@ -169,34 +169,31 @@ function render(md: MarkdownRenderer, meta: ComponentMeta, name: string): string
   // goes in `v-pre` elements, so a `{{` in a type isn't read as Vue; the head
   // sits in a <button>, so it holds only spans.
   function renderRow(row: Row, nested = false): string[] {
+    const badge = 'rounded px-1.5 py-0.5 font-mono text-xs/none';
     const meta =
       row.type || row.default || row.required || row.note
         ? [
-            '<span class="flex flex-wrap items-center gap-x-3 gap-y-1.5" v-pre>',
-            row.required ? '<span class="pill rounded-xl text-xs bg-docs-accent text-docs-bg">required</span>' : '',
-            row.type
-              ? `<code class="pill rounded-xl text-xs whitespace-normal wrap-break-word">${esc(row.type)}</code>`
-              : '',
-            row.default
-              ? `<span class="font-mono text-xs text-docs-amber"><code class="p-0 bg-transparent text-docs-amber text-xs">${esc(row.default)}</code></span>`
-              : '',
-            row.note ? `<span class="text-xs text-current/50">${inline(row.note)}</span>` : '',
+            '<span class="flex flex-wrap items-center gap-x-2.5 gap-y-1.5" v-pre>',
+            row.type ? `<code class="api-type ${badge} whitespace-normal wrap-break-word">${esc(row.type)}</code>` : '',
+            row.required ? `<span class="${badge} bg-docs-danger text-[#f2f2f2]">required</span>` : '',
+            row.default ? `<code class="${badge} bg-docs-text/10">${esc(row.default)}</code>` : '',
+            row.note ? `<span class="text-xs text-docs-text/50">${inline(row.note)}</span>` : '',
             '</span>'
           ]
-        : ['<span class="flex flex-wrap items-center gap-x-3 gap-y-1.5"></span>'];
+        : ['<span></span>'];
 
     return [
       nested ? '<ApiRow nested>' : '<ApiRow>',
       '<template #head>',
-      `<span v-pre><code class="p-0 bg-transparent font-mono text-xs text-docs-text whitespace-normal group-hover:text-docs-accent group-focus-visible:text-docs-accent">${esc(row.name)}</code></span>`,
+      `<span class="min-w-0" v-pre><code class="${badge} inline-block max-w-full bg-docs-text/10 text-docs-text break-all duration-150 group-hover:text-docs-accent group-focus-visible:text-docs-accent">${esc(row.name)}</code></span>`,
       ...meta,
       '</template>',
       row.description
-        ? `<div class="api-description text-sm/relaxed text-current/75 pr-8 max-w-160" v-pre>${inline(row.description)}</div>`
+        ? `<div class="api-description pt-2.5 text-sm/[1.4] max-w-160" v-pre>${inline(row.description)}</div>`
         : '',
       ...(row.fields?.length
         ? [
-            '<div class="mt-1 mb-3 pl-4 border-l border-docs-border-subtle">',
+            '<div class="mt-2 pl-4 border-l border-docs-border">',
             ...row.fields.flatMap((field) => renderRow(field, true)),
             '</div>'
           ]
@@ -208,14 +205,12 @@ function render(md: MarkdownRenderer, meta: ComponentMeta, name: string): string
   // one HTML block: no blank lines, or markdown-it would end it early
   return [
     '',
-    `<div class="api clear-both flow-root space-y-3" data-name="${esc(name)}" data-count="${count}"${renders ? ` data-renders="${esc(renders)}"` : ''}>`,
+    `<div class="api clear-both flow-root space-y-1.5" data-name="${esc(name)}" data-count="${count}"${renders ? ` data-renders="${esc(renders)}"` : ''}>`,
     ...all.flatMap((section) => [
-      '<div>',
-      '<div class="inset-card overflow-clip pb-1">',
-      `<div class="inline-block text-docs-amber px-4 pt-4">${section.title}</div>`,
-      section.intro ? `<div class="px-4 pb-3 text-sm" v-pre>${inline(section.intro)}</div>` : '',
+      '<div class="flex flex-col gap-1">',
+      `<div class="px-1.5 py-1 text-xs font-medium uppercase text-docs-text/50">${section.title}</div>`,
+      section.intro ? `<div class="px-1.5 pb-1 text-sm" v-pre>${inline(section.intro)}</div>` : '',
       ...section.rows.flatMap((row) => renderRow(row)),
-      '</div>',
       '</div>'
     ]),
     '</div>',

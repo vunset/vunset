@@ -31,7 +31,7 @@ export function section(lines: string[], title: string): Section | null {
 }
 
 // which lines sit inside fenced code, the markers included
-function fences(lines: string[]): boolean[] {
+export function fences(lines: string[]): boolean[] {
   let fence: string | null = null;
   return lines.map((line) => {
     const marker = line.match(/^(`{3,}|~{3,})/)?.[1];

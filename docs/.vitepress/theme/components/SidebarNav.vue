@@ -1,5 +1,5 @@
 <template>
-  <ScrollArea as="nav" fade="y" class="space-y-4 outline-none scrollbar-thumb-current/10 scrollbar-thin">
+  <ScrollArea as="nav" fade="y" class="space-y-2.5 outline-none scrollbar-thumb-current/10 scrollbar-thin">
     <div v-for="item in sidebar" :key="item.text">
       <div class="side-title">{{ item.text }}</div>
 

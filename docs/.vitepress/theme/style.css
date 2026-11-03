@@ -12,28 +12,20 @@
 @theme {
   --font-sans: 'Instrument Sans', system-ui, sans-serif;
 
-  --radius-docs-outer: 28px;
-  --radius-docs-inner: 20px;
+  --radius-docs-window: 22px;
+  --radius-docs-card: 15px;
 
-  --color-docs-accent: light-dark(#74a34e, #a9c98f);
-
-  --color-docs-bg-subtle: light-dark(#fff, #121212);
   --color-docs-bg: light-dark(#ffffff, #111111);
-
-  --color-docs-stage: light-dark(#f8f8f8, #191919);
-  --color-docs-chip: light-dark(#f4f4f4, #191919);
-
-  --color-docs-text: light-dark(#141414, #f2f2f2);
-  --color-docs-muted: light-dark(#6b6b6b, #9a9a9a);
-  --color-docs-amber: light-dark(#8a6a12, #e8d7a6);
-
-  --color-docs-border-subtle: light-dark(#d9d9d9, #2e2e2e);
-  --color-docs-border: light-dark(#e2e2e2, #262626);
+  --color-docs-surface: light-dark(#f5f5f5, #191919);
+  --color-docs-border: light-dark(#e7e7e7, #262626);
+  --color-docs-text: light-dark(#111111, #f2f2f2);
+  --color-docs-accent: #85e89d;
+  --color-docs-danger: #c54428;
 }
 
 @layer base {
   :root {
-    --header-height: 48px;
+    --header-height: 56px;
     --scroll-offset: var(--header-height);
 
     @apply overscroll-none scheme-light;
@@ -45,7 +37,7 @@
   }
 
   ::selection {
-    @apply bg-docs-accent text-docs-bg;
+    @apply bg-docs-accent text-[#111];
   }
 
   pre {
@@ -57,7 +49,7 @@
   }
 
   :root {
-    --demo-color-backdrop: var(--color-docs-stage);
+    --demo-color-backdrop: var(--color-docs-surface);
   }
 
   .demo-toast-viewport,
@@ -73,31 +65,37 @@
 
 @custom-variant dark (&:is(.dark, :where(.dark *)));
 
-@utility panel {
-  @apply bg-docs-bg-subtle rounded-docs-outer;
-
-  .panel {
-    @apply rounded-docs-inner;
-  }
-}
-
-@utility inset-card {
-  @apply bg-docs-stage rounded-docs-inner not-dark:border border-docs-border;
+@utility window {
+  @apply relative flex flex-col gap-1.5 p-1.5 rounded-docs-window  bg-docs-bg;
+  box-shadow:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.1),
+    inset 0 0 0 1px var(--color-docs-border);
 }
 
 @utility pill {
-  @apply rounded-full bg-docs-chip px-2.5 py-0.5 font-mono text-xs text-docs-text/85;
+  @apply bg-docs-bg;
+  box-shadow:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.1),
+    inset 0 0 0 1px var(--color-docs-border);
+}
+
+@utility card {
+  @apply rounded-docs-card bg-docs-surface;
 }
 
 @utility side-title {
-  @apply mb-2.5 text-sm font-medium tracking-tight;
+  @apply mb-2.5 text-sm font-medium;
 }
 
 @utility side-link {
-  @apply block border-l-2 border-docs-border-subtle py-1.5 pl-3.5 text-sm text-docs-muted duration-150 hover:text-docs-text;
+  @apply block border-l-2 border-docs-text/10 py-1.5 pl-4 text-sm text-docs-text/70 duration-150 hover:text-docs-text;
+
+  &[data-nested] {
+    @apply text-docs-text/40;
+  }
 
   &[data-active] {
-    @apply border-docs-accent font-medium text-docs-text;
+    @apply border-docs-accent text-docs-text;
   }
 
   &:not([data-active]) > * {

@@ -1,6 +1,6 @@
 <template>
   <div class="sticky top-(--header-height) h-[calc(100vh-var(--header-height))]">
-    <SidebarNav class="pl-6 pr-4 py-8 h-full" />
+    <SidebarNav class="px-3.5 py-6 h-full" />
   </div>
 </template>
 

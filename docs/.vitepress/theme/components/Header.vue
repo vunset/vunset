@@ -1,44 +1,46 @@
 <template>
-  <header class="max-w-370 z-5 flex mx-auto px-4 md:px-6 pt-4 pointer-events-none">
+  <header class="z-5 bg-docs-bg/90 backdrop-blur-xs">
     <div
-      class="flex justify-between md:grid md:grid-cols-[1fr_auto_1fr] gap-x-6 md:px-2 items-center w-full pointer-events-auto"
+      class="flex justify-between md:grid md:grid-cols-[1fr_auto_1fr] gap-x-6 items-center max-w-7xl h-(--header-height) mx-auto px-4"
     >
       <a :href="withBase('/')" class="inline-flex w-fit items-center gap-2">
         <Logo class="h-8" />
       </a>
 
-      <TooltipGroup :delay="600">
-        <nav
-          class="flex max-md:hidden bg-docs-bg-subtle items-center dark:shadow-lg shadow-md shadow-black/5 dark:shadow-black/20 border mx-auto -my-1 border-docs-border-subtle rounded-full p-0.5"
-          :class="page.relativePath === 'index.md' ? 'invisible' : ''"
-        >
-          <TooltipRoot v-for="item in site.themeConfig.nav" :key="item.text">
-            <TooltipTrigger
-              as="a"
-              :href="withBase(item.link)"
-              class="px-3 py-1 rounded-full duration-150"
-              :class="section(item.link) === section(path) ? 'bg-docs-chip' : 'text-docs-muted hover:text-docs-text'"
-            >
-              {{ item.text }}
-            </TooltipTrigger>
+      <div class="flex items-center gap-2">
+        <TooltipGroup :delay="600">
+          <nav
+            class="pill rounded-[20px] flex max-md:hidden items-center p-1"
+            :class="page.relativePath === 'index.md' ? 'invisible' : ''"
+          >
+            <TooltipRoot v-for="item in site.themeConfig.nav" :key="item.text">
+              <TooltipTrigger
+                as="a"
+                :href="withBase(item.link)"
+                class="px-2 py-0.5 rounded-full text-sm duration-150"
+                :class="section(item.link) === section(path) ? 'bg-docs-border' : 'hover:bg-docs-border/50'"
+              >
+                {{ item.text }}
+              </TooltipTrigger>
 
-            <Portal>
-              <Positioner>
-                <Popup class="bg-docs-bg rounded-lg px-2 py-0.5 text-xs border-docs-border border">{{
-                  item.tooltip
-                }}</Popup>
-              </Positioner>
-            </Portal>
-          </TooltipRoot>
-        </nav>
-      </TooltipGroup>
+              <Portal>
+                <Positioner>
+                  <Popup class="bg-docs-bg rounded-lg px-2 py-0.5 text-xs border-docs-border border">
+                    {{ item.tooltip }}
+                  </Popup>
+                </Positioner>
+              </Portal>
+            </TooltipRoot>
+          </nav>
+        </TooltipGroup>
 
-      <div class="flex items-center justify-end gap-0.5 pointer-events-auto">
         <SearchDialog />
+      </div>
 
+      <div class="flex items-center justify-end gap-0.5">
         <button
           type="button"
-          class="size-8 rounded-full shrink-0 grid hover:bg-docs-chip p-1 duration-150"
+          class="size-8 rounded-full shrink-0 grid hover:bg-docs-border p-1 duration-150"
           :aria-label="isDark ? 'Switch to light theme' : 'Switch to dark theme'"
           :title="isDark ? 'Light theme' : 'Dark theme'"
           @click="isDark = !isDark"
@@ -66,7 +68,7 @@
         <a
           :href="site.themeConfig.socialLinks[0].link"
           target="_blank"
-          class="size-8 rounded-full shrink-0 grid hover:bg-docs-chip p-1 duration-150"
+          class="size-8 rounded-full shrink-0 grid hover:bg-docs-border p-1 duration-150"
           title="GitHub"
         >
           <svg class="size-4 m-auto" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -79,7 +81,7 @@
 
         <MenuRoot side="bottom" align="end">
           <MenuTrigger
-            class="h-8 rounded-full flex max-md:hidden items-center gap-2 hover:bg-docs-chip data-open:bg-docs-chip py-1 pl-3 pr-2 duration-150"
+            class="h-8 rounded-full flex max-md:hidden items-center gap-2 hover:bg-docs-border data-open:bg-docs-border py-1 pl-3 pr-2 duration-150"
             aria-label="Packages on npm"
           >
             <svg class="size-3.5" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -89,7 +91,7 @@
             <span class="text-xs font-medium">{{ site.themeConfig.version }}</span>
 
             <svg
-              class="size-3 -ml-1 text-docs-muted"
+              class="size-3 -ml-1 text-docs-text/50"
               viewBox="0 0 12 12"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -101,7 +103,7 @@
           <Portal>
             <Positioner class="z-50">
               <Popup
-                class="w-fit flex flex-col p-1 bg-docs-bg-subtle border border-docs-border-subtle rounded-xl shadow-lg shadow-black/30 outline-none duration-150 data-enter-from:opacity-0 data-enter-from:scale-95 data-leave-to:opacity-0 data-leave-to:scale-95"
+                class="w-fit flex flex-col p-1 bg-docs-surface border border-docs-border rounded-xl shadow-lg shadow-black/30 outline-none duration-150 data-enter-from:opacity-0 data-enter-from:scale-95 data-leave-to:opacity-0 data-leave-to:scale-95"
               >
                 <MenuItem
                   v-for="item in packages"
@@ -109,10 +111,10 @@
                   as="a"
                   :href="`https://www.npmjs.com/package/${item.name}`"
                   target="_blank"
-                  class="flex flex-col gap-0.5 px-3 py-2 rounded-lg outline-none duration-150 hover:bg-docs-chip focus:bg-docs-chip"
+                  class="flex flex-col gap-0.5 px-3 py-2 rounded-lg outline-none duration-150 hover:bg-docs-border focus:bg-docs-border"
                 >
                   <span class="font-mono text-xs font-medium text-docs-text">{{ item.name }}</span>
-                  <span class="text-xs text-docs-muted">{{ item.details }}</span>
+                  <span class="text-xs text-docs-text/50">{{ item.details }}</span>
                 </MenuItem>
               </Popup>
             </Positioner>

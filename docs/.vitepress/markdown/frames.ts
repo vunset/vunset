@@ -1,55 +1,74 @@
 import type { MarkdownRenderer } from 'vitepress';
-import { quote, section, type Section } from './sections.ts';
+import { fences, quote, section, type Section } from './sections.ts';
 
-// `## Anatomy`, `## Examples` and `## Keyboard` → a <SectionFrame>: the `##`
-// heading beside, the section's text in a <SectionCard>. Examples, when there
-// are two or more, become <ExampleTabs>, a tab per `###`, with any text before
-// the first `###` under the heading.
+// `## Examples` → <Examples>, one window. Two or more `###` become tabs beside
+// it, any text before the first `###` under the heading; a single example keeps
+// its `##` above the window. Inside, each run of text is a card of its own,
+// between the previews and code blocks.
 export function framesContainer(md: MarkdownRenderer) {
   md.core.ruler.before('normalize', 'framed-sections', (state) => {
     state.src = frames(state.src);
   });
 }
 
-const TITLES = ['Examples'];
-
 export function frames(src: string): string {
   const lines = src.split('\n');
-  const found = TITLES.map((title) => section(lines, title)).filter((item): item is Section => item !== null);
+  const found = section(lines, 'Examples');
+  if (!found) return src;
 
-  // from the bottom up, so each section's lines are still where they were found
-  for (const item of found.sort((a, b) => b.start - a.start)) {
-    const tabs = lines[item.start].includes('Examples') && item.items.length > 1;
-    lines.splice(item.start, item.end - item.start, ...(tabs ? exampleTabs(lines, item) : frame(lines, item)));
-  }
+  const tabs = found.items.length > 1;
+  lines.splice(found.start, found.end - found.start, ...(tabs ? exampleTabs(lines, found) : example(lines, found)));
   return lines.join('\n');
 }
 
 const slot = (name: string, body: string[]) => [`<template #${name}>`, '', ...body, '', '</template>'];
 
-function frame(lines: string[], { start, end }: Section): string[] {
-  return [
-    '',
-    '<SectionFrame>',
-    ...slot('title', [lines[start]]),
-    '<SectionCard>',
-    '',
-    ...lines.slice(start + 1, end),
-    '',
-    '</SectionCard>',
-    '</SectionFrame>',
-    ''
-  ];
+function example(lines: string[], { start, end }: Section): string[] {
+  return [lines[start], '', '<Examples>', '', ...cards(lines.slice(start + 1, end)), '', '</Examples>', ''];
 }
 
 function exampleTabs(lines: string[], { start, lead, items }: Section): string[] {
   return [
     '',
-    `<ExampleTabs :items="[${items.map((item) => quote(item.label)).join(', ')}]">`,
+    `<Examples :items="[${items.map((item) => quote(item.label)).join(', ')}]">`,
     ...slot('title', [lines[start]]),
     ...(lead.some((line) => line.trim()) ? slot('lead', lead) : []),
-    ...items.flatMap((item, index) => slot(`example-${index}`, item.lines)),
-    '</ExampleTabs>',
+    ...items.flatMap((item, index) => slot(`example-${index}`, cards(item.lines))),
+    '</Examples>',
     ''
   ];
+}
+
+// text runs wrapped in `.example-text`; previews (already expanded to
+// <Preview>, or still `::: preview`) and fenced code left as they are
+const OPEN = /^(?:<Preview\b|:::\s*preview\b)/;
+const CLOSE = /^(?:<\/Preview>|:::)\s*$/;
+
+function cards(lines: string[]): string[] {
+  const fenced = fences(lines);
+  const out: string[] = [];
+  let text: string[] = [];
+  let preview = false;
+
+  const flush = () => {
+    if (text.some((line) => line.trim())) out.push('', '<div class="example-text">', '', ...text, '', '</div>', '');
+    text = [];
+  };
+
+  lines.forEach((line, index) => {
+    if (!fenced[index] && !preview && OPEN.test(line)) preview = true;
+    if (fenced[index] || preview) {
+      flush();
+      out.push(line);
+      // a blank line after, or markdown-it reads what follows as part of the HTML
+      if (preview && !fenced[index] && CLOSE.test(line)) {
+        preview = false;
+        out.push('');
+      }
+      return;
+    }
+    text.push(line);
+  });
+  flush();
+  return out;
 }

@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { nextTick, onMounted, onUnmounted, ref } from 'vue';
+import { nextTick, onMounted, onUnmounted, provide, ref } from 'vue';
 import { AccordionHeader, AccordionItem, AccordionRoot, CollapsiblePanel, CollapsibleTrigger } from '@vunset/vue';
 import PlusIcon from './PlusIcon.vue';
+import { FRAMED } from './Frame.vue';
 
 defineProps<{
   parts: { label: string; count?: number; renders?: string }[];
 }>();
+
+provide(FRAMED, true);
 
 const opened = ref<number[]>([0]);
 const root = ref<HTMLElement>();
@@ -37,26 +40,18 @@ onUnmounted(() => window.removeEventListener('hashchange', open));
 
 <template>
   <div ref="root">
-    <AccordionRoot v-model="opened" multiple class="flex flex-col gap-1">
-      <AccordionItem
-        v-for="(part, index) in parts"
-        :key="part.label"
-        :value="index"
-        class="api-part bg-docs-chip transition-[background-color,border-radius] duration-200 data-open:bg-docs-stage data-open:first:mt-0 data-open:last:mb-0"
-      >
+    <AccordionRoot v-model="opened" multiple class="window">
+      <AccordionItem v-for="(part, index) in parts" :key="part.label" :value="index" class="card">
         <AccordionHeader as="div">
-          <CollapsibleTrigger class="group flex items-center w-full gap-4 px-5 py-4 text-left">
-            <span class="flex items-baseline gap-2.5 mr-auto">
-              <span class="text-lg/none font-medium">{{ part.label }}</span>
-              <span v-if="part.renders" class="text-xs/none font-mono text-docs-muted">&lt;{{ part.renders }}&gt;</span>
-            </span>
-
+          <CollapsibleTrigger class="group flex items-center w-full gap-2.5 p-3 text-left">
             <PlusIcon />
+            <span class="text-base/none">{{ part.label }}</span>
+            <span v-if="part.renders" class="text-sm/none text-docs-text/50">&lt;{{ part.renders }}&gt;</span>
           </CollapsibleTrigger>
         </AccordionHeader>
 
         <CollapsiblePanel keep-mounted :data-api-part="index">
-          <div class="api-panel outline-none px-3 pb-3">
+          <div class="api-panel outline-none px-1.5 pb-1.5">
             <slot :name="`part-${index}`" />
           </div>
         </CollapsiblePanel>
@@ -68,30 +63,15 @@ onUnmounted(() => window.removeEventListener('hashchange', open));
 <style>
 @reference '../style.css';
 
-/* a part's card, its corners joined to the closed ones beside it */
-.api-part {
-  @apply rounded-md;
-
-  &:first-child,
-  &[data-open],
-  &[data-open] + & {
-    @apply rounded-t-docs-outer;
-  }
-
-  &:last-child,
-  &[data-open],
-  &:has(+ [data-open]) {
-    @apply rounded-b-docs-outer;
-  }
-}
-
 /* the part's `###`, already its trigger's label */
 .api-panel > h3:first-of-type {
   @apply sr-only;
 }
 
-/* a panel's own text, around its props, spaced as in an example's card */
+/* a panel's own text, around its props; cards inside it sit a step deeper */
 .api-panel {
+  --color-docs-surface: var(--color-docs-bg);
+
   & > * + :not(h3:first-child + *) {
     @apply mt-2;
   }
@@ -101,7 +81,7 @@ onUnmounted(() => window.removeEventListener('hashchange', open));
   }
 
   & > :is(p, ul, ol, h4) {
-    @apply mx-1.5;
+    @apply mx-1.5 text-sm;
   }
 }
 </style>

@@ -5,6 +5,7 @@ const MANAGERS = ['npm', 'pnpm', 'yarn', 'bun'] as const;
 type Manager = (typeof MANAGERS)[number];
 
 const KEY = 'vunset-package-manager';
+const TABS = MANAGERS.map((name) => ({ value: name, label: name }));
 
 // One choice for every install block on the site, remembered across visits.
 const manager = ref<Manager>('npm');
@@ -21,8 +22,9 @@ function restore() {
   }
 }
 
-function choose(value: Manager) {
-  manager.value = value;
+function choose(value?: string) {
+  if (!value) return;
+  manager.value = value as Manager;
   try {
     localStorage.setItem(KEY, value);
   } catch {
@@ -32,40 +34,20 @@ function choose(value: Manager) {
 </script>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
-import { TabsIndicator, TabsList, TabsPanel, TabsRoot, TabsTab } from '@vunset/vue';
+import { onMounted } from 'vue';
+import Frame from './Frame.vue';
+import CodeTabs from './CodeTabs.vue';
 
 // Read after hydration, so the server's npm and the client's first render agree.
 onMounted(restore);
-
-const selected = computed({ get: () => manager.value, set: choose });
 </script>
 
 <template>
-  <TabsRoot v-model="selected" class="install-tabs inset-card border border-docs-border flow-root overflow-clip">
-    <TabsList aria-label="Package manager" class="relative isolate flex gap-1 m-2 mb-0">
-      <TabsTab
-        v-for="name in MANAGERS"
-        :key="name"
-        :value="name"
-        class="px-3 py-1.5 rounded-full font-mono text-xs text-docs-muted duration-150 hover:text-docs-text data-selected:text-docs-text"
-      >
-        {{ name }}
-      </TabsTab>
-
-      <TabsIndicator
-        class="absolute bg-docs-chip duration-150 transition-[left,top] -z-1 rounded-full"
-        :style="{
-          width: 'var(--active-tab-width)',
-          height: 'var(--active-tab-height)',
-          left: 'var(--active-tab-left)',
-          top: 'var(--active-tab-top)'
-        }"
-      />
-    </TabsList>
-
-    <TabsPanel v-for="name in MANAGERS" :key="name" :value="name" keep-mounted>
-      <slot :name="name" />
-    </TabsPanel>
-  </TabsRoot>
+  <Frame>
+    <CodeTabs :model-value="manager" :tabs="TABS" label="Package manager" @update:model-value="choose">
+      <template v-for="name in MANAGERS" :key="name" #[name]>
+        <slot :name="name" />
+      </template>
+    </CodeTabs>
+  </Frame>
 </template>

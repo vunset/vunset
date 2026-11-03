@@ -20,7 +20,7 @@ const indicator = {
 
 <template>
   <div
-    class="rounded-docs-outer grid grid-cols-1 md:grid-cols-[2fr_1fr] border-docs-border-subtle/60 backdrop-blur-lg bg-docs-bg/60 border p-px"
+    class="rounded-docs-window grid grid-cols-1 md:grid-cols-[2fr_1fr] border-docs-border/60 backdrop-blur-lg bg-docs-bg/60 border p-px"
   >
     <TabsRoot v-model="kind" class="home-example-code flow-root overflow-clip">
       <TabsList aria-label="Package" class="relative isolate m-2 mb-0 flex gap-1">
@@ -28,14 +28,14 @@ const indicator = {
           v-for="tab in ['headless', 'ui']"
           :key="tab"
           :value="tab"
-          class="rounded-full px-3 py-1.5 text-xs font-medium text-docs-muted duration-150 hover:text-docs-text data-selected:text-docs-text"
+          class="rounded-full px-3 py-1.5 text-xs font-medium text-docs-text/50 duration-150 hover:text-docs-text data-selected:text-docs-text"
         >
           {{ tab === 'ui' ? 'Pre-styled' : 'Headless' }}
-          <span class="ml-1 font-mono font-normal text-docs-muted">@vunset/{{ tab === 'ui' ? 'ui' : 'vue' }}</span>
+          <span class="ml-1 font-mono font-normal text-docs-text/50">@vunset/{{ tab === 'ui' ? 'ui' : 'vue' }}</span>
         </TabsTab>
 
         <TabsIndicator
-          class="absolute -z-1 rounded-full bg-docs-chip duration-150 transition-[left,top]"
+          class="absolute -z-1 rounded-full bg-docs-border duration-150 transition-[left,top]"
           :style="indicator"
         />
       </TabsList>
@@ -56,19 +56,19 @@ const indicator = {
 
           <TabsList
             aria-label="Styling"
-            class="overflow-hidden absolute bottom-3 right-3 isolate flex gap-0.5 rounded-full border border-docs-border-subtle bg-docs-bg-subtle p-0.5"
+            class="overflow-hidden absolute bottom-3 right-3 isolate flex gap-0.5 rounded-full border border-docs-border bg-docs-surface p-0.5"
           >
             <TabsTab
               v-for="tab in ['tailwind', 'css']"
               :key="tab"
               :value="tab"
-              class="rounded-full px-3 py-1 text-xs text-docs-muted duration-150 hover:text-docs-text data-selected:text-docs-text"
+              class="rounded-full px-3 py-1 text-xs text-docs-text/50 duration-150 hover:text-docs-text data-selected:text-docs-text"
             >
               {{ tab === 'css' ? 'CSS' : 'Tailwind' }}
             </TabsTab>
 
             <TabsIndicator
-              class="absolute -z-1 rounded-full bg-docs-chip duration-150 transition-[left,top]"
+              class="absolute -z-1 rounded-full bg-docs-border duration-150 transition-[left,top]"
               :style="indicator"
             />
           </TabsList>
@@ -83,7 +83,7 @@ const indicator = {
     </TabsRoot>
 
     <div
-      class="relative m-2 grid max-md:order-first place-items-center rounded-docs-inner py-14 text-docs-text pattern-grid bg-current/5"
+      class="relative m-2 grid max-md:order-first place-items-center rounded-docs-card py-14 text-docs-text pattern-grid bg-current/5"
     >
       <span
         class="pointer-events-none absolute top-3 left-3 font-mono text-[11px]/none tracking-wider text-current/40 uppercase"

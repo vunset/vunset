@@ -9,9 +9,8 @@ import ScrollTable from './components/ScrollTable.vue';
 import DemoOutput from './components/DemoOutput.vue';
 import ApiAccordion from './components/ApiAccordion.vue';
 import ApiRow from './components/ApiRow.vue';
-import ExampleTabs from './components/ExampleTabs.vue';
-import SectionFrame from './components/SectionFrame.vue';
-import SectionCard from './components/SectionCard.vue';
+import Examples from './components/Examples.vue';
+import Frame from './components/Frame.vue';
 import InstallTabs from './components/InstallTabs.vue';
 import HomeExample from './components/HomeExample.vue';
 
@@ -28,9 +27,8 @@ export default {
     app.component('DemoOutput', DemoOutput);
     app.component('ApiAccordion', ApiAccordion);
     app.component('ApiRow', ApiRow);
-    app.component('ExampleTabs', ExampleTabs);
-    app.component('SectionFrame', SectionFrame);
-    app.component('SectionCard', SectionCard);
+    app.component('Examples', Examples);
+    app.component('Frame', Frame);
     app.component('InstallTabs', InstallTabs);
     app.component('HomeExample', HomeExample);
   }

@@ -1,6 +1,6 @@
 <template>
   <div class="sticky top-(--header-height) h-[calc(100vh-var(--header-height))]">
-    <ScrollArea v-if="links.length" fade="y" class="pl-2 pr-6 py-8 outline-none">
+    <ScrollArea v-if="links.length" fade="y" class="px-3.5 py-6 outline-none">
       <div class="side-title">On this page</div>
 
       <nav class="flex flex-col">
@@ -9,8 +9,9 @@
           :key="header.slug"
           :href="header.link"
           class="side-link truncate"
+          :data-nested="header.level > 2 || undefined"
           :data-active="header.link === activeLink || undefined"
-          :style="{ paddingLeft: `${14 + (header.level - 2) * 14}px` }"
+          :style="{ paddingLeft: `${16 + (header.level - 2) * 16}px` }"
         >
           {{ header.title }}
         </a>

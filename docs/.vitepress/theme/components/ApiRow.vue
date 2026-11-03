@@ -10,20 +10,22 @@ const props = defineProps<{
 
 defineSlots<{ head(): unknown; default?(): unknown }>();
 
-const row = computed(() => ['not-last:border-b border-docs-border', !props.nested && 'mx-4 py-1.5']);
+const row = computed(() =>
+  props.nested ? 'not-last:border-b border-docs-border py-2' : 'rounded-xl bg-docs-bg p-3'
+);
 const head = computed(() => [
-  'group grid w-full items-center gap-x-4 gap-y-1 text-left outline-none grid-cols-[minmax(0,1fr)_0.75rem]',
+  'group grid w-full items-center gap-x-2.5 gap-y-1.5 text-left outline-none grid-cols-[0.75rem_minmax(0,1fr)]',
   props.nested
-    ? 'sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_0.75rem]'
-    : 'sm:grid-cols-[minmax(0,2fr)_minmax(0,5fr)_0.75rem]'
+    ? 'sm:grid-cols-[0.75rem_minmax(0,1fr)_minmax(0,2fr)]'
+    : 'sm:grid-cols-[0.75rem_minmax(0,9rem)_minmax(0,1fr)]'
 ]);
 </script>
 
 <template>
   <CollapsibleRoot v-if="$slots.default" :class="row">
     <CollapsibleTrigger :class="[head, 'cursor-pointer']">
+      <PlusIcon />
       <slot name="head" />
-      <PlusIcon class="col-start-2 row-start-1 sm:col-start-3 self-center justify-self-end" />
     </CollapsibleTrigger>
 
     <CollapsiblePanel
@@ -36,6 +38,7 @@ const head = computed(() => [
 
   <div v-else :class="row">
     <div :class="head">
+      <span />
       <slot name="head" />
     </div>
   </div>
@@ -43,6 +46,11 @@ const head = computed(() => [
 
 <style>
 @reference '../style.css';
+
+/* the type reads as plain code beside the name's badge */
+article code.api-type {
+  @apply bg-transparent;
+}
 
 .api-description a {
   @apply border-b border-current/30 duration-200 hover:border-docs-accent;

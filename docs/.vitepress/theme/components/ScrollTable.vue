@@ -1,25 +1,26 @@
 <script setup lang="ts">
 import { ScrollArea } from '@vunset/vue';
+import Frame from './Frame.vue';
 </script>
 
 <template>
-  <ScrollArea axis="x" fade="x" class="article-table inset-card overflow-clip">
-    <slot />
-  </ScrollArea>
+  <Frame>
+    <ScrollArea axis="x" fade="x" class="article-table card overflow-clip">
+      <slot />
+    </ScrollArea>
+  </Frame>
 </template>
 
 <style>
 @reference '../style.css';
 
 .article-table {
-  @apply border border-docs-border;
-
   table {
     @apply w-full text-sm;
   }
 
   th {
-    @apply px-4 py-2 text-left font-mono text-[11px] font-normal uppercase tracking-wider text-docs-muted border-b border-docs-border;
+    @apply px-4 py-2.5 text-left text-xs font-medium uppercase text-docs-text/50 border-b border-docs-bg;
 
     &:nth-child(4) {
       @apply min-w-60;
@@ -27,7 +28,7 @@ import { ScrollArea } from '@vunset/vue';
   }
 
   tbody tr:not(:last-child) {
-    @apply border-b border-docs-border;
+    @apply border-b border-docs-bg;
   }
 
   td {
@@ -38,7 +39,7 @@ import { ScrollArea } from '@vunset/vue';
     }
 
     div {
-      @apply mt-1.5 text-xs text-docs-muted;
+      @apply mt-1.5 text-xs text-docs-text/50;
     }
   }
 }

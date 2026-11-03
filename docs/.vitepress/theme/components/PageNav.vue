@@ -1,21 +1,27 @@
 <template>
-  <nav v-if="neighbors.prev || neighbors.next" aria-label="Pages" class="mt-12 grid grid-cols-2 gap-3">
+  <nav v-if="neighbors.prev || neighbors.next" aria-label="Pages" class="mt-6 grid grid-cols-2 gap-3.5">
     <a
       v-if="neighbors.prev"
       :href="withBase(neighbors.prev.link)"
-      class="flex flex-col gap-1 rounded-2xl border border-docs-border-subtle p-4 duration-150 hover:border-docs-accent/40 hover:bg-docs-bg-subtle"
+      rel="prev"
+      class="pill rounded-xl flex items-center justify-between gap-3 p-3.5 duration-150 hover:border-docs-text/20"
     >
-      <span class="text-xs text-docs-muted">← Previous</span>
-      <span class="page-nav-title font-medium text-docs-text" v-html="label(neighbors.prev.text)" />
+      <span class="text-xs text-docs-text/50" aria-hidden="true">←</span>
+      <span class="sr-only">Previous:</span>
+      <span class="page-nav-title truncate" v-html="label(neighbors.prev.text)" />
+      <span class="w-3" />
     </a>
 
     <a
       v-if="neighbors.next"
       :href="withBase(neighbors.next.link)"
-      class="col-start-2 flex flex-col items-end gap-1 rounded-2xl border border-docs-border-subtle p-4 text-right duration-150 hover:border-docs-accent/40 hover:bg-docs-bg-subtle"
+      rel="next"
+      class="pill rounded-xl col-start-2 flex items-center justify-between gap-3 p-3.5 duration-150 hover:border-docs-text/20"
     >
-      <span class="text-xs text-docs-muted">Next →</span>
-      <span class="page-nav-title font-medium text-docs-text" v-html="label(neighbors.next.text)" />
+      <span class="w-3" />
+      <span class="sr-only">Next:</span>
+      <span class="page-nav-title truncate" v-html="label(neighbors.next.text)" />
+      <span class="text-xs text-docs-text/50" aria-hidden="true">→</span>
     </a>
   </nav>
 </template>

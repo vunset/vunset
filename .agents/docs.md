@@ -7,9 +7,10 @@
 `docs/` holds only pages: a `@vunset/vue` page sits in the folder of its
 sidebar group (`docs/forms/select.md`, `docs/data/charts/area.md`),
 `@vunset/ui`'s are all in `docs/ui/`. Pages stay plain markdown:
-`## Anatomy`, `## Examples` and `## Keyboard` render as framed windows,
-examples as tabs when there are two or more (`markdown/frames.ts`), and
-`## API Reference` as cards (`markdown/api.ts`).
+`## Examples` renders as one window, a tab per `###` when there are two or
+more, each run of text a card between its previews and code
+(`markdown/frames.ts`); `## API Reference` as an accordion of cards
+(`markdown/api.ts`).
 
 ## Theme
 
@@ -18,6 +19,13 @@ they render; what they style inside a slot (the markdown's `p`, `h3`, a table's
 cells) gets one parent class, written in the component's own `<style>`
 (`@reference '../style.css'`), never as `[&_p]:` variants.
 `theme/article.css` styles only the prose.
+
+Six color tokens (`docs-bg`, `-surface`, `-border`, `-text`, `-accent`,
+`-danger`); muted text is `docs-text` at an opacity. A `window` (border, `bg`)
+holds `card`s (`surface`). `<Frame>` draws the window unless an ancestor already
+did: a preview, code block, table or install tabs on the page gets its own,
+inside an example or the API reference it shows as bare cards. A card inside a
+card redefines `--color-docs-surface` to `bg` for its children.
 
 ## Base path
 

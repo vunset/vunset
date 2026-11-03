@@ -2,7 +2,7 @@
   <DrawerRoot v-model:open="open" side="left" swipeable>
     <DrawerTrigger
       v-bind="$attrs"
-      class="size-8 rounded-full shrink-0 grid hover:bg-docs-chip duration-150"
+      class="size-8 rounded-full shrink-0 grid hover:bg-docs-border duration-150"
       aria-label="Menu"
     >
       <svg class="size-4 m-auto" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -16,7 +16,7 @@
       />
 
       <Popup
-        class="fixed z-50 inset-y-0 left-0 w-[min(18rem,85vw)] flex flex-col bg-docs-bg-subtle border-r border-docs-border outline-none duration-250 ease-out data-enter-from:-translate-x-full data-leave-to:-translate-x-full"
+        class="fixed z-50 inset-y-0 left-0 w-[min(18rem,85vw)] flex flex-col bg-docs-surface border-r border-docs-border outline-none duration-250 ease-out data-enter-from:-translate-x-full data-leave-to:-translate-x-full"
       >
         <DrawerTitle class="sr-only">Menu</DrawerTitle>
 
@@ -26,7 +26,7 @@
             :key="item.text"
             :href="withBase(item.link)"
             class="px-3 py-1 rounded-full text-sm duration-150"
-            :class="section(item.link) === section(path) ? 'bg-docs-chip' : 'text-docs-muted hover:text-docs-text'"
+            :class="section(item.link) === section(path) ? 'bg-docs-border' : 'text-docs-text/50 hover:text-docs-text'"
           >
             {{ item.text }}
           </a>
@@ -37,7 +37,7 @@
         <a
           href="https://www.npmjs.com/package/@vunset/vue"
           target="_blank"
-          class="flex items-center gap-2 p-4 border-t border-docs-border text-xs text-docs-muted hover:text-docs-text duration-150"
+          class="flex items-center gap-2 p-4 border-t border-docs-border text-xs text-docs-text/50 hover:text-docs-text duration-150"
         >
           <svg class="size-3.5" viewBox="0 0 10 10" fill="none">
             <path d="M10 0V10H8V2H5V10H0V0H10Z" fill="currentColor" />
