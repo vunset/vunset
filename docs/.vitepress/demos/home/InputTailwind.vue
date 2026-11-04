@@ -9,7 +9,7 @@ const email = ref('');
   <Input
     v-model="email"
     type="email"
-    placeholder="ada@example.com"
+    placeholder="ada@vunset.com"
     class="h-9 w-64 border border-dotted border-current/30 bg-current/3 px-3 text-sm outline-none placeholder:opacity-50 focus-visible:border-current"
   />
 

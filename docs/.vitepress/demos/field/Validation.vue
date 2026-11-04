@@ -14,7 +14,7 @@ const error = computed(() => {
 <template>
   <FieldRoot v-slot="{ touched }" required :invalid="!!error" class="demo-field">
     <FieldLabel class="demo-field-label">Email</FieldLabel>
-    <Input v-model="email" type="email" placeholder="you@example.com" class="demo-field-input" />
+    <Input v-model="email" type="email" placeholder="you@vunset.com" class="demo-field-input" />
     <FieldError :match="touched && !!error" class="demo-field-error">{{ error }}</FieldError>
   </FieldRoot>
 </template>

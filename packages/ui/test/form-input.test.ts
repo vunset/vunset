@@ -35,7 +35,11 @@ describe('FormInput', () => {
     wrapper = mount(
       defineComponent({
         render: () =>
-          h(FormInput as any, { label: 'Email', modelValue: value.value, 'onUpdate:modelValue': (v: string) => (value.value = v) })
+          h(FormInput as any, {
+            label: 'Email',
+            modelValue: value.value,
+            'onUpdate:modelValue': (v: string) => (value.value = v)
+          })
       }),
       { attachTo: document.body }
     );
@@ -47,12 +51,12 @@ describe('FormInput', () => {
   });
 
   it('puts class and style on the field, every other attribute on the input', () => {
-    mountInput({}, { class: 'wide', style: 'margin: 1px', placeholder: 'you@example.com', autocomplete: 'email' });
+    mountInput({}, { class: 'wide', style: 'margin: 1px', placeholder: 'you@vunset.com', autocomplete: 'email' });
 
     const field = document.querySelector<HTMLElement>('.form-field')!;
     expect(field.classList.contains('wide')).toBe(true);
     expect(field.style.margin).toBe('1px');
-    expect(input().placeholder).toBe('you@example.com');
+    expect(input().placeholder).toBe('you@vunset.com');
     expect(input().getAttribute('autocomplete')).toBe('email');
     expect(input().classList.contains('wide')).toBe(false);
   });
@@ -155,7 +159,12 @@ describe('FormInput', () => {
 
     // A browser asks first and commits only what is let through.
     for (const character of '1a2') {
-      const gate = new InputEvent('beforeinput', { bubbles: true, cancelable: true, data: character, inputType: 'insertText' });
+      const gate = new InputEvent('beforeinput', {
+        bubbles: true,
+        cancelable: true,
+        data: character,
+        inputType: 'insertText'
+      });
       input().dispatchEvent(gate);
       if (!gate.defaultPrevented) type(input().value + character);
       await nextTick();

@@ -15,7 +15,7 @@ const emails = ref('');
       label="Invite"
       help="Separate addresses with commas."
       :transform="(value) => toSeparatedList(value, ',', true)"
-      placeholder="ada@example.com,grace@example.com"
+      placeholder="ada@vunset.com,grace@vunset.com"
       class="w-72"
     />
   </div>

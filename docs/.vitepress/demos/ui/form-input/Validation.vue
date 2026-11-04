@@ -17,7 +17,7 @@ const error = computed(() => {
     type="email"
     required
     autocomplete="email"
-    placeholder="you@example.com"
+    placeholder="you@vunset.com"
     :error="error"
     class="w-72"
   />

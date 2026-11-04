@@ -46,7 +46,7 @@ const DEFAULTS = {
   color: 0.5,
   brightness: 0.5,
   exposure: 1.45,
-  grain: 0.05,
+  grain: 0.02,
   groups: 5,
   spread: 0.285,
   spacing: 0.22,

@@ -10,7 +10,7 @@ const site = ref('');
 <template>
   <div class="grid w-80 gap-4">
     <!-- A Form* component: its #start and #end slots are already addons. -->
-    <FormInput v-model="site" label="Website" placeholder="example.com">
+    <FormInput v-model="site" label="Website" placeholder="vunset.com">
       <template #start>https://</template>
       <template #end><AppIcon name="alert-info" /></template>
     </FormInput>

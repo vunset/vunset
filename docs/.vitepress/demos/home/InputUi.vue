@@ -6,7 +6,7 @@ const email = ref('');
 </script>
 
 <template>
-  <FormInput v-model="email" type="email" placeholder="ada@example.com" class="w-64" />
+  <FormInput v-model="email" type="email" placeholder="ada@vunset.com" class="w-64" />
 
   <DemoOutput>v-model: {{ email }}</DemoOutput>
 </template>

@@ -3,7 +3,7 @@ import { reactive, ref, useId } from 'vue';
 import { AppDialog, AppButton, FormInput } from '@vunset/ui';
 
 const formId = useId();
-const profile = reactive({ name: 'Ada Lovelace', email: 'ada@example.com' });
+const profile = reactive({ name: 'Ada Lovelace', email: 'ada@vunset.com' });
 const error = ref('');
 const saving = ref(false);
 const saved = ref('');

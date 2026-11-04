@@ -19,7 +19,7 @@ const items = ref<Item[]>(
   Array.from({ length: 10000 }, (_, index) => ({
     id: 1000 + index,
     name: `item_${index}_${CATEGORIES[index % 3]!.toLowerCase()}`,
-    url: `https://example.com/items/${1000 + index}?view=details&format=json`,
+    url: `https://vunset.com/items/${1000 + index}?view=details&format=json`,
     category: CATEGORIES[index % 3]!,
     active: index % 4 !== 0,
     price: (index * 37) % 2000

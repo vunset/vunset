@@ -9,7 +9,7 @@ import {
   useValidate,
   createValidationStore,
   defaultValidationStore,
-  provideValidation,
+  provideValidation
 } from '../src';
 
 afterEach(() => defaultValidationStore.clearErrors());
@@ -17,9 +17,9 @@ afterEach(() => defaultValidationStore.clearErrors());
 function mountField(fieldProps: Record<string, any> = { name: 'email' }, control = () => h(Input as any)) {
   return mount(
     defineComponent({
-      setup: () => () => h(FieldRoot as any, { class: 'field', ...fieldProps }, () => [control(), h(FieldError as any)]),
+      setup: () => () => h(FieldRoot as any, { class: 'field', ...fieldProps }, () => [control(), h(FieldError as any)])
     }),
-    { attachTo: document.body },
+    { attachTo: document.body }
   );
 }
 
@@ -38,7 +38,7 @@ describe('validation errors', () => {
     const { errors, setErrors } = createValidationStore();
     setErrors([
       { path: 'email', message: 'Wrong email' },
-      { path: ['address', 'city'], message: 'Required' },
+      { path: ['address', 'city'], message: 'Required' }
     ]);
     expect(errors.value).toEqual({ email: 'Wrong email', 'address.city': 'Required' });
   });
@@ -91,10 +91,10 @@ describe('a named field', () => {
         setup: () => () =>
           h(FieldRoot as any, { name: 'email' }, () => [
             h(Input as any),
-            h(FieldError as any, null, { default: ({ message }: { message: string }) => `! ${message}` }),
-          ]),
+            h(FieldError as any, null, { default: ({ message }: { message: string }) => `! ${message}` })
+          ])
       }),
-      { attachTo: document.body },
+      { attachTo: document.body }
     );
     useValidate().setErrors({ email: 'Wrong email' });
     await nextTick();
@@ -106,7 +106,7 @@ describe('a named field', () => {
     useValidate().setErrors({ email: 'Wrong email', name: 'Required' });
     await nextTick();
 
-    input().value = 'ada@example.com';
+    input().value = 'ada@vunset.com';
     input().dispatchEvent(new Event('input', { bubbles: true }));
     await nextTick();
 
@@ -140,10 +140,13 @@ describe('a named field', () => {
         setup() {
           provideValidation(scoped);
           const value = ref('');
-          return () => h(FieldRoot as any, { class: 'field', name: 'email' }, () => [h(Input as any, { modelValue: value.value })]);
-        },
+          return () =>
+            h(FieldRoot as any, { class: 'field', name: 'email' }, () => [
+              h(Input as any, { modelValue: value.value })
+            ]);
+        }
       }),
-      { attachTo: document.body },
+      { attachTo: document.body }
     );
 
     useValidate().setErrors({ email: 'From the default store' });
@@ -159,8 +162,10 @@ describe('a named field', () => {
 describe('a named FieldError', () => {
   it('works on its own, outside any Field', async () => {
     mount(
-      defineComponent({ setup: () => () => h('div', { class: 'custom' }, [h(FieldError as any, { name: 'email', class: 'error' })]) }),
-      { attachTo: document.body },
+      defineComponent({
+        setup: () => () => h('div', { class: 'custom' }, [h(FieldError as any, { name: 'email', class: 'error' })])
+      }),
+      { attachTo: document.body }
     );
     const error = () => document.querySelector<HTMLElement>('.error');
     expect(error()).toBeNull();
@@ -182,9 +187,10 @@ describe('a named FieldError', () => {
   it('inside a FieldRoot, shows the error it names and still describes the control', async () => {
     mount(
       defineComponent({
-        setup: () => () => h(FieldRoot as any, null, () => [h(Input as any), h(FieldError as any, { name: 'password', class: 'error' })]),
+        setup: () => () =>
+          h(FieldRoot as any, null, () => [h(Input as any), h(FieldError as any, { name: 'password', class: 'error' })])
       }),
-      { attachTo: document.body },
+      { attachTo: document.body }
     );
     useValidate().setErrors({ password: 'Too short' });
     await nextTick();
