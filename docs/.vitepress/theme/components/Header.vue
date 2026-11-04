@@ -1,5 +1,5 @@
 <template>
-  <header class="z-5 bg-docs-bg/90 backdrop-blur-xs">
+  <header class="z-5" :class="{ 'bg-docs-bg/90 backdrop-blur-xs': page.relativePath !== 'index.md' }">
     <div
       class="flex justify-between md:grid md:grid-cols-[1fr_auto_1fr] gap-x-6 items-center max-w-7xl h-(--header-height) mx-auto px-4"
     >
@@ -10,8 +10,8 @@
       <div class="flex items-center gap-2">
         <TooltipGroup :delay="600">
           <nav
-            class="pill rounded-[20px] flex max-md:hidden items-center p-1"
-            :class="page.relativePath === 'index.md' ? 'invisible' : ''"
+            class="pill rounded-[20px] max-md:hidden items-center p-1"
+            :class="page.relativePath === 'index.md' ? 'hidden' : 'flex'"
           >
             <TooltipRoot v-for="item in site.themeConfig.nav" :key="item.text">
               <TooltipTrigger
@@ -103,7 +103,7 @@
           <Portal>
             <Positioner class="z-50">
               <Popup
-                class="w-fit flex flex-col p-1 bg-docs-surface border border-docs-border rounded-xl shadow-lg shadow-black/30 outline-none duration-150 data-enter-from:opacity-0 data-enter-from:scale-95 data-leave-to:opacity-0 data-leave-to:scale-95"
+                class="w-fit flex flex-col p-1 bg-docs-surface border border-docs-border rounded-xl shadow-lg shadow-black/10 outline-none duration-150 data-enter-from:opacity-0 data-enter-from:scale-95 data-leave-to:opacity-0 data-leave-to:scale-95"
               >
                 <MenuItem
                   v-for="item in packages"

@@ -8,6 +8,17 @@ const COMPONENT_IMPORT = /^import \w+ from ['"](\.{1,2}\/[^'"]+\.vue)['"];?$/gm;
 const DEMO_OUTPUT = /\n(?:[ \t]*\n)*[ \t]*<DemoOutput\b[^>]*>[\s\S]*?<\/DemoOutput>[ \t]*(?=\n)/g;
 
 export function previewContainer(md: MarkdownRenderer, { root }: { root: string }) {
+  // a demo imported with <<< shows without its <DemoOutput>, as in a preview
+  md.core.ruler.after('block', 'demo-snippet', (state) => {
+    for (const token of state.tokens) {
+      const src: unknown = token.type === 'fence' && token.meta?.src;
+      if (typeof src !== 'string' || !src.startsWith(root) || token.meta.region) continue;
+      token.content = readFileSync(src, 'utf8').replace(DEMO_OUTPUT, '');
+      token.meta = undefined;
+      state.env.includes?.push(src);
+    }
+  });
+
   sourceContainer(md, 'preview', ({ arg, body, env }) => {
     const demo = join(root, `${arg}.vue`);
     const source = readFileSync(demo, 'utf8');

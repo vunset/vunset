@@ -1,104 +1,77 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import { TabsIndicator, TabsList, TabsPanel, TabsRoot, TabsTab, ScrollArea } from '@vunset/vue';
-import SwitchTailwind from '../../demos/home/SwitchTailwind.vue';
-import SwitchCss from '../../demos/home/SwitchCss.vue';
-import SwitchUi from '../../demos/home/SwitchUi.vue';
+import { computed, provide, ref } from 'vue';
+import { ScrollArea, TabsIndicator, TabsList, TabsPanel, TabsRoot, TabsTab } from '@vunset/vue';
+import InputTailwind from '../../demos/home/InputTailwind.vue';
+import InputCss from '../../demos/home/InputCss.vue';
+import InputUi from '../../demos/home/InputUi.vue';
+import { FRAMED } from './Frame.vue';
+import CodeTabs from './CodeTabs.vue';
+import Stage from './Stage.vue';
 
-const kind = ref<'headless' | 'ui'>('headless');
+provide(FRAMED, true);
+
+const TABS = [
+  { value: 'headless', label: 'Headless', hint: '@vunset/vue' },
+  { value: 'ui', label: 'Pre-styled', hint: '@vunset/ui' }
+];
+
+const kind = ref('headless');
 const styling = ref<'tailwind' | 'css'>('tailwind');
 
-const demo = computed(() => (kind.value === 'ui' ? SwitchUi : styling.value === 'css' ? SwitchCss : SwitchTailwind));
-
-const indicator = {
-  width: 'var(--active-tab-width)',
-  height: 'var(--active-tab-height)',
-  left: 'var(--active-tab-left)',
-  top: 'var(--active-tab-top)'
-};
+const demo = computed(() => (kind.value === 'ui' ? InputUi : styling.value === 'css' ? InputCss : InputTailwind));
 </script>
 
 <template>
-  <div
-    class="rounded-docs-window grid grid-cols-1 md:grid-cols-[2fr_1fr] border-docs-border/60 backdrop-blur-lg bg-docs-bg/60 border p-px"
-  >
-    <TabsRoot v-model="kind" class="home-example-code flow-root overflow-clip">
-      <TabsList aria-label="Package" class="relative isolate m-2 mb-0 flex gap-1">
-        <TabsTab
-          v-for="tab in ['headless', 'ui']"
-          :key="tab"
-          :value="tab"
-          class="rounded-full px-3 py-1.5 text-xs font-medium text-docs-text/50 duration-150 hover:text-docs-text data-selected:text-docs-text"
-        >
-          {{ tab === 'ui' ? 'Pre-styled' : 'Headless' }}
-          <span class="ml-1 font-mono font-normal text-docs-text/50">@vunset/{{ tab === 'ui' ? 'ui' : 'vue' }}</span>
-        </TabsTab>
-
-        <TabsIndicator
-          class="absolute -z-1 rounded-full bg-docs-border duration-150 transition-[left,top]"
-          :style="indicator"
-        />
-      </TabsList>
-
-      <TabsPanel value="headless">
+  <div class="window md:flex-row">
+    <CodeTabs v-model="kind" :tabs="TABS" label="Package" class="min-w-0 md:flex-1">
+      <template #headless>
         <TabsRoot v-model="styling" class="relative">
           <TabsPanel value="tailwind">
-            <ScrollArea fade="y" class="h-80 overflow-auto scrollbar-thin scrollbar-thumb-white/15">
-              <slot name="tailwind" />
-            </ScrollArea>
+            <ScrollArea fade="y" class="home-code"><slot name="tailwind" /></ScrollArea>
           </TabsPanel>
 
           <TabsPanel value="css">
-            <ScrollArea fade="y" class="h-80 overflow-auto scrollbar-thin scrollbar-thumb-white/15">
-              <slot name="css" />
-            </ScrollArea>
+            <ScrollArea fade="y" class="home-code"><slot name="css" /></ScrollArea>
           </TabsPanel>
 
-          <TabsList
-            aria-label="Styling"
-            class="overflow-hidden absolute bottom-3 right-3 isolate flex gap-0.5 rounded-full border border-docs-border bg-docs-surface p-0.5"
-          >
+          <TabsList aria-label="Styling" class="absolute right-2 bottom-2 isolate flex rounded-full bg-docs-bg p-0.5">
             <TabsTab
               v-for="tab in ['tailwind', 'css']"
               :key="tab"
               :value="tab"
-              class="rounded-full px-3 py-1 text-xs text-docs-text/50 duration-150 hover:text-docs-text data-selected:text-docs-text"
+              class="rounded-full px-2.5 py-0.75 text-xs/snug text-docs-text/50 duration-150 hover:text-docs-text data-selected:text-docs-text"
             >
               {{ tab === 'css' ? 'CSS' : 'Tailwind' }}
             </TabsTab>
 
             <TabsIndicator
               class="absolute -z-1 rounded-full bg-docs-border duration-150 transition-[left,top]"
-              :style="indicator"
+              :style="{
+                width: 'var(--active-tab-width)',
+                height: 'var(--active-tab-height)',
+                left: 'var(--active-tab-left)',
+                top: 'var(--active-tab-top)'
+              }"
             />
           </TabsList>
         </TabsRoot>
-      </TabsPanel>
+      </template>
 
-      <TabsPanel value="ui">
-        <ScrollArea fade="y" class="h-80 overflow-auto scrollbar-thin scrollbar-thumb-white/15">
-          <slot name="ui" />
-        </ScrollArea>
-      </TabsPanel>
-    </TabsRoot>
+      <template #ui>
+        <ScrollArea fade="y" class="home-code"><slot name="ui" /></ScrollArea>
+      </template>
+    </CodeTabs>
 
-    <div
-      class="relative m-2 grid max-md:order-first place-items-center rounded-docs-card py-14 text-docs-text pattern-grid bg-current/5"
-    >
-      <span
-        class="pointer-events-none absolute top-3 left-3 font-mono text-[11px]/none tracking-wider text-current/40 uppercase"
-      >
-        Preview
-      </span>
+    <Stage class="max-md:order-first md:w-80 md:shrink-0">
       <component :is="demo" />
-    </div>
+    </Stage>
   </div>
 </template>
 
 <style>
 @reference '../style.css';
 
-.home-example-code [class*='language-'] {
-  @apply px-5 py-4;
+.home-code {
+  @apply h-60 overflow-auto;
 }
 </style>

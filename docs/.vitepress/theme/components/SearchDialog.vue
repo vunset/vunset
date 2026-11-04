@@ -124,16 +124,16 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown, true));
 </script>
 
 <template>
-  <DialogRoot :open="open" outside-press @update:open="onOpen">
+  <DialogRoot :open outside-press @update:open="onOpen">
     <DialogTrigger
       class="pill rounded-[20px] flex items-center gap-2 max-md:size-8 max-md:justify-center md:pl-3.5 md:pr-3 md:py-1.5 text-sm duration-150 hover:border-docs-text/20"
       aria-label="Search"
     >
-      <svg class="size-4 md:hidden" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+      <svg class="size-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
         <circle cx="7" cy="7" r="4.5" />
         <path d="m10.5 10.5 3.5 3.5" />
       </svg>
-      <span class="max-md:hidden">Search</span>
+
       <kbd class="bg-transparent p-0 text-xs/[1.15] text-docs-text/50 max-md:hidden">⌘K</kbd>
     </DialogTrigger>
 

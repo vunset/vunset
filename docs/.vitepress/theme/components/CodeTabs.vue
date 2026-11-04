@@ -3,7 +3,7 @@ import { computed, ref } from 'vue';
 import { TabsIndicator, TabsList, TabsPanel, TabsRoot, TabsTab } from '@vunset/vue';
 
 const props = defineProps<{
-  tabs: { value: string; label: string; long?: boolean }[];
+  tabs: { value: string; label: string; hint?: string; long?: boolean }[];
   label?: string;
 }>();
 
@@ -28,6 +28,7 @@ const long = computed(() => props.tabs.find((tab) => tab.value === selected.valu
         class="px-2.5 py-0.75 rounded-full text-xs/snug text-docs-text/50 duration-150 hover:text-docs-text data-selected:text-docs-text"
       >
         {{ tab.label }}
+        <span v-if="tab.hint" class="text-docs-text/50">{{ tab.hint }}</span>
       </TabsTab>
 
       <TabsIndicator

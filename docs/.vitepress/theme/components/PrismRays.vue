@@ -6,58 +6,13 @@
     aria-hidden="true"
   />
 
-  <div v-if="dev" class="fixed right-4 bottom-4 z-50 w-84 text-xs text-docs-text">
-    <div
-      v-if="panelOpen"
-      class="mb-2 max-h-[70vh] overflow-y-auto rounded-2xl border border-docs-border bg-docs-bg/90 p-4 backdrop-blur"
-    >
-      <div v-for="group in GROUPS" :key="group.title" class="mb-4 last:mb-0">
-        <div class="mb-2 font-medium text-docs-text/50">{{ group.title }}</div>
-
-        <label
-          v-for="control in group.controls"
-          :key="control.key"
-          class="mb-1.5 grid grid-cols-[6.5rem_1fr_3.25rem] items-center gap-2"
-        >
-          <span class="truncate">{{ control.label }}</span>
-          <input
-            v-model.number="settings[control.key]"
-            type="range"
-            :min="control.min"
-            :max="control.max"
-            :step="control.step"
-            class="accent-docs-accent"
-          />
-          <span class="text-right font-mono text-docs-text/50">{{ settings[control.key] }}</span>
-        </label>
-      </div>
-
-      <div class="mt-4 flex gap-2">
-        <button
-          type="button"
-          class="flex-1 rounded-full bg-docs-accent px-3 py-1.5 font-medium text-docs-bg"
-          @click="copy"
-        >
-          {{ copied ? 'Copied' : 'Copy values' }}
-        </button>
-        <button type="button" class="rounded-full border border-docs-border px-3 py-1.5" @click="reset">
-          Reset
-        </button>
-      </div>
-    </div>
-
-    <button
-      type="button"
-      class="ml-auto block rounded-full border border-docs-border bg-docs-bg/90 px-3 py-1.5 backdrop-blur"
-      @click="panelOpen = !panelOpen"
-    >
-      {{ panelOpen ? 'Hide rays panel' : 'Rays panel' }}
-    </button>
-  </div>
+  <ShaderPanel v-if="dev" label="Rays" :groups="GROUPS" :settings="settings" :defaults="defaults" />
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, reactive, ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { startShader, useShaderSettings, type ShaderGroup } from '../shader';
+import ShaderPanel from './ShaderPanel.vue';
 
 // The light theme tints a white page instead of lighting a dark one.
 const props = defineProps<{ light?: boolean }>();
@@ -129,10 +84,7 @@ const LIGHT_DEFAULTS: Partial<typeof DEFAULTS> = {
   grain: 0.02
 };
 
-type Key = keyof typeof DEFAULTS;
-type Control = { key: Key; label: string; min: number; max: number; step: number };
-
-const GROUPS: { title: string; controls: Control[] }[] = [
+const GROUPS: ShaderGroup[] = [
   {
     title: 'Origin and fan',
     controls: [
@@ -185,42 +137,8 @@ const GROUPS: { title: string; controls: Control[] }[] = [
 ];
 
 const dev = import.meta.env.DEV;
-const STORAGE_KEY = props.light ? 'prism-rays-light' : 'prism-rays';
 const defaults = props.light ? { ...DEFAULTS, ...LIGHT_DEFAULTS } : DEFAULTS;
-const settings = reactive({ ...defaults, ...(dev ? stored() : {}) });
-const panelOpen = ref(false);
-const copied = ref(false);
-
-function stored(): Partial<typeof DEFAULTS> {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}');
-  } catch {
-    return {};
-  }
-}
-
-if (dev) {
-  watch(settings, (value) => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
-    } catch {}
-  });
-}
-
-function reset() {
-  Object.assign(settings, defaults);
-}
-
-async function copy() {
-  await navigator.clipboard.writeText(JSON.stringify(settings, null, 2));
-  copied.value = true;
-  setTimeout(() => (copied.value = false), 1500);
-}
-
-const VERTEX = `
-attribute vec2 position;
-void main() { gl_Position = vec4(position, 0.0, 1.0); }
-`;
+const settings = useShaderSettings(defaults, props.light ? 'prism-rays-light' : 'prism-rays');
 
 // Soft rays fanning out from a point below the screen, each split into its
 // red, green and blue a little apart, which is what gives the edges their rainbow.
@@ -346,92 +264,18 @@ void main() {
 let stop = () => {};
 
 onMounted(() => {
-  const el = canvas.value;
-  const gl = el?.getContext('webgl', { antialias: false, premultipliedAlpha: false });
-  if (!el || !gl) return;
+  const shader = canvas.value && startShader(canvas.value, FRAGMENT, () => ({ ...settings, lightTheme: props.light ? 1 : 0 }));
+  if (!shader) return;
 
-  const program = createProgram(gl);
-  if (!program) return;
-
-  const buffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-  const position = gl.getAttribLocation(program, 'position');
-  gl.enableVertexAttribArray(position);
-  gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
-
-  const resolution = gl.getUniformLocation(program, 'resolution');
-  const time = gl.getUniformLocation(program, 'time');
-  gl.uniform1f(gl.getUniformLocation(program, 'lightTheme'), props.light ? 1 : 0);
-  const uniforms = (Object.keys(DEFAULTS) as Key[]).map((key) => [key, gl.getUniformLocation(program, key)] as const);
-
-  const resize = () => {
-    const scale = Math.min(window.devicePixelRatio, 1.5);
-    el.width = Math.round(el.clientWidth * scale);
-    el.height = Math.round(el.clientHeight * scale);
-    gl.viewport(0, 0, el.width, el.height);
-    gl.uniform2f(resolution, el.width, el.height);
-  };
-
-  const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const start = performance.now();
-  let frame = 0;
-
-  const observer = new ResizeObserver(() => {
-    resize();
-    if (still) draw(performance.now());
-  });
-  observer.observe(el);
-  resize();
-
-  function draw(now: number) {
-    for (const [key, location] of uniforms) gl!.uniform1f(location, settings[key]);
-    gl!.uniform1f(time, (now - start) / 1000 + 40);
-    gl!.drawArrays(gl!.TRIANGLES, 0, 3);
-  }
-
-  function loop(now: number) {
-    draw(now);
-    frame = requestAnimationFrame(loop);
-  }
-
-  // A still page redraws only when a setting changes.
-  const unwatch = still ? watch(settings, () => draw(performance.now())) : () => {};
-
-  if (still) draw(start);
-  else frame = requestAnimationFrame(loop);
+  // the panel's changes show at once, even on a still page
+  const unwatch = watch(settings, shader.redraw);
   running.value = true;
 
   stop = () => {
-    cancelAnimationFrame(frame);
     unwatch();
-    observer.disconnect();
-    gl.getExtension('WEBGL_lose_context')?.loseContext();
+    shader.stop();
   };
 });
 
 onUnmounted(() => stop());
-
-function createProgram(gl: WebGLRenderingContext): WebGLProgram | null {
-  const compile = (type: number, source: string) => {
-    const shader = gl.createShader(type)!;
-    gl.shaderSource(shader, source);
-    gl.compileShader(shader);
-    if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader;
-    console.warn(gl.getShaderInfoLog(shader));
-    return null;
-  };
-
-  const vertex = compile(gl.VERTEX_SHADER, VERTEX);
-  const fragment = compile(gl.FRAGMENT_SHADER, FRAGMENT);
-  if (!vertex || !fragment) return null;
-
-  const program = gl.createProgram()!;
-  gl.attachShader(program, vertex);
-  gl.attachShader(program, fragment);
-  gl.linkProgram(program);
-  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return null;
-  gl.useProgram(program);
-  return program;
-}
 </script>
