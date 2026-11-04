@@ -18,7 +18,7 @@ export interface ChartContext {
   labels?: ComputedRef<string[]>;
   /** The categories currently not drawn. */
   hidden: ComputedRef<string[]>;
-  toggle: (category: string) => void;
+  setHidden: (hidden: string[]) => void;
 }
 
 /**
@@ -95,7 +95,9 @@ export function useChartSeries(options: UseChartSeriesOptions): UseChartSeriesRe
     colors,
     labels: options.labels && computed(options.labels),
     hidden: computed(() => hidden.value),
-    toggle
+    setHidden: (next) => {
+      hidden.value = next;
+    }
   });
 
   return { colors, hidden: computed(() => hidden.value), visible, toggle };

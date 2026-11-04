@@ -62,6 +62,18 @@ the root's own content for that, not inside a component of yours. It carries
 </template>
 ```
 
+### Showing one at a time
+
+With `isolate`, a click shows only that series and hides the rest; clicking
+it again brings them all back, and clicking a hidden one switches to it.
+Holding Shift, Ctrl or ⌘ toggles just that one instead, for picking a few.
+
+```vue
+<template>
+  <ChartLegend isolate />
+</template>
+```
+
 ### Beside the chart
 
 To put the legend somewhere else on the page, give it the `categories` and

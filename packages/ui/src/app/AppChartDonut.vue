@@ -48,6 +48,8 @@ const props = withDefaults(
     tooltipClass?: HTMLAttributes['class'];
     /** Where the legend sits: above the ring, or below it. @default 'top' */
     legendPlacement?: 'top' | 'bottom';
+    /** A click on a legend button shows only that slice, and a second click shows them all again. */
+    legendIsolate?: boolean;
     /** A class for the legend. */
     legendClass?: HTMLAttributes['class'];
     /** A class for each legend button. */
@@ -76,7 +78,7 @@ defineSlots<{
 }>();
 
 const donut = computed(() => {
-  const { hidden, legend, legendPlacement, legendClass, legendItemClass, ...rest } = props;
+  const { hidden, legend, legendPlacement, legendIsolate, legendClass, legendItemClass, ...rest } = props;
   return { ...rest, ...(hiddenBound && { hidden }) };
 });
 </script>
@@ -87,6 +89,7 @@ const donut = computed(() => {
       v-if="props.legend"
       :label-format="props.labelFormat"
       :placement="props.legendPlacement"
+      :isolate="props.legendIsolate"
       :class="props.legendClass"
       :item-class="props.legendItemClass"
     >

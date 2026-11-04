@@ -69,6 +69,7 @@ rounded to two decimals, ready to format or compare:
 
 ```ts
 calcPercentage(25, 200); // 12.5: 25 is 12.5% of 200
+calcPercentage(300, 200, true); // 100: clamped to 0–100
 calcDiffPercentage(200, 150); // -25: from 200 to 150 is down 25%
 calcDiffPercentage(200, 250); // 25
 ```
@@ -123,8 +124,9 @@ for an empty list.
 
 ### calcPercentage
 
-`(a: number, b: number) => number`: `a` as a percentage of `b`, to two
-decimals. `Infinity` when `b` is 0.
+`(a: number, b: number, clamp?: boolean) => number`: `a` as a percentage of
+`b`, to two decimals. `Infinity` when `b` is 0. With `clamp`, the result is
+held within `0` and `100`, so `Infinity` becomes `100`.
 
 ### calcDiffPercentage
 

@@ -44,6 +44,14 @@ describe('percentages', () => {
     expect(calcPercentage(1, 3)).toBe(33.33);
   });
 
+  it('holds a share within 0 and 100 when clamped', () => {
+    expect(calcPercentage(300, 200)).toBe(150);
+    expect(calcPercentage(300, 200, true)).toBe(100);
+    expect(calcPercentage(-5, 200, true)).toBe(0);
+    expect(calcPercentage(5, 0, true)).toBe(100);
+    expect(calcPercentage(1, 3, true)).toBe(33.33);
+  });
+
   it('gives a change in percent, and 100 from nothing', () => {
     expect(calcDiffPercentage(200, 250)).toBe(25);
     expect(calcDiffPercentage(200, 150)).toBe(-25);

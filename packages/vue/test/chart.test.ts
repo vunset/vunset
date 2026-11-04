@@ -667,6 +667,51 @@ describe('the legend', () => {
     expect(marks(wrapper, 'line')).toHaveLength(2);
   });
 
+  it('with `isolate`, shows only the clicked series, and all again on a second click', async () => {
+    const wrapper = withLegend({ isolate: true });
+    await nextTick();
+    const pressed = () => entries(wrapper).map((entry) => entry.attributes('aria-pressed'));
+
+    await entries(wrapper)[0]!.trigger('click');
+    expect(marks(wrapper, 'line')).toHaveLength(1);
+    expect(pressed()).toEqual(['true', 'false']);
+
+    // A hidden one takes over.
+    await entries(wrapper)[1]!.trigger('click');
+    expect(pressed()).toEqual(['false', 'true']);
+
+    await entries(wrapper)[1]!.trigger('click');
+    expect(marks(wrapper, 'line')).toHaveLength(2);
+    expect(pressed()).toEqual(['true', 'true']);
+  });
+
+  it('with `isolate`, adds or removes one with Shift, Ctrl or ⌘', async () => {
+    const wrapper = mount(ChartLegend, { props: { isolate: true, categories: ['a', 'b', 'c'], modelValue: ['b', 'c'] } });
+    const items = () => wrapper.findAll('[data-part="legend-item"]');
+    const last = () => wrapper.emitted('update:modelValue')!.at(-1);
+
+    // Controlled and never written back, so each click starts from `['b', 'c']`.
+    await items()[1]!.trigger('click', { shiftKey: true });
+    expect(last()).toEqual([['c']]);
+    await items()[2]!.trigger('click', { ctrlKey: true });
+    expect(last()).toEqual([['b']]);
+    await items()[0]!.trigger('click', { metaKey: true });
+    expect(last()).toEqual([['b', 'c', 'a']]);
+    // A plain click still isolates.
+    await items()[1]!.trigger('click');
+    expect(last()).toEqual([['a', 'c']]);
+  });
+
+  it('with `isolate` beside a chart, emits the others as hidden', async () => {
+    const wrapper = mount(ChartLegend, { props: { isolate: true, categories: ['a', 'b', 'c'], modelValue: [] } });
+    await wrapper.findAll('[data-part="legend-item"]')[1]!.trigger('click');
+    expect(wrapper.emitted('update:modelValue')!.at(-1)).toEqual([['a', 'c']]);
+
+    await wrapper.setProps({ modelValue: ['a', 'c'] });
+    await wrapper.findAll('[data-part="legend-item"]')[1]!.trigger('click');
+    expect(wrapper.emitted('update:modelValue')!.at(-1)).toEqual([[]]);
+  });
+
   it('tweens the redraw, unless motion is reduced', async () => {
     reduceMotion(false);
     try {

@@ -19,9 +19,10 @@ export function calcAvg<T>(data: T[], key?: keyof T): number {
   return data.length === 0 ? 0 : calcTotal(data, key) / data.length;
 }
 
-/** `a` as a percentage of `b`, to two decimals. */
-export function calcPercentage(a: number, b: number): number {
-  return toFixedNumber((a / b) * 100);
+/** `a` as a percentage of `b`, to two decimals; held within 0–100 when `clamp` is set. */
+export function calcPercentage(a: number, b: number, clamp = false): number {
+  const percentage = toFixedNumber((a / b) * 100);
+  return clamp ? Math.min(Math.max(percentage, 0), 100) : percentage;
 }
 
 /** How far `b` moved from `a`, in percent, to two decimals; 100 when `a` is 0 or less. */

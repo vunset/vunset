@@ -63,6 +63,7 @@ const showLegend = computed(() => props.legend ?? props.series > 1);
     <ChartLegend
       v-if="showLegend"
       :placement="props.legendPlacement"
+      :isolate="props.legendIsolate"
       :class="props.legendClass"
       :item-class="props.legendItemClass"
     >

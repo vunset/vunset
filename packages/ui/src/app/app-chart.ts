@@ -48,6 +48,8 @@ export interface AppChartProps {
   tooltipClass?: HTMLAttributes['class'];
   /** Where the legend sits: above the drawing, or below it. @default 'top' */
   legendPlacement?: 'top' | 'bottom';
+  /** A click on a legend button shows only that series, and a second click shows them all again. */
+  legendIsolate?: boolean;
   /** A class for the legend. */
   legendClass?: HTMLAttributes['class'];
   /** A class for each legend button. */

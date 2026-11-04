@@ -134,6 +134,13 @@ describe('the cartesian charts', () => {
     expect(plot.compareDocumentPosition(legend) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
+  it('shows only the clicked series with `legend-isolate`', async () => {
+    const chart = await mountChart(AppChartLine, { legendIsolate: true });
+    await legendItems(chart)[0]!.trigger('click');
+
+    expect(legendItems(chart).map((item) => item.attributes('aria-pressed'))).toEqual(['true', 'false']);
+  });
+
   it('puts its legend classes on the legend and each button', async () => {
     const chart = await mountChart(AppChartLine, { legendClass: 'keys', legendItemClass: 'chip' });
 
