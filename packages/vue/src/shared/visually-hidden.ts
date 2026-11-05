@@ -1,9 +1,6 @@
 import type { CSSProperties } from 'vue';
 
-/**
- * Removes an element from the visual layer while keeping it in the a11y tree
- * and in the form.
- */
+/** Hidden visually but kept in the a11y tree and the form. */
 export const visuallyHidden: CSSProperties = {
   border: 0,
   clip: 'rect(0 0 0 0)',

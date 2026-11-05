@@ -1,5 +1,4 @@
-// Charts, drawn by TanStack Charts. A subpath of its own so that
-// `@tanstack/charts`, an optional peer, is never resolved by an app that draws none.
+// A subpath of its own, so an app without the optional `@tanstack/charts` peer never resolves it.
 export {
   default as ChartRoot,
   type ChartCurve,

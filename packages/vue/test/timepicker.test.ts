@@ -128,7 +128,6 @@ describe('Timepicker', () => {
 
       await key(segment('minute'), 'Backspace');
       expect(model.value).toBeNull();
-      // The other segment keeps what it shows.
       expect(segment('hour').textContent).toBe('14');
     });
 
@@ -301,7 +300,6 @@ describe('Timepicker', () => {
       expect(column('minute')!.querySelectorAll('[role="option"]')).toHaveLength(60);
       expect(option('hour', '10').getAttribute('aria-selected')).toBe('true');
       expect(column('hour')!.getAttribute('aria-activedescendant')).toBe(option('hour', '10').id);
-      // No seconds column without `seconds`.
       expect(column('second')).toBeNull();
     });
 
@@ -342,7 +340,6 @@ describe('Timepicker', () => {
       expect(popup()).not.toBeNull();
       expect(document.activeElement).toBe(segment('hour'));
 
-      // Typing carries on, and the columns follow.
       await typeInto(segment('hour'), '14');
       expect(option('hour', '14').getAttribute('aria-selected')).toBe('true');
     });
@@ -453,7 +450,6 @@ describe('Timepicker', () => {
       await key(segment('minute'), 'End');
       expect(model.value).toBe('09:59');
       await key(segment('hour'), 'End');
-      // 17:59 is past the max: the step lands on it.
       expect(model.value).toBe('17:00');
     });
 
@@ -475,7 +471,6 @@ describe('Timepicker', () => {
       expect(root.hasAttribute('data-invalid')).toBe(true);
       expect(segment('hour').getAttribute('aria-invalid')).toBe('true');
 
-      // A step skips 08, which has no minute inside.
       await key(segment('hour'), 'ArrowUp');
       expect(model.value).toBe('09:30');
       expect(root.hasAttribute('data-invalid')).toBe(false);
@@ -537,7 +532,6 @@ describe('Timepicker', () => {
       expect(segment('hour').textContent).toBe('01');
       expect(document.activeElement).toBe(segment('hour'));
       await typeInto(segment('hour'), '2');
-      // 12 in the afternoon is noon.
       expect(model.value).toBe('12:00');
       segment('hour').focus();
       await typeInto(segment('hour'), '0');

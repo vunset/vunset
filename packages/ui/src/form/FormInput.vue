@@ -6,8 +6,7 @@ import FormField, { type FormSize } from './FormField.vue';
 import type { HTMLAttributes } from 'vue';
 import AppIcon from '../app/AppIcon.vue';
 
-// `class` and `style` dress the field; every other attribute — `placeholder`,
-// `autocomplete`, `inputmode`, `aria-*` — belongs on the `<input>`.
+// `class` and `style` dress the field; every other attribute belongs on the `<input>`.
 defineOptions({ name: 'FormInput', inheritAttrs: false });
 
 // Forwarded only when bound, so a field without `v-model` keeps its own value.

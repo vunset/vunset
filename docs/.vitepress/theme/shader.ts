@@ -37,10 +37,7 @@ export interface Shader {
   stop: () => void;
 }
 
-/**
- * Fills the canvas with a fragment shader, given `resolution`, `time` in seconds
- * and a float uniform per key of `uniforms()`. Reduced motion draws one frame.
- */
+// Uniforms: `resolution`, `time` in seconds, and a float per key of `uniforms()`. Reduced motion draws one frame.
 export function startShader(
   canvas: HTMLCanvasElement,
   fragment: string,

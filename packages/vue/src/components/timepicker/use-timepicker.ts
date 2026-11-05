@@ -28,15 +28,9 @@ export type HourCycle = 12 | 24;
 export interface TimepickerState {
   /** The value, `HH:mm` or `HH:mm:ss`; `null` while any segment is empty. */
   value: string | null;
-  /**
-   * Whether every segment is empty.
-   * @attribute `data-empty`
-   */
+  /** Whether every segment is empty. @attribute `data-empty` */
   empty: boolean;
-  /**
-   * Whether the popup is open.
-   * @attribute `data-open`
-   */
+  /** Whether the popup is open. @attribute `data-open` */
   open: boolean;
   /** @attribute `data-disabled` */
   disabled: boolean;
@@ -51,18 +45,15 @@ export interface TimepickerState {
 export interface UseTimepickerOptions {
   value?: MaybeRefOrGetter<string | null | undefined>;
   defaultValue?: MaybeRefOrGetter<string | null | undefined>;
-  /** Adds a second segment and column, and writes `HH:mm:ss`. */
   seconds?: MaybeRefOrGetter<boolean | undefined>;
-  /** The earliest time that can be stepped to or picked, `HH:mm(:ss)`. */
   min?: MaybeRefOrGetter<string | null | undefined>;
-  /** The latest time that can be stepped to or picked, `HH:mm(:ss)`. */
   max?: MaybeRefOrGetter<string | null | undefined>;
-  /** `12` shows the hour as 12, 01–11 with an AM/PM segment; the value stays 24-hour. @default 24 */
+  /** @default 24 */
   hourCycle?: MaybeRefOrGetter<HourCycle | undefined>;
-  /** The AM/PM segment's text. @default ['AM', 'PM'] */
+  /** @default ['AM', 'PM'] */
   periodLabels?: MaybeRefOrGetter<readonly [string, string] | undefined>;
   open?: MaybeRefOrGetter<boolean | undefined>;
-  /** Opens the popup when focus enters the segments, leaving it there. @default true */
+  /** @default true */
   openOnFocus?: MaybeRefOrGetter<boolean | undefined>;
   side?: MaybeRefOrGetter<Side | undefined>;
   align?: MaybeRefOrGetter<Align | undefined>;
@@ -83,7 +74,6 @@ export interface TimepickerOption {
   /** As the segment shows it: `'07'`, `'12'`, `'PM'`. */
   label: string;
   selected: boolean;
-  /** Outside `min`/`max`. */
   disabled: boolean;
   props: Record<string, unknown>;
 }
@@ -93,7 +83,6 @@ export interface UseTimepickerReturn {
   open: WritableComputedRef<boolean>;
   state: ComputedRef<TimepickerState>;
   hooks: ComputedRef<Record<string, string>>;
-  /** The units shown, in order. */
   units: ComputedRef<TimeUnit[]>;
   /** What each segment holds, `null` while empty. `hour` is 0–23 in either cycle; `period` is `0` (AM) or `1` (PM). */
   parts: Record<TimeUnit, number | null>;
@@ -104,18 +93,17 @@ export interface UseTimepickerReturn {
   triggerProps: ComputedRef<Record<string, unknown>>;
   clearProps: ComputedRef<Record<string, unknown>>;
   getSegmentProps: (unit: TimeUnit) => Record<string, unknown>;
-  /** The hidden input's value: the value, or `''`. */
   hiddenValue: ComputedRef<string>;
   name: () => string | undefined;
   form: () => string | undefined;
   clear: () => void;
-  /** @internal For `useTimepickerColumn`. */
+  /** @internal */
   pick: (unit: TimeUnit, value: number) => void;
-  /** @internal A column's values, in order. */
+  /** @internal */
   values: (unit: TimeUnit) => number[];
-  /** @internal Whether a value can be picked within `min`/`max`. */
+  /** @internal */
   allowed: (unit: TimeUnit, value: number) => boolean;
-  /** @internal The next value allowed `delta` away, wrapping; from `null`, the first (or last) one. */
+  /** @internal Wraps; from `null`, the first (or last) allowed value. */
   seek: (unit: TimeUnit, from: number | null, delta: number) => number | undefined;
   /** @internal */
   columns: Map<TimeUnit, HTMLElement>;
@@ -181,13 +169,11 @@ export function useTimepicker(options: UseTimepickerOptions = {}): UseTimepicker
     return [parts.hour!, parts.minute!, ...(seconds() ? [parts.second!] : [])].map(pad).join(':');
   }
 
-  /** Seconds since midnight, once every segment is filled. */
   function time(): number | null {
     return filled() ? parts.hour! * 3600 + parts.minute! * 60 + (seconds() ? parts.second! : 0) : null;
   }
 
-  // What this picker last wrote: when it comes back as the value, the segments
-  // already show it, partly typed ones included.
+  // What this picker last wrote: back as the value, the segments already show it, partly typed ones too.
   let published: string | null | undefined;
 
   function publish(): void {
@@ -222,9 +208,7 @@ export function useTimepicker(options: UseTimepickerOptions = {}): UseTimepicker
     publish();
   });
 
-  // `min`/`max` in seconds since midnight. Without a seconds segment they round
-  // inward to whole minutes, the finest a value can then be. A `min` after `max`
-  // (a range over midnight) isn't supported, and bounds nothing.
+  // Without seconds the bounds round inward to whole minutes. A `min` after `max` (over midnight) bounds nothing.
   const bounds = computed(() => {
     const min = parseTime(toValue(options.min));
     const max = parseTime(toValue(options.max));
@@ -249,8 +233,7 @@ export function useTimepicker(options: UseTimepickerOptions = {}): UseTimepicker
     return t < limit.lo || t > limit.hi;
   });
 
-  // Whether a unit can take a value with some time inside the bounds: the units
-  // above it as they are (any value while empty), the ones below it free.
+  // Units above held as they are (any value while empty), units below free.
   function allowed(unit: TimeUnit, next: number): boolean {
     const limit = bounds.value;
     if (!limit) return true;
@@ -280,8 +263,7 @@ export function useTimepicker(options: UseTimepickerOptions = {}): UseTimepicker
     );
   }
 
-  // A step or a pick never leaves the bounds: a time it left outside them moves
-  // to the nearer one. Typing is left as typed, and marked invalid.
+  // A step or pick clamps to the nearer bound; typing is left as typed, and marked invalid.
   function clampIntoRange(): void {
     const t = time();
     const limit = bounds.value;
@@ -294,7 +276,7 @@ export function useTimepicker(options: UseTimepickerOptions = {}): UseTimepicker
     if (twelve()) parts.period = Number(parts.hour >= 12);
   }
 
-  /** A column's values in order: in 12-hour, the hours of the period shown, 12 first. */
+  /** In 12-hour, the hours of the period shown, 12 first. */
   function values(unit: TimeUnit): number[] {
     if (unit === 'period') return [0, 1];
     if (unit === 'hour' && twelve()) return range(12, (parts.period ?? 0) * 12);
@@ -325,8 +307,7 @@ export function useTimepicker(options: UseTimepickerOptions = {}): UseTimepicker
   useFieldValue(field, () => value.value);
   watch(() => !empty.value, (filled) => field?.setFilled(filled), { immediate: true });
 
-  // Opened from the trigger, focus moves into the columns; opened by focus on a
-  // segment, it stays there, so typing carries on.
+  // Opened by focus on a segment, focus stays there so typing carries on.
   const focusPopup = ref(true);
 
   // The popup lines up with the whole picker: its root, not the trigger.
@@ -458,8 +439,7 @@ export function useTimepicker(options: UseTimepickerOptions = {}): UseTimepicker
     if (next instanceof Node && (rootEl.value?.contains(next) || popupEl.value?.contains(next))) return;
     field?.setFocused(false);
     field?.setTouched(true);
-    // Tabbed away. Focus going nowhere, as a press on the popup's padding sends
-    // it, is left to the outside-press dismissal.
+    // Focus going nowhere (a press on the popup's padding) is left to the outside-press dismissal.
     if (next instanceof Node) popover.open.value = false;
   }
 
@@ -472,8 +452,7 @@ export function useTimepicker(options: UseTimepickerOptions = {}): UseTimepicker
   const inputEl = ref<HTMLElement | null>(null);
   const openOnFocus = () => toValue(options.openOnFocus) ?? true;
 
-  // Only focus arriving from outside opens it: not a move between segments, and
-  // not focus handed back from the closing popup, or Escape would reopen it.
+  // Only focus from outside opens it: focus handed back by the closing popup would undo Escape.
   function onInputFocusin(event: FocusEvent): void {
     if (!openOnFocus()) return;
     const from = event.relatedTarget;
@@ -601,8 +580,7 @@ export function useTimepicker(options: UseTimepickerOptions = {}): UseTimepicker
     }
   }));
 
-  // A pick on an empty value fills the other units with 00, so it is complete at
-  // once. An empty period becomes AM, or PM where only that half is allowed.
+  // A pick on an empty value fills the rest with 00; an empty period becomes AM, or PM if only that is allowed.
   function pick(unit: TimeUnit, next: number): void {
     if (locked() || !allowed(unit, next)) return;
     if (twelve() && unit !== 'period' && parts.period === null) {
@@ -652,7 +630,6 @@ export interface UseTimepickerColumnReturn {
   state: ComputedRef<TimepickerState>;
 }
 
-/** One unit's column in the popup: its options, its keys, and the scroll that keeps the pick in view. */
 export function useTimepickerColumn(unit: MaybeRefOrGetter<TimeUnit>): UseTimepickerColumnReturn {
   const picker = useTimepickerContext();
   const baseId = useId();

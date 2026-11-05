@@ -1,5 +1,4 @@
-// The icons ui's own components draw, registered under the app's: an app icon of
-// the same name, in `configureIcons({ inline })`, replaces one everywhere.
+// Registered under the app's icons, so an app icon of the same name replaces one everywhere.
 const stroke = (body: string) =>
   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`;
 

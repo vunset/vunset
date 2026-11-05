@@ -1,10 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { computeItemAlignment, type AlignGeometry } from '../src';
 
-/**
- * A list of ten 40px options in a popup with 4px of padding at each end,
- * sitting in a 800px viewport with the trigger comfortably in the middle.
- */
+// Ten 40px options, 4px padding at each end, in an 800px viewport with the trigger in the middle.
 const base: AlignGeometry = {
   viewportHeight: 800,
   triggerTop: 400,
@@ -20,7 +17,6 @@ const base: AlignGeometry = {
   edgeThreshold: 20,
 };
 
-/** Where the option's center ends up on screen, given a result. */
 function itemCenterOnScreen(g: AlignGeometry, r: { top: number; scrollTop: number }) {
   return r.top + g.listOffsetTop + g.itemCenterFromContentTop - r.scrollTop;
 }
@@ -30,7 +26,6 @@ const triggerCenter = (g: AlignGeometry) => g.triggerTop + g.triggerHeight / 2;
 describe('computeItemAlignment', () => {
   describe('when there is room', () => {
     it('puts the option exactly on the trigger without scrolling', () => {
-      // The fifth option, 180px down the list.
       const geometry = { ...base, itemCenterFromContentTop: 180 };
       const result = computeItemAlignment(geometry)!;
 
@@ -40,7 +35,6 @@ describe('computeItemAlignment', () => {
     });
 
     it('shows the whole list when it fits, with nothing scrolled', () => {
-      // High enough that the aligned popup still clears the bottom margin.
       const geometry = { ...base, triggerTop: 380 };
       const result = computeItemAlignment(geometry)!;
 
@@ -50,15 +44,11 @@ describe('computeItemAlignment', () => {
     });
 
     it('shrinks the popup rather than breaking the alignment', () => {
-      // At this trigger position the whole list would overhang the bottom
-      // margin by 12px. Keeping the option on the trigger matters more than
-      // showing the last 12px, so the popup gives up the height and the
-      // remainder becomes scrollable below.
+      // The whole list would overhang the bottom margin by 12px, so the popup gives up the height and scrolls.
       const result = computeItemAlignment(base)!;
 
       expect(result.height).toBe(396);
       expect(result.listMaxHeight).toBeLessThan(base.contentHeight);
-      // The chosen option is the first one, so nothing has to scroll for it.
       expect(result.scrollTop).toBe(0);
       expect(itemCenterOnScreen(base, result)).toBeCloseTo(triggerCenter(base));
     });
@@ -66,8 +56,6 @@ describe('computeItemAlignment', () => {
 
   describe('when the list must scroll to make it work', () => {
     it('scrolls the list so the option still lands on the trigger', () => {
-      // A long list with the option well down it: the popup fills the viewport
-      // and the remainder becomes scroll.
       const geometry = {
         ...base,
         viewportHeight: 600,
@@ -84,8 +72,6 @@ describe('computeItemAlignment', () => {
     });
 
     it('sizes the popup from the alignment near the bottom of the screen', () => {
-      // First option, trigger low down. The popup shrinks to sit between the
-      // trigger and the viewport edge rather than floating above it.
       const geometry = { ...base, viewportHeight: 800, triggerTop: 500 };
       const result = computeItemAlignment(geometry)!;
 
@@ -125,10 +111,7 @@ describe('computeItemAlignment', () => {
   });
 
   describe('with the trigger near the top and a selection far down the list', () => {
-    // The case a browser window makes easy to hit: scroll until the control is
-    // near the top, then open it. There is no room above the trigger for the
-    // popup to place the option there, so the list has to scroll instead — and
-    // it can only scroll if the popup is short enough to leave something over.
+    // No room above a trigger near the top, so the list scrolls instead, which needs the popup short enough to leave some over.
     const nearTop = {
       ...base,
       viewportHeight: 770,
@@ -160,8 +143,7 @@ describe('computeItemAlignment', () => {
   });
 
   describe('a long list behind a short popup', () => {
-    // The Year select: 40 options at 34px behind a 240px cap, so only about
-    // seven show at once and the list does nearly all the work.
+    // The Year select: 40 options at 34px behind a 240px cap, so only about seven show at once.
     const years = {
       ...base,
       viewportHeight: 770,
@@ -177,7 +159,6 @@ describe('computeItemAlignment', () => {
       itemCenterFromContentTop: index * 34 + 17,
     });
 
-    /** Where the option sits inside the list's visible window. */
     const offsetInWindow = (g: AlignGeometry, r: { scrollTop: number }) =>
       g.itemCenterFromContentTop - r.scrollTop;
 
@@ -188,9 +169,7 @@ describe('computeItemAlignment', () => {
     });
 
     it('keeps the whole of the last option inside the list window', () => {
-      // The bug this exists for: satisfying the alignment alone put the option
-      // hundreds of pixels below the visible list, and the popup drifted off to
-      // meet an equation that could not hold.
+      // Regression: alignment alone put the option hundreds of pixels below the visible list.
       const geometry = optionAt(39);
       const result = computeItemAlignment(geometry)!;
       const offset = offsetInWindow(geometry, result);
@@ -268,13 +247,11 @@ describe('computeItemAlignment', () => {
     });
 
     it('gives up when too little of a long list would show', () => {
-      // The trigger is inside the thresholds, but sits so low that aligning the
-      // first option would leave a sliver of a 400px list on screen.
+      // Aligning the first option this low would leave a sliver of a 400px list on screen.
       expect(computeItemAlignment({ ...base, viewportHeight: 500, triggerTop: 420 })).toBeNull();
     });
 
     it('allows a short list that fits entirely, however small', () => {
-      // Nothing is being hidden, so the minimum does not apply.
       const geometry = { ...base, contentHeight: 40, fullHeight: 48, viewportHeight: 300, triggerTop: 100 };
       const result = computeItemAlignment(geometry);
       expect(result).not.toBeNull();
@@ -286,7 +263,6 @@ describe('computeItemAlignment', () => {
     it('sits where the option is, so an enter animation grows from it', () => {
       const geometry = { ...base, itemCenterFromContentTop: 20 };
       const result = computeItemAlignment(geometry)!;
-      // The first option, 24px down whatever height the popup came out at.
       expect(result.originRatio).toBeCloseTo((24 / result.height) * 100, 1);
     });
 

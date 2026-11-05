@@ -58,7 +58,6 @@ function key(name: string, target: HTMLElement = document.activeElement as HTMLE
   target.dispatchEvent(new KeyboardEvent('keydown', { key: name, bubbles: true }));
 }
 
-/** Long enough for a leaving panel to finish and unmount. */
 async function settle() {
   for (let i = 0; i < 4; i += 1) {
     await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
@@ -66,7 +65,6 @@ async function settle() {
   }
 }
 
-/** Clicking a real tab focuses it first, as a browser would. */
 async function press(element: HTMLElement) {
   element.focus();
   element.dispatchEvent(new MouseEvent('click', { bubbles: true }));
@@ -83,7 +81,6 @@ describe('Tabs', () => {
       expect(tab('overview').getAttribute('role')).toBe('tab');
       expect(panel('overview')!.getAttribute('role')).toBe('tabpanel');
 
-      // Neither knows where the other is rendered; both are found by value.
       expect(tab('overview').getAttribute('aria-controls')).toBe(panel('overview')!.id);
       expect(panel('overview')!.getAttribute('aria-labelledby')).toBe(tab('overview').id);
     });
@@ -105,7 +102,6 @@ describe('Tabs', () => {
     });
 
     it('writes the first tab to a v-model that starts empty, and follows the model after', async () => {
-      // Reactive, so the host re-renders with the model as `v-model` would.
       const rootProps = reactive<Record<string, any>>({ modelValue: undefined });
       rootProps['onUpdate:modelValue'] = (value: string) => (rootProps.modelValue = value);
       mountTabs({ rootProps });
@@ -119,7 +115,6 @@ describe('Tabs', () => {
     });
 
     it('leaves a bound value alone while its owner keeps it empty', async () => {
-      // Bound is controlled: the owner said what it wanted, and "nothing" is an answer.
       mountTabs({ rootProps: { modelValue: undefined } });
       await nextTick();
 
@@ -154,16 +149,13 @@ describe('Tabs', () => {
       expect(selectedTab()).toBe(tab('usage'));
       expect(panel('usage')).not.toBeNull();
 
-      // The panel it replaced leaves rather than vanishing, so it is still
-      // there for a frame — `present` outlives the selection.
       expect(panel('overview')).not.toBeNull();
       await settle();
       expect(panel('overview')).toBeNull();
     });
 
     it('announces the tab it picked for itself, so v-model agrees with the screen', async () => {
-      // Selecting the first tab silently would leave a bound ref undefined
-      // while the first panel is plainly showing.
+      // Selecting the first tab silently would leave a bound ref undefined while its panel shows.
       const onChange = vi.fn();
       mountTabs({ rootProps: { onChange } });
       await nextTick();
@@ -233,7 +225,6 @@ describe('Tabs', () => {
       key('ArrowRight');
       await nextTick();
       expect(document.activeElement).toBe(tab('usage'));
-      // Manual activation: focus moved, the selection did not.
       expect(selectedTab()).toBe(tab('overview'));
     });
 
@@ -325,8 +316,6 @@ describe('Tabs', () => {
     });
 
     it('leaves the tab stop where focus went, not where the selection is', async () => {
-      // Arrowing to a tab and tabbing away should bring you back to the tab you
-      // were looking at, not to the one that happens to be selected.
       mountTabs();
       await nextTick();
       tab('overview').focus();
@@ -339,7 +328,6 @@ describe('Tabs', () => {
     });
 
     it('offers a tab stop when the selected tab is disabled', async () => {
-      // Otherwise every tab is -1 and the list drops out of the tab order.
       mountTabs({
         rootProps: { defaultValue: 'usage' },
         tabs: [{ value: 'overview' }, { value: 'usage', disabled: true }]
@@ -411,16 +399,13 @@ describe('Tabs', () => {
       await nextTick();
 
       const indicator = document.querySelector<HTMLElement>('.indicator')!;
-      // `test/setup.ts` gives every element the same box, so the interesting
-      // part is that the variables are published at all, and from the list's
-      // own scroll size rather than the viewport.
+      // `test/setup.ts` gives every element one box, so this only checks the variables come from the list's scroll size.
       expect(indicator.style.getPropertyValue('--active-tab-width')).toBe('120px');
       expect(indicator.style.getPropertyValue('--active-tab-height')).toBe('32px');
       expect(indicator.style.getPropertyValue('--active-tab-left')).toBe('0px');
     });
 
     it('stays hidden until a tab has been measured', async () => {
-      // Nothing is selected, so there is no tab to sit under.
       const Host = defineComponent({
         setup() {
           return () =>

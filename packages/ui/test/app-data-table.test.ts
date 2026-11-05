@@ -60,7 +60,6 @@ describe('AppDataTable', () => {
     expect(root.find('tbody tr').classes()).toContain('on-row');
     expect(root.find('thead th').classes()).toContain('on-th');
     expect(root.find('tbody td').classes()).toContain('on-td');
-    // None of them is left on the container.
     expect(root.attributes('table-class')).toBeUndefined();
     expect(root.classes()).not.toContain('on-td');
   });

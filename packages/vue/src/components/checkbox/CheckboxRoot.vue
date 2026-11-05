@@ -1,9 +1,6 @@
 <script lang="ts">
 export interface CheckboxState {
-  /**
-   * Whether the checkbox is checked.
-   * @attribute `data-checked` while checked, `data-unchecked` otherwise
-   */
+  /** Whether the checkbox is checked. @attribute `data-checked` while checked, `data-unchecked` otherwise */
   checked: boolean;
   /** Neither checked nor unchecked — a group whose members disagree. */
   indeterminate: boolean;

@@ -1,5 +1,4 @@
 <script lang="ts">
-/** What a chart sees after each draw: the scene's size, and where the plot sits in it. */
 export interface ChartRender {
   scene: {
     width: number;
@@ -29,15 +28,11 @@ defineOptions({ name: 'ChartFrame' });
 
 // Getters, read as the drawing renders: by then the parts in the slot have registered.
 const props = defineProps<{
-  /** Which chart this is, for `data-chart`. */
   kind?: string;
   definition: () => ChartDefinition<any, any, any>;
-  /** The accessible name. */
   label: () => string;
-  /** A number means pixels. */
   height: number | string;
   tooltip: () => boolean;
-  /** Attributes for the tooltip's box. */
   tooltipAttrs?: () => Record<string, unknown>;
 }>();
 
@@ -46,15 +41,11 @@ const emit = defineEmits<{
 }>();
 
 const slots = defineSlots<{
-  /** Content before the drawing, such as a `ChartLegend`. */
   default(): unknown;
-  /** The tooltip's content, for the point in focus; `pinned` once a click holds it. */
   tooltip(props: { point: ChartPoint<any>; pinned: boolean }): unknown;
-  /** Content laid over the plot, centered on it. */
   center?(): unknown;
 }>();
 
-/** `--chart-tick-font-size` in px, for the chart's definition. */
 const tickSize = defineModel<number>('tickSize');
 
 // TanStack takes the size as a number, so the stylesheet's length is read off a probe.

@@ -1,9 +1,5 @@
-// `dist/web-types.json` for the package it runs in, so JetBrains IDEs complete
-// each component's props, slots and events. Read from the same rows as the
-// docs' API tables (`docs/.vitepress/markdown/api.ts`), linked to the page
-// that documents the component.
-//
-//   node ../../scripts/web-types.ts   (from packages/vue or packages/ui)
+// JetBrains completions from the docs' API rows. Run from packages/vue or packages/ui:
+//   node ../../scripts/web-types.ts
 
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { basename, dirname, join, relative, resolve } from 'node:path';
@@ -29,8 +25,7 @@ interface Doc {
   description: string;
 }
 
-// every `::: api` in the docs: the component's file → its page, and the prose
-// under its `###` (the page's own description when there is none)
+// every `::: api`: the component's file → its page, and the prose under its `###`
 function docs(): Map<string, Doc> {
   const found = new Map<string, Doc>();
 

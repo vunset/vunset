@@ -71,7 +71,6 @@ function snippet(html: string, terms: string[]): Part[] {
     .map((part) => ({ text: part, match: terms.some((term) => term.toLowerCase() === part.toLowerCase()) }));
 }
 
-// grouped by page, in the order of each page's best result
 const results = computed<ListboxGroup[]>(() => {
   const q = query.value.trim();
   if (!index.value || !q) return [];

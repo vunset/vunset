@@ -7,7 +7,7 @@ export interface UseLocalStorageReturn {
 }
 
 // No storage on a server, or in a browser that blocks it: reads find nothing, writes do nothing.
-/** @internal Also `useTheme`'s. */
+/** @internal */
 export function storage(): Storage | undefined {
   try {
     return typeof localStorage === 'undefined' ? undefined : localStorage;

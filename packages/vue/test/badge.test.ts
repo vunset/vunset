@@ -41,8 +41,6 @@ describe('Badge', () => {
   });
 
   it('claims no role: it is text, not a control', () => {
-    // What a badge means is in its words. A role would only make a screen
-    // reader announce furniture around them.
     const w = mountBadge();
     expect(w.attributes('role')).toBeUndefined();
   });
@@ -56,7 +54,6 @@ describe('Badge', () => {
 
     expect(w.classes()).toContain('Badge--danger');
     expect(w.attributes('aria-label')).toBe('3 unread messages');
-    // The caller's additions never cost it its own hooks.
     expect(w.attributes('data-part')).toBe('badge');
   });
 });

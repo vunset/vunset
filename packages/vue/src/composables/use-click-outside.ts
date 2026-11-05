@@ -22,12 +22,7 @@ function elementsOf(targets: ClickOutsideTarget[]): Element[] {
     .filter((element): element is HTMLElement => element !== null);
 }
 
-/**
- * Calls `handler` on a press outside `target`. A press inside an open overlay
- * (a menu, a select's list) counts as inside, wherever it is portaled to, and
- * nothing fires while `target` isn't on the page. Returns a function that stops
- * listening; it also stops with the component.
- */
+/** Calls `handler` on a press outside `target`; a press inside an open overlay counts as inside. Returns the stop. */
 export function useClickOutside(
   target: ClickOutsideTarget,
   handler: (event: PointerEvent) => void,
@@ -35,8 +30,7 @@ export function useClickOutside(
 ): () => void {
   if (typeof document === 'undefined') return () => {};
 
-  // Pointerdown in the capture phase, as the overlays' own dismissal: a panel
-  // and a menu inside it close on the same press.
+  // Capture-phase pointerdown, as the overlays' own dismissal, so a panel and a menu in it close on one press.
   function onPointerDown(event: PointerEvent): void {
     if (!(toValue(options.enabled) ?? true)) return;
 

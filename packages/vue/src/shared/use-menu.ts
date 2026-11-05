@@ -100,7 +100,6 @@ export interface UseMenuReturn {
   positionerProps: ComputedRef<Record<string, unknown>>;
   popupProps: ComputedRef<Record<string, unknown>>;
   arrowProps: ComputedRef<Record<string, unknown>>;
-  /** Builds props for one item. Call per item. */
   getItemProps: (itemOptions?: MenuItemOptions) => Record<string, unknown>;
   close: () => void;
   /** Opens the menu and focuses its first item once it is placed, as the keyboard does. */

@@ -71,12 +71,10 @@ describe('ContextMenu', () => {
       await settle();
 
       expect(menu()).not.toBeNull();
-      // Without this the browser's own menu covers ours.
       expect(event.defaultPrevented).toBe(true);
     });
 
     it('anchors to the point, not to the region', async () => {
-      // The region may be a whole table; the menu belongs where the pointer was.
       mountContextMenu();
       rightClick(240, 160);
       await settle();
@@ -91,13 +89,10 @@ describe('ContextMenu', () => {
       await settle();
 
       expect(menu()).toBeNull();
-      // The platform menu is left alone, which is the honest thing for a
-      // region that is not offering one.
       expect(event.defaultPrevented).toBe(false);
     });
 
     it('holds the page still while open, and lets it scroll again once closed', async () => {
-      // Pinned to a point, the menu would be left floating over the wrong row.
       const { wrapper } = mountContextMenu();
       rightClick();
       await settle();

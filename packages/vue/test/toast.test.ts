@@ -16,10 +16,7 @@ import {
   type ToastStore,
 } from '../src';
 
-/**
- * Animations resolve off `requestAnimationFrame`, and the enter phase needs two
- * of them. Timers are faked but rAF is left real, so both can be driven.
- */
+// The enter phase needs two rAFs, so timers are faked but rAF is left real.
 async function flush(frames = 4) {
   for (let i = 0; i < frames; i += 1) {
     await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
@@ -35,7 +32,6 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-/** The template a consuming app registers once, in its root component. */
 function mountToaster(props: Record<string, any> = {}, rootProps: Record<string, any> | null = null) {
   return mount(
     defineComponent({
@@ -79,8 +75,7 @@ describe('Toast', () => {
     });
 
     it('lets the parts find their own toast, so the template is written once', async () => {
-      // The viewport provides each toast per item; the parts inject it. Without
-      // that, a template registered once could not know which toast it is.
+      // The viewport provides each toast per item, so one registered template knows which toast it is.
       const store = createToastStore();
       const w = mountToaster({ store });
 
@@ -127,7 +122,6 @@ describe('Toast', () => {
       await nextTick();
 
       expect(w.find('.bespoke').text()).toBe('hand-rolled');
-      // The ordinary one still went through the registered template.
       expect(titles(w).map((t) => t.text())).toEqual(['Ordinary']);
     });
 
@@ -170,8 +164,7 @@ describe('Toast', () => {
       useToast(store).setToast({ title: 'Three' });
       await flush(2);
 
-      // Every element measures the same height in this environment, so the
-      // offsets are a running total of it.
+      // jsdom gives every element the same height, so offsets are a running total of it.
       const offsets = roots(w).map((r) => styleOf(r).match(/--toast-offset-y: (\d+)px/)?.[1]);
       const height = Number(styleOf(roots(w)[0]).match(/--toast-height: (\d+)px/)?.[1]);
 
@@ -188,8 +181,7 @@ describe('Toast', () => {
       useToast(store).setToast({ title: 'Three' });
       await flush(2);
 
-      // Every element reports the same height here, so the measured value is
-      // replaced with the differing ones a real browser would report.
+      // jsdom gives every element the same height, so the differing ones are stubbed.
       const [front, middle, back] = store.toasts.value;
       store.setHeight(front.id, 100);
       store.setHeight(middle.id, 40);
@@ -202,8 +194,7 @@ describe('Toast', () => {
     });
 
     it('paints the newest toast above the ones behind it', async () => {
-      // The DOM order is newest first, so paint order has to be reversed or
-      // the toast in front ends up underneath the older ones.
+      // DOM order is newest first, so paint order is reversed to keep the front toast on top.
       const store = createToastStore();
       const w = mountToaster({ store });
 
@@ -245,8 +236,6 @@ describe('Toast', () => {
       store.close(store.toasts.value[0].id);
       await nextTick();
 
-      // Both are still in the DOM while the front one animates out, but the
-      // survivor has already taken its place at the front.
       expect(roots(w)).toHaveLength(2);
       const leaving = roots(w)[0];
       const survivor = roots(w)[1];
@@ -255,9 +244,7 @@ describe('Toast', () => {
       expect(survivor.attributes('data-index')).toBe('0');
       expect(survivor.attributes()).toHaveProperty('data-front');
 
-      // Giving up its place means it is no longer the front toast either, so a
-      // stylesheet that clamps the pile to the front toast's height has to let
-      // a leaving one out of the clamp — `[data-leave-to]` is the hook.
+      // A stylesheet clamping the pile to the front toast's height must let a leaving one out, via `[data-leave-to]`.
       expect(leaving.attributes()).not.toHaveProperty('data-front');
     });
 
@@ -278,14 +265,11 @@ describe('Toast', () => {
       await nextTick();
 
       const offsets = roots(w).map((r) => styleOf(r).match(/--toast-offset-y: (\d+)px/)?.[1]);
-      // The middle one fades where it stood; the back one moves up at once.
       expect(offsets).toEqual(['0', '50', '50']);
     });
 
     it('publishes the front toast\'s height for the pile to clamp against', async () => {
-      // A collapsed stack hides the toasts behind the front one. Each toast
-      // knows its own height; only the viewport knows the front one's, so a
-      // tall toast underneath a short one has nothing to clamp to without this.
+      // Only the viewport knows the front toast's height, which a taller toast behind it clamps to.
       const store = createToastStore();
       const w = mountToaster({ store });
 
@@ -297,7 +281,6 @@ describe('Toast', () => {
       await nextTick();
       expect(styleOf(viewport(w))).toContain('--toast-front-height: 44px');
 
-      // A taller toast arriving in front takes over the clamp.
       useToast(store).setToast({ title: 'Tall' });
       await flush(2);
       store.setHeight(store.toasts.value[0].id, 180);
@@ -319,7 +302,6 @@ describe('Toast', () => {
       await nextTick();
       expect(styleOf(viewport(w))).toContain('--toast-front-height: 180px');
 
-      // Dismissing the front one hands the clamp to whatever is now in front.
       store.close(store.toasts.value[0].id);
       await nextTick();
 
@@ -421,13 +403,11 @@ describe('Toast', () => {
       vi.advanceTimersByTime(800);
       await viewport(w).trigger('pointerenter');
 
-      // Well past the original deadline, but the clock is held.
       vi.advanceTimersByTime(5000);
       await flush();
       expect(roots(w)).toHaveLength(1);
 
       await viewport(w).trigger('pointerleave');
-      // Only the 200ms that were left should remain, not a fresh second.
       vi.advanceTimersByTime(250);
       await flush();
       expect(roots(w)).toHaveLength(0);
@@ -470,7 +450,6 @@ describe('Toast', () => {
       await flush(2);
       await viewport(w).trigger('pointerenter');
 
-      // The pointer never leaves, because the toast under it goes away.
       store.close(store.toasts.value[0].id);
       await flush();
       expect(roots(w)).toHaveLength(0);
@@ -589,7 +568,6 @@ describe('Toast', () => {
       store.close(store.toasts.value[0].id);
       await nextTick();
 
-      // Still in the DOM, carrying the hook its exit animation runs from.
       expect(roots(w)[0].attributes()).toHaveProperty('data-leave-to');
     });
 
@@ -737,11 +715,7 @@ describe('Toast', () => {
         new PointerEvent(type, { clientX: x, clientY: y, pointerId: 1, button: 0, bubbles: true, timeStamp } as PointerEventInit)
       );
 
-    /**
-     * Drags from the toast by `to` over `durationMs`. Deliberate by default:
-     * back-to-back events would imply a speed no hand produces, so every
-     * release would count as a flick.
-     */
+    // Back-to-back events would read as a flick, so the drag is spread over `durationMs`.
     async function swipe(
       w: VueWrapper<any>,
       to: { x?: number; y?: number },
@@ -815,7 +789,6 @@ describe('Toast', () => {
       const w = await show();
       const during = await swipe(w, { x: -64 });
 
-      // It gives a little, then stiffens: never past 48px however far the pull.
       expect(movementX(during.style)).toBeLessThan(0);
       expect(movementX(during.style)).toBeGreaterThan(-48);
       expect(roots(w)[0].attributes()).not.toHaveProperty('data-leave-to');
@@ -861,7 +834,6 @@ describe('Toast', () => {
     });
 
     it('does not replay the enter animation on a toast already on screen', async () => {
-      // Re-entering would flash the toast out to its starting style and back.
       const store = createToastStore();
       const w = mountToaster({ store });
 
@@ -919,7 +891,6 @@ describe('Toast', () => {
 
       await roots(w)[0].trigger('animationend');
 
-      // Off again, so the next repeat can put it back and restart the nudge.
       expect(roots(w)[0].attributes()).not.toHaveProperty('data-repeated');
     });
 
@@ -933,9 +904,7 @@ describe('Toast', () => {
       await flush(2);
       expect(roots(w)[0].attributes()).toHaveProperty('data-repeated');
 
-      // A second repeat before the first nudge has finished. The flag has to
-      // come off for a frame, or re-setting an attribute that is already there
-      // restarts no animation and the nudge is swallowed.
+      // The flag comes off for a frame, or re-setting an existing attribute restarts no animation.
       useToast(store).setToast({ id: 'ping', title: 'Ping' });
       await nextTick();
       await nextTick();
@@ -956,7 +925,6 @@ describe('Toast', () => {
       await nextTick();
       expect(roots(w)[0].attributes()).toHaveProperty('data-leave-to');
 
-      // It really is arriving again, so it enters rather than being nudged.
       useToast(store).setToast({ id: 'ping', title: 'Ping' });
       await nextTick();
 
@@ -972,7 +940,6 @@ describe('Toast', () => {
       useToast(store).setToast({ title: 'Something else' });
       await flush(2);
 
-      // The repeat must not jump the queue back to the front.
       useToast(store).setToast({ id: 'ping', title: 'Ping again' });
       await nextTick();
 
@@ -1014,7 +981,6 @@ describe('Toast', () => {
 describe('a provided store', () => {
   afterEach(() => defaultToastStore.closeAll());
 
-  /** A toaster under a component that provides `store`, and a button below it that adds a toast. */
   function mountUnder(store: ToastStore) {
     let add!: () => void;
     const Button = defineComponent(() => {
@@ -1076,7 +1042,6 @@ describe('a provided store', () => {
 
 describe('ids', () => {
   it('numbers a toast past one already showing under that number', () => {
-    // A server render's toasts are carried into the page's store with their ids.
     const store = createToastStore();
     store.add({ id: 'toast-1', title: 'From the server' });
     expect(store.add({ title: 'Mine' })).toBe('toast-2');

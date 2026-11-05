@@ -15,8 +15,7 @@ const props = withDefaults(
 
 const TELEPORTS = '#teleports';
 
-// A server can't look, so it always names `#teleports`: that is where an SSR
-// page (Nuxt's included) puts `teleports['#teleports']`.
+// SSR (Nuxt included) renders teleports into `#teleports`.
 function target() {
   if (props.to !== undefined) return props.to;
   return typeof document === 'undefined' || document.querySelector(TELEPORTS) ? TELEPORTS : 'body';

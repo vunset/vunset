@@ -19,7 +19,7 @@ interface ThemeConfig {
 
 const MODES: unknown[] = ['light', 'dark', 'system'];
 
-// Before any component asks for the theme, so these options are the ones it starts with.
+// Before any component asks for the theme, so it starts with these options.
 export default defineNuxtPlugin({
   name: 'vunset:theme',
   setup() {
@@ -56,8 +56,7 @@ export default defineNuxtPlugin({
 
     return {
       provide: {
-        // Reactive, so a template reads `$theme.current` without `.value`. `current` and
-        // `toggleTheme` are the old layer's names for `resolved` and `toggle`.
+        // `current` and `toggleTheme` are the old layer's names for `resolved` and `toggle`.
         theme: reactive({ ...theme, current: theme.resolved, toggleTheme: theme.toggle })
       }
     };

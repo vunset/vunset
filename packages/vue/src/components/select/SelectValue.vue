@@ -18,35 +18,17 @@ const props = withDefaults(
 defineSlots<{
   default(
     props: ListboxState & {
-      /**
-       * Every selected option.
-       * @attribute none
-       */
+      /** Every selected option. @attribute none */
       selected: RenderedOption[];
-      /**
-       * The selected options the trigger names, up to the root's `flatten`.
-       * @attribute none
-       */
+      /** The selected options the trigger names, up to the root's `flatten`. @attribute none */
       visible: RenderedOption[];
-      /**
-       * How many selected options `visible` leaves out.
-       * @attribute none
-       */
+      /** How many selected options `visible` leaves out. @attribute none */
       hiddenCount: number;
-      /**
-       * Whether `visible` leaves any out.
-       * @attribute none
-       */
+      /** Whether `visible` leaves any out. @attribute none */
       collapsed: boolean;
-      /**
-       * The selection as one line of text: "Vue, TypeScript", or "Vue and 2 more".
-       * @attribute none
-       */
+      /** The selection as one line of text: "Vue, TypeScript", or "Vue and 2 more". @attribute none */
       summary: string;
-      /**
-       * The `placeholder` prop.
-       * @attribute none
-       */
+      /** The `placeholder` prop. @attribute none */
       placeholder: string | undefined;
     }
   ): unknown;

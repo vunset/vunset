@@ -95,7 +95,6 @@ describe('Submenu', () => {
       expect(subTrigger().getAttribute('role')).toBe('menuitem');
       expect(subTrigger().getAttribute('aria-haspopup')).toBe('menu');
       expect(subTrigger().getAttribute('aria-expanded')).toBe('false');
-      // An item, not a tab stop of its own.
       expect(subTrigger().getAttribute('tabindex')).toBe('-1');
       expect(subMenu()).toBeNull();
     });
@@ -111,10 +110,7 @@ describe('Submenu', () => {
       await openRoot();
       hover(subTrigger());
       await settle();
-      // Both menus are laid out separately, each exposing its own resolved side.
-      // Which side a submenu actually lands on depends on real collision
-      // geometry, so that belongs in a browser test, not here — jsdom reports
-      // every element as zero-sized.
+      // Which side a submenu lands on needs real collision geometry, so that belongs in a browser test.
       expect(subMenu()).not.toBe(rootMenu());
       expect(subMenu()!.getAttribute('data-side')).toBeTruthy();
     });
@@ -187,7 +183,6 @@ describe('Submenu', () => {
       await settle();
       key(document.activeElement!, 'ArrowLeft');
       await settle();
-      // Still inside the File menu, not moved along the bar.
       expect(barTrigger().getAttribute('aria-expanded')).toBe('true');
     });
 
@@ -212,7 +207,6 @@ describe('Submenu', () => {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
       await settle();
       expect(subMenu()).toBeNull();
-      // The parent survives the first press.
       expect(rootMenu()).not.toBeNull();
 
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
@@ -259,8 +253,7 @@ describe('Submenu placement', () => {
     await openRoot();
     hover(subTrigger());
     await settle();
-    // The default must come from the composable, which knows this menu is
-    // nested. A component-level default would shadow it and force 'bottom'.
+    // The default comes from the composable, which knows the menu is nested; a component default would force 'bottom'.
     expect(subMenu()!.getAttribute('data-side')).toBe('right');
   });
 
@@ -272,7 +265,6 @@ describe('Submenu placement', () => {
 });
 
 describe('Submenu placement overrides', () => {
-  /** A submenu whose placement is set explicitly on MenuRoot. */
   function mountWithSide(side: string, align?: string) {
     const Host = defineComponent({
       setup() {
@@ -332,7 +324,6 @@ describe('Submenu placement overrides', () => {
 
 describe('Submenu collision handling', () => {
   it('flips to the left when there is no room on the right', async () => {
-    // Anchor hard against the right edge: a right-opening submenu cannot fit.
     setLayout({ x: 940, y: 200, width: 120, height: 32 });
     mountNested();
     await openRoot();
@@ -351,14 +342,11 @@ describe('Submenu collision handling', () => {
   });
 
   it('falls back to another axis when neither side fits', async () => {
-    // A viewport narrower than the menu on both sides of the anchor.
     setLayout({ x: 60, y: 100, width: 120, height: 32 }, { width: 260, height: 768 });
     mountNested();
     await openRoot();
     hover(subTrigger());
     await settle();
-    // Nowhere to go horizontally, so it must move to the vertical axis rather
-    // than hang off the edge.
     expect(['top', 'bottom']).toContain(subMenu()!.getAttribute('data-side'));
   });
 
@@ -379,10 +367,7 @@ describe('Submenu fitting', () => {
   const availableHeight = () =>
     Number.parseFloat(subMenu()!.parentElement!.style.getPropertyValue('--available-height'));
 
-  /**
-   * Measured one mount at a time: the helpers query the whole document, so two
-   * live menubars would have the second's assertions read the first's DOM.
-   */
+  // One mount at a time: the helpers query the whole document.
   async function roomOnViewport(height: number) {
     setLayout({ x: 200, y: 100, width: 120, height: 32 }, { width: 1024, height });
     const { wrapper } = mountNested();
@@ -400,9 +385,7 @@ describe('Submenu fitting', () => {
     const tall = await roomOnViewport(768);
     const short = await roomOnViewport(300);
 
-    // A side-placed menu may slide vertically, so its room is bounded by the
-    // viewport rather than by where the anchor sits — which is exactly the
-    // measure a small screen needs to cap against.
+    // A side-placed menu may slide vertically, so its room is bounded by the viewport, not the anchor.
     expect(short).toBeLessThan(tall);
     expect(short).toBeGreaterThan(0);
   });
@@ -414,12 +397,7 @@ describe('Submenu fitting', () => {
 });
 
 describe('a hover-opened chain', () => {
-  /**
-   * A submenu is portaled, so it is not a DOM descendant of the menu that
-   * owns it. Moving the pointer into one fires `pointerleave` on the parent's
-   * popup, which on its own reads as leaving the menu — and the whole chain
-   * would close out from under the pointer.
-   */
+  // A portaled submenu isn't a DOM descendant, so entering it fires `pointerleave` on the parent, which must not close the chain.
   const enter = (el: Element) => el.dispatchEvent(new PointerEvent('pointerenter'));
   const leave = (el: Element) => el.dispatchEvent(new PointerEvent('pointerleave'));
 
@@ -433,14 +411,12 @@ describe('a hover-opened chain', () => {
     await settle();
     expect(rootMenu()).not.toBeNull();
 
-    // Into the menu, then onto the submenu trigger.
     leave(barTrigger());
     enter(rootMenu()!);
     enter(subTrigger());
     await settle();
     expect(subMenu()).not.toBeNull();
 
-    // Across the gap into the submenu itself — the parent popup is left behind.
     leave(rootMenu()!);
     enter(subMenu()!);
     vi.advanceTimersByTime(1000);
@@ -467,7 +443,6 @@ describe('a hover-opened chain', () => {
     enter(subMenu()!);
     await settle();
 
-    // Away from everything: the hold is released up the chain.
     leave(subMenu()!);
     vi.advanceTimersByTime(1000);
     await settle();

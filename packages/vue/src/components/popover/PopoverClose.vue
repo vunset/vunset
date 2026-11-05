@@ -14,10 +14,7 @@ const props = withDefaults(
 );
 
 defineSlots<{
-  /**
-   * The popover's state.
-   * @slotOnly
-   */
+  /** The popover's state. @slotOnly */
   default(props: PopoverState): unknown;
 }>();
 

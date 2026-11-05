@@ -16,11 +16,6 @@ afterEach(() => resetLayout());
 
 const ROOT_PROPS = ['data', 'xKey', 'stacked', 'orientation', 'hidden', 'label', 'height'];
 
-/**
- * A bar per key in `categories`, with both axes, a grid and a tooltip. The
- * props go where they belong: the root's to the root, `x*`/`y*` to the axes,
- * the rest to every bar.
- */
 function mountBar(props: Record<string, any> = {}) {
   const { categories = ['visits', 'signups'], xFormat, yFormat, numTicks, trimLabels, xAxis = true, yAxis = true, colors, legend, ...rest } = props;
   const root = Object.fromEntries(Object.entries(rest).filter(([key]) => ROOT_PROPS.includes(key)));
@@ -44,7 +39,6 @@ function mountBar(props: Record<string, any> = {}) {
 const bars = (wrapper: VueWrapper<any>) => marks(wrapper, 'bar');
 const fills = (wrapper: VueWrapper<any>) => fillsOf(wrapper, 'bar');
 
-/** The horizontal extent of a bar, from the x coordinates of its outline. */
 function span(d: string): [number, number] {
   const xs = [...d.matchAll(/[MH]([\d.-]+)/g)].map((match) => Number(match[1]));
   return [Math.min(...xs), Math.max(...xs)];
@@ -85,7 +79,6 @@ describe('grouping and stacking', () => {
 
     expect(arcs(mountBar())).toHaveLength(6);
     expect(arcs(mountBar({ roundedCorners: 0 }))).toHaveLength(0);
-    // Two categories stacked: only the top one of each row is rounded.
     expect(arcs(mountBar({ stacked: true }))).toHaveLength(3);
   });
 });

@@ -7,10 +7,7 @@ import type { UseFieldReturn } from '../../shared/use-field';
 export type CheckboxGroupValue = string | number;
 
 export interface CheckboxGroupState {
-  /**
-   * The checked boxes' values.
-   * @attribute none
-   */
+  /** The checked boxes' values. @attribute none */
   value: CheckboxGroupValue[];
   /** Whether every box ignores interaction. */
   disabled: boolean;

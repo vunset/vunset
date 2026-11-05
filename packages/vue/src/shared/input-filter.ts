@@ -1,12 +1,4 @@
-/**
- * What may be typed into a control.
- *
- * - A **string** is a regular expression source, anchored for you, so
- *   `'[0-9]*'` reads like the `pattern` attribute but applies to every
- *   intermediate value rather than the finished one.
- * - A **RegExp** is tested against the whole prospective value.
- * - A **function** receives the prospective value and the current one.
- */
+/** What may be typed: a regex source (anchored, applied to every intermediate value), a RegExp, or a predicate over the prospective and current values. */
 export type FieldFilter =
   | string
   | RegExp
@@ -14,12 +6,7 @@ export type FieldFilter =
 
 const compiled = new Map<string, RegExp | null>();
 
-/**
- * Turns a filter into a predicate over the prospective value.
- *
- * Returns `null` for a source that will not compile, so a typo in a filter
- * leaves the control usable instead of rejecting every keystroke.
- */
+/** A predicate over the prospective value, or `null` for a source that won't compile, so a typo doesn't block every keystroke. */
 export function toFilterPredicate(
   filter: FieldFilter,
 ): ((next: string, previous: string) => boolean) | null {
@@ -42,8 +29,7 @@ export function toFilterPredicate(
     return expression && ((next: string) => expression.test(next));
   }
 
-  // `lastIndex` persists on a global or sticky regex, so `test` would alternate
-  // between true and false for the same input. A flagless copy cannot.
+  // `lastIndex` persists on a global or sticky regex, so `test` would alternate; a flagless copy can't.
   const expression =
     filter.global || filter.sticky
       ? new RegExp(filter.source, filter.flags.replace(/[gy]/g, ''))
@@ -61,13 +47,7 @@ export function insertedText(event: InputEvent): string | null {
   return event.dataTransfer?.getData('text/plain') ?? null;
 }
 
-/**
- * The value the control would hold if the insertion went ahead.
- *
- * Returns `null` when the element exposes no selection — `number`, `email` and
- * `date` inputs among others — in which case only the inserted text itself can
- * be judged.
- */
+/** The value after the insertion, or `null` where the element exposes no selection (`number`, `email`, `date`). */
 export function prospectiveValue(
   element: HTMLInputElement,
   inserted: string,
@@ -93,10 +73,7 @@ const bound = (raw: number | string | undefined) => {
   return Number.isFinite(number) ? number : undefined;
 };
 
-/**
- * Whether a typed number breaks `min`, `max` or `step`, as a native number
- * input would judge it. A half-typed `-` or `.` is no number yet, so it passes.
- */
+/** Whether a typed number breaks `min`, `max` or `step` as a native number input would. A half-typed `-` or `.` passes. */
 export function outOfRange(
   value: string,
   limits: { min?: number | string; max?: number | string; step?: number | string },

@@ -1,19 +1,7 @@
 import type { ComputedRef, Ref } from 'vue';
 import { createContext } from './context';
 
-/**
- * The nearest dismissable surface: a dialog, drawer, popover, menu, tooltip or
- * listbox popup.
- *
- * Every such composable publishes its parts here under one shared key, which is
- * what lets a single `<Portal>`, `<Positioner>` and `<Popup>` serve all of them.
- * Without it each component needs its own three components whose only
- * distinguishing feature is which context they read — eleven files that differed
- * by one identifier.
- *
- * `inject` resolves to the nearest provider, so a menu inside a dialog gets the
- * menu's surface rather than the dialog's, which is what nesting should mean.
- */
+// The nearest dismissable surface. One key lets a single Portal, Positioner and Popup serve them all; the nearest provider wins.
 export interface SurfaceContext {
   /** Whether the surface belongs in the DOM. */
   present: Ref<boolean>;

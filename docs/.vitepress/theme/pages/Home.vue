@@ -13,7 +13,8 @@
         <a
           v-if="release"
           :href="withBase('/changelog')"
-          class="pill inline-flex items-center gap-1.25 rounded-[20px] py-1 pr-2.5 pl-1 text-sm text-docs-text/50 duration-150 hover:text-docs-text"
+          style="--i: 0"
+          class="home-appear pill inline-flex items-center gap-1.25 rounded-[20px] py-1 pr-2.5 pl-1 text-sm text-docs-text/50 duration-150 hover:text-docs-text"
         >
           <span class="rounded-full bg-docs-accent/15 px-2 py-0.5 font-mono text-xs/4 text-docs-accent">
             v{{ release.version }}
@@ -22,9 +23,9 @@
           <span aria-hidden="true">→</span>
         </a>
 
-        <h1 class="text-4xl font-medium text-docs-text sm:text-5xl">{{ hero.text }}</h1>
+        <h1 style="--i: 1" class="home-appear text-4xl font-medium text-docs-text sm:text-5xl">{{ hero.text }}</h1>
 
-        <p v-if="hero.tagline" class="text-lg text-docs-text/80">
+        <p v-if="hero.tagline" style="--i: 2" class="home-appear text-lg text-docs-text/80">
           <span v-for="line in hero.tagline.split(/(?<=\.) /)" :key="line" class="sm:block">{{ line }} </span>
         </p>
       </section>
@@ -35,9 +36,10 @@
         @mouseleave="hovered = undefined"
       >
         <div
-          v-for="item in packages"
+          v-for="(item, index) in packages"
           :key="item.name"
-          class="home-card flex flex-col gap-1.5 rounded-2xl data-hovered:scale-100 p-1.5 text-docs-text backdrop-blur-xl"
+          :style="{ '--i': 3 + index }"
+          class="home-appear home-card flex flex-col gap-1.5 rounded-2xl data-hovered:scale-100 p-1.5 text-docs-text backdrop-blur-xl"
           :class="item.accent ? 'relative z-1 md:scale-100' : 'scale-90'"
           :data-primary="item.accent || undefined"
           :data-hovered="item.name === hovered || undefined"
@@ -84,7 +86,10 @@
         </div>
       </section>
 
-      <section class="mt-16 flex flex-col items-center gap-6 md:mt-32">
+      <section
+        :style="{ '--i': 3 + packages.length }"
+        class="home-appear mt-16 flex flex-col items-center gap-6 md:mt-32"
+      >
         <div class="flex flex-col items-center gap-3 text-center">
           <h2 class="text-3xl font-medium text-docs-text md:text-4xl">Style it your way</h2>
           <p class="text-docs-text/80">One input, written three ways. Every one renders the same.</p>
@@ -227,17 +232,35 @@ html:not(.dark) {
 }
 
 .home-action {
-  @apply bg-docs-bg text-docs-text duration-200;
+  @apply bg-docs-bg text-docs-text duration-200 hover:opacity-85;
   box-shadow:
     inset 0 1px 0 0 --alpha(var(--color-docs-text) / 20%),
     inset 0 0 0 1px var(--color-docs-border);
-  transition-property: background, color, box-shadow;
+  transition-property: background, color, box-shadow, opacity;
 }
 
 .home-card[data-active] .home-action {
   @apply text-docs-bg;
   background: linear-gradient(--alpha(var(--color-docs-text) / 80%), var(--color-docs-text));
   box-shadow: inset 0 0 0 1px var(--color-docs-text);
+}
+
+@keyframes home-appear {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+    translate: 0 8px;
+  }
+}
+
+.home-appear {
+  animation: home-appear 700ms cubic-bezier(0.2, 0.8, 0.2, 1) calc(var(--i, 0) * 70ms) backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-appear {
+    animation: none;
+  }
 }
 
 .home-copy [data-part='copy-icons'] {

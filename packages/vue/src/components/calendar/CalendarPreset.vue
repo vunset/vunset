@@ -19,20 +19,11 @@ const props = withDefaults(
 defineSlots<{
   /** The preset's details; empty for a `value` that names no preset. */
   default(props: {
-    /**
-     * Which preset it is.
-     * @attribute `data-value="…"`
-     */
+    /** Which preset it is. @attribute `data-value="…"` */
     key?: string;
-    /**
-     * What it is called.
-     * @attribute none
-     */
+    /** What it is called. @attribute none */
     label?: string;
-    /**
-     * The first and last day it selects.
-     * @attribute none
-     */
+    /** The first and last day it selects. @attribute none */
     range?: [Date, Date];
     /** Whether it can't be applied: its days fall outside `min`/`max`, or it is a quarter yet to start. */
     disabled?: boolean;

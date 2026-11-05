@@ -19,25 +19,13 @@ const props = withDefaults(
 
 defineSlots<{
   default(props: {
-    /**
-     * `0` (Sunday) to `6`.
-     * @attribute `data-value="…"`
-     */
+    /** `0` (Sunday) to `6`. @attribute `data-value="…"` */
     index: WeekDay;
-    /**
-     * The full name: "Monday".
-     * @attribute none
-     */
+    /** The full name: "Monday". @attribute none */
     long: string;
-    /**
-     * The short name: "Mon".
-     * @attribute none
-     */
+    /** The short name: "Mon". @attribute none */
     short: string;
-    /**
-     * The narrowest name: "M".
-     * @attribute none
-     */
+    /** The narrowest name: "M". @attribute none */
     narrow: string;
     /** Whether it is a Saturday or Sunday. */
     weekend: boolean;

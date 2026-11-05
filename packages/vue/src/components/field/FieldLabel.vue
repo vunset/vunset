@@ -18,8 +18,7 @@ const { labelProps, state, registerLabel } = useFieldContext();
 
 onBeforeUnmount(registerLabel());
 
-// `for` only means something on a `<label>`; any other tag names its control
-// through the control's `aria-labelledby` alone.
+// `for` only works on a `<label>`; other tags rely on `aria-labelledby`.
 const merged = usePartProps(() => {
   if (!props.as || props.as === 'label') return labelProps.value;
   const { for: _for, ...rest } = labelProps.value;

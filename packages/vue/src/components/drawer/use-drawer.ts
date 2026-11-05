@@ -9,41 +9,19 @@ import { createContext } from '../../shared/context';
 export type DrawerSide = 'top' | 'right' | 'bottom' | 'left';
 
 export interface DrawerState extends DialogState {
-  /**
-   * The edge it enters from.
-   * @attribute `data-side="…"`
-   */
+  /** The edge it enters from. @attribute `data-side="…"` */
   side: DrawerSide;
   /** Whether the drawer is being dragged. */
   dragging: boolean;
 }
 
 export interface UseDrawerOptions extends UseDialogOptions {
-  /** Which edge the drawer enters from. */
   side?: MaybeRefOrGetter<DrawerSide | undefined>;
-  /**
-   * How the drawer can be swiped away: `'handle'` by its handle, `true` from
-   * anywhere on it as well, `false` not at all. From anywhere, a press only
-   * becomes a drag once it moves, so taps on buttons inside still land, and
-   * presses in text fields never drag; content can't scroll along the axis.
-   *
-   * @default 'handle'
-   */
+  /** @default 'handle' */
   swipeable?: MaybeRefOrGetter<boolean | 'handle' | undefined>;
-  /**
-   * Fraction of the drawer's own size that must be traveled before releasing
-   * dismisses it.
-   *
-   * @default 0.4
-   */
+  /** Fraction of its size. @default 0.4 */
   dismissThreshold?: MaybeRefOrGetter<number | undefined>;
-  /**
-   * Speed, in pixels per millisecond, past which a flick dismisses without
-   * having to reach `dismissThreshold`. A small minimum travel still applies, so
-   * a fast twitch cannot dismiss by itself.
-   *
-   * @default 0.4
-   */
+  /** Pixels per millisecond. @default 0.4 */
   velocityThreshold?: MaybeRefOrGetter<number | undefined>;
 }
 
@@ -51,15 +29,12 @@ export interface UseDrawerReturn extends Omit<UseDialogReturn, 'state'> {
   state: ComputedRef<DrawerState>;
   /** Bind to the grab area. Binding it to the popup makes the whole surface draggable. */
   handleProps: ComputedRef<Record<string, unknown>>;
-  /** How far the drawer has been dragged from rest, in pixels. */
   offset: Ref<number>;
   dragging: Ref<boolean>;
 }
 
-/** How far a press on the drawer moves along its axis before it is a drag rather than a tap. */
 const DRAG_SLOP = 4;
 
-/** Where a press means editing, not dragging. */
 const EDITABLE = 'input, textarea, select, [contenteditable]:not([contenteditable="false"])';
 
 const AXIS: Record<DrawerSide, { axis: 'x' | 'y'; sign: 1 | -1 }> = {
@@ -83,10 +58,8 @@ export function useDrawer(options: UseDrawerOptions = {}): UseDrawerReturn {
   let pointerId: number | null = null;
   let start = 0;
   let velocity = createVelocity(0, 0);
-  // The element whose handlers run this gesture: the handle, or the drawer
-  // itself. A press on the handle bubbles to the drawer, which must stand back.
+  // A press on the handle bubbles to the drawer, which must stand back.
   let owner: EventTarget | null = null;
-  // A press on the drawer that hasn't moved far enough to be a drag yet.
   let pending = false;
 
   const state = computed<DrawerState>(() => ({ ...dialog.state.value, side: side(), dragging: dragging.value }));

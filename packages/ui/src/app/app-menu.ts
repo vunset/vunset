@@ -78,10 +78,7 @@ export interface AppMenubarLink {
 /** One entry of an AppMenubar's `items`: a menu, or a link. */
 export type AppMenubarEntry = AppMenubarMenu | AppMenubarLink;
 
-/**
- * What an entry with `to` renders as: `link` (else `configureLink`'s) with `to`, or an `<a>` with `href`.
- * A disabled one is an `<a>` with nowhere to go, since a router link can't render without its `to`.
- */
+// A disabled entry is an `<a>` with nowhere to go: a router link can't render without its `to`.
 export function linkProps(link: string | Component | undefined, to: unknown, disabled?: boolean) {
   if (disabled) return { as: 'a' };
   const tag = link ?? defaultLink();

@@ -25,7 +25,6 @@ interface BoxSpec {
   [key: string]: unknown;
 }
 
-/** A group of boxes; `model` is wired as `v-model` when given. */
 function mountGroup(
   groupProps: Record<string, unknown> = {},
   specs: BoxSpec[] = [{ value: 'a' }, { value: 'b' }, { value: 'c' }],
@@ -218,7 +217,6 @@ describe('CheckboxGroup', () => {
 
       expect(parentState(await render(['a', 'b'], ['a', 'b']))).toBe('true');
       expect(parentState(await render(['a'], ['a', 'b']))).toBe('mixed');
-      // Without them it can't know the boxes yet.
       expect(parentState(await render(['a', 'b']))).toBe('false');
     });
 
@@ -337,7 +335,6 @@ describe('CheckboxGroup', () => {
       const ids = boxes().map((el) => el.id);
       expect(new Set(ids).size).toBe(2);
       expect(boxes().some((el) => el.hasAttribute('aria-describedby'))).toBe(false);
-      // the name still reaches the inputs, through the group
       expect(boxes().map((el) => inputOf(el).name)).toEqual(['topics', 'topics']);
     });
 

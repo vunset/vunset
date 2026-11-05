@@ -25,7 +25,6 @@ const DATA = [
 beforeEach(() => setLayout({ width: 600, height: 300 }));
 afterEach(() => resetLayout());
 
-/** A chart of `parts`, by default two areas with both axes, a grid and a tooltip. */
 function mountChart(
   props: Record<string, any> = {},
   parts: () => VNode[] = () => [
@@ -105,7 +104,6 @@ describe('the root', () => {
     await nextTick();
     await nextTick();
 
-    // Registered last, but drawn first: it comes first in the template.
     expect(strokes(wrapper)).toEqual(['#f00', '#0f0']);
   });
 
@@ -186,7 +184,6 @@ describe('the area', () => {
       .findAll('linearGradient')
       .map((node) => node.attributes('id'));
 
-    // A shared id would have the second chart repaint the first.
     expect(ids).toHaveLength(2);
     expect(new Set(ids).size).toBe(2);
   });
@@ -377,7 +374,6 @@ describe('a continuous x axis', () => {
     const [a, b, c] = xs(wrapper);
 
     expect((c! - b!) / (b! - a!)).toBeCloseTo(3);
-    // Unformatted, the ticks read as the scale writes them.
     expect(ticks(wrapper, 'x').length).toBeGreaterThan(1);
     expect(ticks(wrapper, 'x').some((label) => /\d/.test(label))).toBe(true);
   });
@@ -576,7 +572,6 @@ describe('the legend', () => {
 
   const entries = (wrapper: VueWrapper<any>) => wrapper.findAll('[data-part="legend-item"]');
 
-  // Where the legend sits in the page, against the drawing.
   const afterPlot = (wrapper: VueWrapper<any>) => {
     const legend = wrapper.find('[data-part="legend"]').element;
     const plot = wrapper.find('[data-part="chart-plot"]').element;
@@ -594,7 +589,6 @@ describe('the legend', () => {
     expect(afterPlot(bottom)).toBe(true);
     expect(bottom.find('[data-part="legend"]').attributes('data-placement')).toBe('bottom');
 
-    // Below, it still drives the chart, and the parts draw once.
     expect(marks(bottom, 'line')).toHaveLength(2);
     await entries(bottom)[0]!.trigger('click');
     expect(marks(bottom, 'line')).toHaveLength(1);
@@ -676,7 +670,6 @@ describe('the legend', () => {
     expect(marks(wrapper, 'line')).toHaveLength(1);
     expect(pressed()).toEqual(['true', 'false']);
 
-    // A hidden one takes over.
     await entries(wrapper)[1]!.trigger('click');
     expect(pressed()).toEqual(['false', 'true']);
 
@@ -697,7 +690,6 @@ describe('the legend', () => {
     expect(last()).toEqual([['b']]);
     await items()[0]!.trigger('click', { metaKey: true });
     expect(last()).toEqual([['b', 'c', 'a']]);
-    // A plain click still isolates.
     await items()[1]!.trigger('click');
     expect(last()).toEqual([['a', 'c']]);
   });
@@ -722,7 +714,6 @@ describe('the legend', () => {
       const drawn = () => marks(wrapper, 'line').map((line) => line.attributes('d'));
       const started = drawn();
       await new Promise((resolve) => setTimeout(resolve, 400));
-      // Mid-tween right after the click, settled once it has run.
       expect(drawn()).not.toEqual(started);
       const settled = drawn();
       await new Promise((resolve) => setTimeout(resolve, 100));
@@ -757,7 +748,6 @@ describe('the legend', () => {
     await nextTick();
     await entries(wrapper)[0]!.trigger('click');
 
-    // Hiding the first must not slide the second onto the first color.
     expect(strokes(wrapper)).toEqual(['var(--chart-color-1, currentColor)']);
   });
 
@@ -800,7 +790,6 @@ describe('the legend', () => {
     const wrapper = withLegend({ modelValue: ['visits'] });
     await nextTick();
 
-    // The legend was told what is hidden; the chart it sits in was not.
     expect(entries(wrapper)[0]!.attributes('data-hidden')).toBe('');
     expect(marks(wrapper, 'line')).toHaveLength(2);
   });

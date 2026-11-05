@@ -2,7 +2,6 @@ import { watch, type Ref } from 'vue';
 import { waitForAnimationsToFinish } from './animations';
 
 export interface UseExitAnimationOptions {
-  /** Whether the surface is open. */
   open: () => boolean;
   /** Whether it is still in the DOM. Outlives `open` for the duration of the exit. */
   mounted: Ref<boolean>;

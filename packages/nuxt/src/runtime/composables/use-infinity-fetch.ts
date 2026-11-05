@@ -74,11 +74,9 @@ export function useInfinityFetch<T>(url: string, options: UseInfinityFetchOption
       const target = value instanceof Element ? value : value?.$el;
       if (!(target instanceof Element)) return;
 
-      // +1: zoomed, `scrollTop` and rects are fractional while `scrollHeight`/`clientHeight`/`innerHeight`
-      // are rounded, so the fully scrolled end can sit a fraction of a pixel short of 0.
+      // +1: when zoomed, positions are fractional but sizes rounded, so the end can fall short of 0.
       const offset = (options.offset ?? 0) + 1;
-      // A list that doesn't scroll itself has nothing left to scroll, so only the window counts; a box capped
-      // to a height is always in the window, so only its own scroll counts.
+      // Only the window counts for a list that doesn't scroll itself, only its own scroll for one that does.
       const inWindow = target.getBoundingClientRect().bottom <= window.innerHeight + offset;
       const scrolledToEnd = target.scrollHeight - target.scrollTop - target.clientHeight <= offset;
 
@@ -88,8 +86,7 @@ export function useInfinityFetch<T>(url: string, options: UseInfinityFetchOption
     // Captured, so a scroll inside any scrolling ancestor counts too.
     window.addEventListener('scroll', check, { capture: true, passive: true });
     window.addEventListener('resize', check, { passive: true });
-    // A page that leaves the end still in view loads the next at once. After the render, so the
-    // page's items are measured, not the list as it was before them.
+    // After the render, so a page that leaves the end in view measures its new items and loads the next.
     watch(status, (value) => value === 'idle' && check(), { flush: 'post' });
 
     onScopeDispose(() => {

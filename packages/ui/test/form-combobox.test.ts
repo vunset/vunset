@@ -237,7 +237,6 @@ describe('FormCombobox', () => {
       expect(panel().hasAttribute('inert')).toBe(true);
 
       await type('company 32');
-      // Company 32 and 320–329: the folded group opens for its hits.
       expect(panel().hasAttribute('inert')).toBe(false);
       expect(panel().querySelectorAll('[data-part="preset"]')).toHaveLength(11);
 
@@ -254,7 +253,6 @@ describe('FormCombobox', () => {
 
       expect(viewport.querySelector('.form-listbox-list')).not.toBeNull();
       expect(viewport.previousElementSibling!.classList.contains('form-listbox-presets')).toBe(true);
-      // Presets and list scroll as one body, capped by the popup.
       expect(viewport.parentElement!.classList.contains('form-listbox-body')).toBe(true);
     });
 
@@ -276,7 +274,6 @@ describe('FormCombobox', () => {
       expect(check('Signals').querySelector('svg')).not.toBeNull();
       expect(check('Everything').querySelector('svg')).toBeNull();
       expect(check('Signals').getAttribute('aria-hidden')).toBe('true');
-      // The heading's label, which names the group, holds the name alone.
       expect(document.getElementById(heading.parentElement!.getAttribute('aria-labelledby')!)!.textContent!.trim()).toBe('Saved');
     });
 

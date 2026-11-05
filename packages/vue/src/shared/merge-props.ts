@@ -64,12 +64,7 @@ function addListeners(listeners: Map<string, EventHandler[][]>, key: string, val
   else listeners.set(key, [group]);
 }
 
-/**
- * One listener running the sets' groups from the last to the first. A DOM
- * event gets `preventInternalHandler` even when there is a single handler, so a
- * caller can call it without knowing whether the library attached one; its
- * effect ends with this element's handlers, not with the event.
- */
+// A DOM event always gets `preventInternalHandler`; it skips only this element's earlier handlers.
 function dispatcher(groups: EventHandler[][]): EventHandler {
   const [outermost, ...inner] = [...groups].reverse().flat();
 

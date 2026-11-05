@@ -11,10 +11,7 @@ const props = defineProps<{
 }>();
 
 defineSlots<{
-  /**
-   * The pagination's state.
-   * @slotOnly The element carries `data-disabled` while there is no page that way.
-   */
+  /** The pagination's state. @slotOnly The element carries `data-disabled` while there is no page that way. */
   default(props: PaginationState): unknown;
 }>();
 

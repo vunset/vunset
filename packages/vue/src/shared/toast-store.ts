@@ -18,12 +18,7 @@ export interface ToastOptions<Data = unknown> {
   manualClose?: boolean;
   /** Milliseconds before it dismisses itself. Ignored when `manualClose` is set. */
   timeout?: number;
-  /**
-   * Renders this one toast instead of the viewport's registered template.
-   *
-   * The escape hatch for a toast that looks nothing like the others — it still
-   * has to render a `ToastRoot` to take part in the stack.
-   */
+  /** Renders this toast instead of the viewport's template. It must still render a `ToastRoot`. */
   slot?: (toast: Toast<Data>) => VNodeChild;
   /** Anything else the template needs. */
   data?: Data;
@@ -36,14 +31,7 @@ export interface Toast<Data = unknown> extends ToastOptions<Data> {
   transitionStatus: ToastTransitionStatus;
   /** Measured natural height, published so the stack can lay itself out. */
   height: number;
-  /**
-   * How many times this toast has been raised again under the same id.
-   *
-   * `0` for one that has only been shown once. A repeat replaces the toast
-   * where it stands rather than stacking a duplicate, so this counter is the
-   * only trace of it — and what a stylesheet can hang a nudge on to show that
-   * something happened.
-   */
+  /** How many times it was raised again under the same id, for a stylesheet to nudge on. `0` at first. */
   repeatCount: number;
 }
 
@@ -107,9 +95,7 @@ export function createToastStore(): ToastStore {
   const expanded = computed(() => hovering.value || focused.value);
 
   interface Timer {
-    /** Time still owed while paused. */
     remaining: number;
-    /** When it fires, while running. */
     deadline: number;
     handle: ReturnType<typeof setTimeout> | undefined;
   }
@@ -123,11 +109,7 @@ export function createToastStore(): ToastStore {
     return toasts.value.find((toast) => toast.id === id);
   }
 
-  /**
-   * Where each toast sits, recomputed from the list rather than stored on it.
-   * A leaving toast drops out of the running total at once, so the ones behind
-   * close the gap while it fades rather than after it is gone.
-   */
+  // Derived from the list, so a leaving toast frees its space while it fades.
   const placements = computed(() => {
     const map = new Map<ToastId, ToastPlacement>();
     let resting = 0;
@@ -174,8 +156,7 @@ export function createToastStore(): ToastStore {
     }
     clearTimeout(timer.handle);
     timer.handle = undefined;
-    // Banked rather than restarted: a toast the user has read halfway through
-    // should not serve its full time again every time the pointer passes over.
+    // Banked rather than restarted, so a half-read toast doesn't serve its full time again.
     timer.remaining = Math.max(0, timer.deadline - Date.now());
   }
 
@@ -215,16 +196,13 @@ export function createToastStore(): ToastStore {
 
     const existing = toasts.value.findIndex((entry) => entry.id === id);
     if (existing !== -1) {
-      // Reusing an id replaces the toast in place, so a progress message can be
-      // rewritten without the stack reshuffling underneath it.
+      // Reusing an id replaces the toast in place, so the stack doesn't reshuffle.
       clearTimer(id);
       timers.delete(id);
       runs.delete(id);
 
       const previous = toasts.value[existing];
-      // One already on screen must not replay its enter animation, or it
-      // flashes out and back in. One caught on its way out really is arriving
-      // again, so it enters properly.
+      // One on screen must not replay its enter animation; one caught leaving enters again.
       const returning = previous.transitionStatus === 'leave';
 
       const next = toasts.value.slice();
@@ -340,18 +318,10 @@ export function createToastStore(): ToastStore {
   };
 }
 
-/**
- * The store used when none is named.
- *
- * A module-level instance is what lets `useToast().setToast(...)` be called from
- * a plain module — an API client, a router guard — with nothing to wire up.
- * Anything that needs isolation, such as a server render or a second app on the
- * page, should create its own with {@link createToastStore}.
- */
+/** The store used when none is named, so `useToast()` works from plain modules. Server renders should create their own. */
 export const defaultToastStore = serverSafe(createToastStore());
 
-// The shared store outlives a server request, so a toast added there would show
-// up in every later one. It is ignored instead.
+// It outlives a server request, so a toast added there would leak into later ones; ignored instead.
 function serverSafe(store: ToastStore): ToastStore {
   const add = store.add;
   store.add = (options) => {

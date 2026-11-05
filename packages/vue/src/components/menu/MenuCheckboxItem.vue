@@ -16,10 +16,8 @@ const props = withDefaults(
     /** Can't be toggled, and arrow keys skip it. */
     disabled?: boolean;
     /**
-     * Whether toggling this item closes the menu.
-     *
-     * Off by default, unlike a plain item: a menu that shuts on the first tick
-     * makes setting two of them a chore.
+     * Whether toggling this item closes the menu. Off by default, unlike a plain item:
+     * a menu that shuts on the first tick makes setting two of them a chore.
      */
     closeOnClick?: boolean;
     /** Element or component to render. */
@@ -37,10 +35,7 @@ const emit = defineEmits<{
 
 defineSlots<{
   default(props: {
-    /**
-     * Whether it is checked.
-     * @attribute `data-checked` while checked, `data-unchecked` otherwise
-     */
+    /** Whether it is checked. @attribute `data-checked` while checked, `data-unchecked` otherwise */
     checked: boolean;
     /** Whether it ignores interaction. */
     disabled: boolean;

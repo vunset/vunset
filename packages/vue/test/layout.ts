@@ -1,10 +1,4 @@
-/**
- * A stand-in for layout in jsdom, which performs none.
- *
- * Tests mutate this to place the anchor near a viewport edge and so exercise
- * real collision handling: Floating UI's own algorithm runs, it just needs
- * plausible geometry to run on.
- */
+// Fake layout for jsdom; tests move the anchor near an edge to exercise Floating UI's real collision handling.
 export interface Box {
   x: number;
   y: number;
@@ -20,7 +14,6 @@ export const layout = {
   viewport: { ...DEFAULT_VIEWPORT },
 };
 
-/** Moves the simulated anchor, e.g. hard against the right edge. */
 export function setLayout(box: Partial<Box>, viewport?: Partial<typeof DEFAULT_VIEWPORT>): void {
   Object.assign(layout.box, box);
   if (viewport) {

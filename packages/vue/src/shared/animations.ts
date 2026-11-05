@@ -1,7 +1,4 @@
-/**
- * Resolves once every CSS animation and transition running on `element` has
- * settled, or immediately if none are.
- */
+/** Resolves once every animation and transition on `element` has settled. */
 export function waitForAnimationsToFinish(element: HTMLElement, signal?: AbortSignal): Promise<void> {
   return new Promise((resolve) => {
     if (signal?.aborted) {

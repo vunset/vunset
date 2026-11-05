@@ -14,10 +14,7 @@ const props = withDefaults(
 );
 
 defineSlots<{
-  /**
-   * The pagination's state. Its default content is `…`.
-   * @slotOnly
-   */
+  /** The pagination's state. Its default content is `…`. @slotOnly */
   default(props: PaginationState): unknown;
 }>();
 

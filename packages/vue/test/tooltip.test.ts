@@ -5,19 +5,11 @@ import {
   TooltipGroup, TooltipRoot, TooltipTrigger, Portal, Positioner, Popup,
 } from '../src';
 
-/**
- * Comfortably longer than `settle()` costs. jsdom drives `requestAnimationFrame`
- * off a ~16ms timer, so a few frames burn ~50ms — a shorter delay would elapse
- * inside the helper meant to observe that it had not yet elapsed.
- */
+// Longer than `settle()`: jsdom's rAF runs off a ~16ms timer, so a few frames burn ~50ms.
 const DELAY = 200;
 const CLOSE_DELAY = 60;
 
-/**
- * Every test mounts its own TooltipGroup. The fallback group is module-level, so
- * without one the "instant" flag would leak between tests and a tooltip that
- * should wait would open immediately.
- */
+// Each test mounts its own group, or the module-level fallback leaks the "instant" flag between tests.
 function mountTooltip(rootProps: Record<string, any> = {}, count = 1) {
   const Host = defineComponent({
     props: { rootProps: { type: Object, default: () => ({}) } },
@@ -53,7 +45,6 @@ const anyTip = () => document.querySelector('[role="tooltip"]');
 
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-/** Flushes pending renders without advancing wall-clock time meaningfully. */
 async function flush() {
   for (let i = 0; i < 3; i += 1) {
     await nextTick();
@@ -71,8 +62,7 @@ async function settle(ms = 0) {
 }
 
 beforeEach(() => {
-  // Input modality is global and sticky by design. A previous test's
-  // `pointerdown` would otherwise make focus look mouse-driven here.
+  // Input modality is global and sticky; a previous `pointerdown` would make focus look mouse-driven.
   document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }));
 });
 
@@ -105,7 +95,6 @@ describe('Tooltip', () => {
       mountTooltip();
       enter(trigger());
       await flush();
-      // The pointer merely passing over must not flash a tooltip.
       expect(anyTip()).toBeNull();
 
       await settle(DELAY * 2);
@@ -135,7 +124,6 @@ describe('Tooltip', () => {
       mountTooltip();
       enter(trigger(), 'touch');
       await settle(DELAY * 3);
-      // Touch has no hover, and the tooltip would cover what was just tapped.
       expect(anyTip()).toBeNull();
     });
   });
@@ -172,7 +160,6 @@ describe('Tooltip', () => {
       await settle(DELAY * 2);
       trigger().dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
       await settle();
-      // Pressing means acting on the control, not reading about it.
       expect(anyTip()).toBeNull();
     });
   });
@@ -186,7 +173,6 @@ describe('Tooltip', () => {
       leave(trigger());
       enter(tip()!);
       await settle(CLOSE_DELAY * 3);
-      // Reachable content: links or selectable text inside must survive the move.
       expect(anyTip()).not.toBeNull();
     });
 
@@ -232,7 +218,6 @@ describe('Tooltip', () => {
       await settle(300);
       expect(anyTip()).not.toBeNull();
 
-      // Back onto the trigger, the tooltip stays.
       leave(tip()!);
       enter(trigger());
       await settle(300);
@@ -260,7 +245,6 @@ describe('Tooltip', () => {
       leave(trigger(0));
       enter(trigger(1));
       await flush();
-      // No second wait: the user has already asked for tooltips.
       expect(tip(1)).not.toBeNull();
     });
 
@@ -272,7 +256,6 @@ describe('Tooltip', () => {
       leave(trigger(0));
       enter(trigger(1));
       await settle();
-      // Not after its close delay: two tooltips never show together.
       expect(tip(0)).toBeNull();
       expect(tip(1)).not.toBeNull();
     });
@@ -318,9 +301,7 @@ describe('Tooltip handoff animation', () => {
   const enterFrom = (i: number) => tip(i)?.hasAttribute('data-enter-from');
 
   it('animates the first tooltip in', async () => {
-    // Driven by the prop rather than by hovering: waiting out the open delay in
-    // real time also burns animation frames, so the enter phase would already
-    // have advanced to idle before it could be observed.
+    // By prop: waiting out the delay in real time burns frames, so the enter phase would pass unobserved.
     const w = mountTooltip({ open: false }, 2);
     await w.setProps({ rootProps: { open: true } });
     await flush();
@@ -335,19 +316,13 @@ describe('Tooltip handoff animation', () => {
     leave(trigger(0));
     enter(trigger(1));
     await flush();
-    // Replaying the enter animation on a handoff reads as lag, not polish.
     expect(enterFrom(1)).toBe(false);
     expect(tip(1)).not.toBeNull();
   });
 });
 
 describe('Tooltip handoff exit', () => {
-  /**
-   * Both tooltips driven by props. Timing-based versions of these tests are
-   * worthless: waiting out the close delay also burns animation frames, so the
-   * exit completes and unmounts either way, and the assertion passes without
-   * `skipExit` doing anything.
-   */
+  // By props: waiting out the close delay burns frames, so the exit would finish either way and the test prove nothing.
   function mountPair() {
     const Host = defineComponent({
       props: { a: Boolean, b: Boolean },
@@ -382,14 +357,11 @@ describe('Tooltip handoff exit', () => {
     await w.setProps({ a: true });
     await settle();
 
-    // The neighbor opens first, as it does when the pointer slides across.
     await w.setProps({ b: true });
     await flush();
     await w.setProps({ a: false });
     await flush();
 
-    // Fading out beside its replacement shows two tooltips at once, which reads
-    // as the new one animating in.
     expect(tip(0)).toBeNull();
     expect(tip(1)).not.toBeNull();
   });
@@ -402,7 +374,6 @@ describe('Tooltip handoff exit', () => {
     await w.setProps({ a: false });
     await flush();
 
-    // Present and in its ending phase, so the exit animation is still running.
     expect(tip(0)).not.toBeNull();
     expect(tip(0)!.hasAttribute('data-leave-to')).toBe(true);
   });

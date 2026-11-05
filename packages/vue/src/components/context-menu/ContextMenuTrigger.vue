@@ -26,8 +26,7 @@ defineSlots<{
 
 const menu = useMenuContext();
 
-// Focus goes into the menu: the area that was pressed is rarely focusable, so
-// left where it was, focus would leave the keyboard no way into the open menu.
+// Focus moves into the menu: the pressed area is rarely focusable.
 function openAt(x: number, y: number) {
   // Closing puts focus back here, as a native context menu does.
   const active = document.activeElement;

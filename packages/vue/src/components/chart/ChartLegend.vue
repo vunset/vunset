@@ -54,10 +54,7 @@ const emit = defineEmits<{
 }>();
 
 defineSlots<{
-  /**
-   * Replaces the buttons.
-   * @slotOnly The element carries only `data-part="legend"`.
-   */
+  /** Replaces the buttons. @slotOnly The element carries only `data-part="legend"`. */
   default(props: {
     /** One per category, with its `category`, `label`, `color`, whether it is `hidden`, and a `toggle()`. */
     items: ChartLegendItem[];

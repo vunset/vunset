@@ -63,10 +63,7 @@ const emit = defineEmits<{
 }>();
 
 defineSlots<{
-  /**
-   * The menu's state.
-   * @slotOnly The root renders no element of its own: the trigger and the popup carry these as attributes.
-   */
+  /** The menu's state. @slotOnly The root renders no element of its own: the trigger and the popup carry these as attributes. */
   default(props: MenuState): unknown;
 }>();
 

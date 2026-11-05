@@ -37,17 +37,11 @@ export interface FieldState {
 }
 
 export interface UseFieldOptions {
-  /** Whether the field ignores user interaction. */
   disabled?: MaybeRefOrGetter<boolean>;
-  /** Whether the value can be read and selected but not edited. */
   readOnly?: MaybeRefOrGetter<boolean>;
-  /** Whether a value is required: announced and marked, never enforced by the browser. */
   required?: MaybeRefOrGetter<boolean>;
-  /** Whether the field is invalid. */
   invalid?: MaybeRefOrGetter<boolean>;
-  /** Whether the control has been touched. */
   touched?: MaybeRefOrGetter<boolean | undefined>;
-  /** Whether the value has changed. */
   dirty?: MaybeRefOrGetter<boolean | undefined>;
   id?: MaybeRefOrGetter<string | undefined>;
   /** The key into the validation errors; also the control's form name unless it sets one. */
@@ -55,46 +49,32 @@ export interface UseFieldOptions {
 }
 
 export interface UseFieldReturn {
-  /** The full state, mirrored onto every part. */
   state: ComputedRef<FieldState>;
-  /** Bind to the element wrapping the whole field. */
   rootProps: ComputedRef<Record<string, unknown>>;
-  /** Bind to the `<label>`. Associates itself with the control. */
   labelProps: ComputedRef<Record<string, unknown>>;
-  /** Bind to a box drawn around the control and its adornments. */
   groupProps: ComputedRef<Record<string, unknown>>;
   /** The group's state: the field's, also invalid while the control rejects its own value. */
   groupState: ComputedRef<FieldState>;
-  /** The id shared by the label's `for` and the control. */
   controlId: ComputedRef<string>;
   /** The label's id, while one is mounted. Controls point `aria-labelledby` here. */
   labelledBy: ComputedRef<string | undefined>;
-  /** The ids describing the control, for its `aria-describedby`. */
   describedBy: ComputedRef<string | undefined>;
   /** Whether a value is required. Read by controls that mark themselves. */
   required: () => boolean;
   name: () => string | undefined;
-  /** This field's message in the validation errors. */
   error: ComputedRef<string | undefined>;
   /** Reports the value changing, which clears this field's validation error. */
   changed: () => void;
-  /** The control element, once one has published itself. */
   controlRef: Ref<HTMLElement | null>;
-  /** Moves focus to the control. */
   focusControl: () => void;
   /** Publishes the control's element, so the frame can hand presses to it. */
   setControl: (element: HTMLElement | null) => void;
-  /** Marks the field touched, as leaving the control does. */
   setTouched: (touched: boolean) => void;
-  /** Reports focus moving into or out of the control. */
   setFocused: (focused: boolean) => void;
-  /** Reports whether the control holds a value. */
   setFilled: (filled: boolean) => void;
   /** Reports the control's own check failing, as a number past `max` does. Marks only the group. */
   setControlInvalid: (invalid: boolean) => void;
-  /** Reports whether the control has moved away from its initial value. */
   setDirty: (dirty: boolean) => void;
-  /** Adds an id to the control's `aria-describedby`. */
   registerMessage: (id: string) => () => void;
   /** Points the control's `aria-labelledby` at the label. Returns the undo. */
   registerLabel: () => () => void;
@@ -169,8 +149,7 @@ export function useField(options: UseFieldOptions = {}): UseFieldReturn {
     id: labelId,
     for: controlId.value,
     onClick(event: MouseEvent) {
-      // A label only reaches a native control; a custom one, like a select's
-      // trigger, is focused by hand, as clicking the label of a `<select>` would.
+      // A label only reaches a native control; a custom one, like a select's trigger, is focused by hand.
       const root = (event.currentTarget as HTMLElement).getRootNode() as Document | ShadowRoot;
       const control = root.getElementById?.(controlId.value);
       if (!control || control.matches(LABELABLE)) return;
@@ -178,8 +157,7 @@ export function useField(options: UseFieldOptions = {}): UseFieldReturn {
     }
   }));
 
-  // The group draws the control's box, so it shows the control's own verdict too;
-  // the field, its label and its error keep to the app's validation.
+  // The group draws the control's box, so it shows the control's own verdict too.
   const groupState = computed<FieldState>(() => ({
     ...state.value,
     invalid: state.value.invalid || controlInvalid.value
@@ -271,9 +249,7 @@ export function useFieldValue(field: UseFieldReturn | null, value: () => unknown
 }
 
 export interface UseFieldMessageReturn {
-  /** Bind to the describing element. Carries its generated id and the hooks. */
   messageProps: ComputedRef<Record<string, unknown>>;
-  /** The state, for rendering. */
   state: ComputedRef<FieldState>;
 }
 
@@ -308,9 +284,7 @@ export interface UseFieldErrorOptions {
 export interface UseFieldErrorReturn {
   /** Whether the element should be in the DOM. Stays true through the exit animation. */
   mounted: Ref<boolean>;
-  /** Bind to the message element. */
   errorProps: ComputedRef<Record<string, unknown>>;
-  /** The state, including the transition phase. */
   state: ComputedRef<FieldErrorState>;
   /** The field's validation message, kept through the exit animation. */
   message: Ref<string | undefined>;

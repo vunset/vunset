@@ -19,10 +19,7 @@ const props = withDefaults(
 );
 
 defineSlots<{
-  /**
-   * What it shows.
-   * @slotOnly The element carries `data-placeholder` while empty.
-   */
+  /** What it shows. @slotOnly The element carries `data-placeholder` while empty. */
   default(props: {
     /** The number, or `null` while empty: the hour 0–23 in either cycle, `0`/`1` for AM/PM. */
     value: number | null;

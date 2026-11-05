@@ -72,7 +72,6 @@ describe('Switch', () => {
       expect(root(w).attributes('aria-checked')).toBe('true');
     });
 
-    // A button gets these keys from the browser; anything else from the switch.
     it.each(['Enter', ' '])('can be activated with the %s key when not a button', async (key) => {
       const w = mountSwitch({ as: 'span' });
       const target = root(w);
@@ -91,7 +90,6 @@ describe('Switch', () => {
     it('follows the model prop and does not self-update', async () => {
       const w = mountSwitch({ modelValue: false });
       await root(w).trigger('click');
-      // Controlled: state only moves when the parent says so.
       expect(root(w).attributes('aria-checked')).toBe('false');
       await w.setProps({ modelValue: true });
       expect(root(w).attributes('aria-checked')).toBe('true');
@@ -159,7 +157,6 @@ describe('Switch', () => {
       });
       const w = mount(Host, { attachTo: document.body });
       await w.find('[role="switch"]').trigger('click');
-      // The click forwarded to the hidden input must not bubble a second time.
       expect(onClick).toHaveBeenCalledTimes(1);
     });
 
@@ -221,7 +218,6 @@ describe('Switch', () => {
       (input(w).element as HTMLInputElement).click();
       await nextTick();
       expect(root(w).attributes('aria-checked')).toBe('false');
-      // The native input is undone too, so a form would not submit it as on.
       expect((input(w).element as HTMLInputElement).checked).toBe(false);
     });
   });
@@ -246,8 +242,6 @@ describe('Switch', () => {
     });
 
     it('exposes a writable checked ref for programmatic control', async () => {
-      // `defineExpose` still hands this out, so it is API even without a
-      // composable to call.
       const w = mountSwitch();
       (w.vm as any).checked = true;
       await nextTick();
@@ -257,8 +251,7 @@ describe('Switch', () => {
     });
 
     it('leaves the unchecked-value input submittable', async () => {
-      // A disabled input is not submitted, so a stray `disabled` here would
-      // silently drop the value the whole feature exists to send.
+      // A disabled input isn't submitted, which would drop the value the feature exists to send.
       const w = mountSwitch({ name: 'alerts', uncheckedValue: 'off' });
       const hidden = document.querySelector('input[type="hidden"]')!;
 
@@ -321,7 +314,6 @@ describe('Switch', () => {
       });
 
       expect(w.find('[role="switch"]').attributes('aria-required')).toBe('true');
-      // Announced only: the app validates, not the browser.
       expect((w.find('input').element as HTMLInputElement).required).toBe(false);
       w.unmount();
     });

@@ -19,10 +19,7 @@ export interface FloatingAnchor {
 }
 
 export interface FloatingState {
-  /**
-   * Whether the panel is open.
-   * @attribute `data-open` while open, `data-closed` otherwise
-   */
+  /** Whether the panel is open. @attribute `data-open` while open, `data-closed` otherwise */
   open: boolean;
   /**
    * Where the panel is in its enter or exit animation.
@@ -35,32 +32,17 @@ export interface FloatingState {
   dragging: boolean;
   /** Whether an edge is being pulled. */
   resizing: boolean;
-  /**
-   * The edge or corner being pulled, while resizing.
-   * @attribute `data-handle="…"` while resizing
-   */
+  /** The edge or corner being pulled, while resizing. @attribute `data-handle="…"` while resizing */
   handle: FloatingHandle | null;
   /** Whether it has been dragged from where it opened; double-clicking the header puts it back. */
   moved: boolean;
-  /**
-   * Its left edge, in pixels from the viewport's.
-   * @attribute none
-   */
+  /** Its left edge, in pixels from the viewport's. @attribute none */
   left: number;
-  /**
-   * Its top edge, in pixels from the viewport's.
-   * @attribute none
-   */
+  /** Its top edge, in pixels from the viewport's. @attribute none */
   top: number;
-  /**
-   * Its width once an edge has been pulled; `null` while its content decides.
-   * @attribute none
-   */
+  /** Its width once an edge has been pulled; `null` while its content decides. @attribute none */
   width: number | null;
-  /**
-   * Its height once an edge has been pulled; `null` while its content decides.
-   * @attribute none
-   */
+  /** Its height once an edge has been pulled; `null` while its content decides. @attribute none */
   height: number | null;
 }
 
@@ -243,8 +225,7 @@ readProps();
 if (anchorX.value?.side === 'left') left.value = anchorX.value.offset;
 if (anchorY.value?.side === 'top') top.value = anchorY.value.offset;
 
-// The viewport is unknown until mount: a server has none, and the first client
-// render has to match the server's.
+// No viewport until mount: the first client render must match the server's.
 const measured = ref(false);
 onMounted(() => (measured.value = true));
 

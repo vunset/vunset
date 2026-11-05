@@ -4,38 +4,18 @@ import { scrollIntoViewWithin } from './focus';
 export type Orientation = 'horizontal' | 'vertical';
 
 export interface UseRovingFocusOptions {
-  /** The element containing the items. */
   container: Ref<HTMLElement | null>;
-  /** Selector matching the navigable items. */
   itemSelector?: MaybeRefOrGetter<string>;
-  /** Which arrow keys move between items. */
   orientation?: MaybeRefOrGetter<Orientation>;
-  /** Wrap around at the ends. */
   loop?: MaybeRefOrGetter<boolean>;
   /** Called when navigation runs past the start or end without looping. */
   onEscapeBoundary?: (direction: 'start' | 'end') => void;
-  /**
-   * Track the active item without moving DOM focus, for
-   * `aria-activedescendant`.
-   *
-   * A listbox with a search box needs this: focus has to stay in the text input
-   * so typing keeps working, while the highlight travels down the options.
-   */
+  /** Track the active item without moving focus, for `aria-activedescendant`: a search box keeps focus while the highlight moves. */
   virtual?: MaybeRefOrGetter<boolean>;
-  /** Called with the element that became active, in virtual mode. */
   onActiveChange?: (item: HTMLElement | null) => void;
 }
 
-/**
- * Arrow-key navigation over a set of items.
- *
- * Items are discovered by querying the DOM at interaction time rather than by
- * registering themselves. That keeps them in document order for free, which
- * registration-based approaches get wrong as soon as items are reordered,
- * conditionally rendered or wrapped in a `v-for` that changes.
- *
- * Disabled items are skipped, matching how a native menu behaves.
- */
+// Items are queried from the DOM at interaction time, so they stay in document order however they render.
 export function useRovingFocus(options: UseRovingFocusOptions) {
   const selector = () => toValue(options.itemSelector) ?? '[role="menuitem"]';
   const orientation = () => toValue(options.orientation) ?? 'vertical';
@@ -79,25 +59,13 @@ export function useRovingFocus(options: UseRovingFocusOptions) {
     setActive(list[next] ?? null);
   }
 
-  /**
-   * Makes `item` the active one, by focus or by reference depending on the mode.
-   *
-   * The virtual branch scrolls it into view itself: focusing an element does
-   * that for free, so nothing else in the library has had to.
-   *
-   * `scroll` exists for the pointer. Revealing an item the user is already
-   * pointing at is at best redundant and at worst a loop: the scroll moves the
-   * list under a stationary cursor, which puts a different half-clipped item
-   * under it, which scrolls again. Only the keyboard, which can move the
-   * highlight somewhere off screen, actually needs the reveal.
-   */
+  // `scroll` is off for the pointer: revealing a hovered item moves the list under the cursor, and loops.
   function setActive(item: HTMLElement | null, scroll = true) {
     if (virtual()) {
       activeItem.value = item;
       options.onActiveChange?.(item);
     } else {
-      // Never scrolls: the surface may not be positioned yet, and revealing an
-      // item that still sits at the document origin jumps the page to the top.
+      // Never scrolls: an unpositioned surface still sits at the origin, and revealing it jumps the page to the top.
       item?.focus({ preventScroll: true });
     }
 

@@ -45,7 +45,6 @@ function mountGroup(options: GroupOptions = {}) {
 
 const toggle = (value: string) => document.querySelector<HTMLElement>(`.toggle-${value}`)!;
 const group = () => document.querySelector<HTMLElement>('[role="group"]')!;
-/** The group component itself, for its emits and its exposed API. */
 const groupWrapper = (w: any) => w.findComponent(ToggleGroup as any) as any;
 const pressed = () =>
   Array.from(document.querySelectorAll<HTMLElement>('[aria-pressed="true"]')).map(
@@ -126,8 +125,6 @@ describe('Toggle', () => {
     });
 
     it('leaves the tab order to the button', () => {
-      // A lone toggle is already reachable; pinning tabindex would only fight
-      // whatever the page has around it.
       const w = mountToggle();
       expect(w.attributes('tabindex')).toBeUndefined();
     });
@@ -149,7 +146,6 @@ describe('Toggle', () => {
       expect(pressed()).toEqual(['center']);
       expect(groupWrapper(w).emitted('update:modelValue')).toEqual([['center']]);
 
-      // The one that was down comes up: that is the whole point of single.
       await press(toggle('right'));
       expect(pressed()).toEqual(['right']);
     });
@@ -222,8 +218,7 @@ describe('Toggle', () => {
     });
 
     it('refuses a programmatic press while the group is disabled', async () => {
-      // `setPressed` is public API on the group, so the guard has to sit there
-      // too — the one on each toggle only covers what a user can reach.
+      // `setPressed` is public, so the guard sits on the group too, not only on each toggle.
       const w = mountGroup({ groupProps: { disabled: true } });
       await nextTick();
 
@@ -233,8 +228,6 @@ describe('Toggle', () => {
     });
 
     it('takes the group value over a toggle’s own pressed prop', async () => {
-      // The group owns the state here; a stray `v-model` on a child would
-      // otherwise disagree with its siblings.
       const Host = defineComponent({
         setup() {
           return () =>
@@ -278,7 +271,6 @@ describe('Toggle', () => {
 
       await press(toggle('center'));
       expect(pressed()).toEqual(['center']);
-      // Nothing changed, so nothing is announced either.
       expect(groupWrapper(w).emitted('update:modelValue')).toBeUndefined();
     });
 
@@ -294,7 +286,6 @@ describe('Toggle', () => {
       mountGroup({ groupProps: { required: true, multiple: true, defaultValue: ['left', 'right'] } });
       await nextTick();
 
-      // Down to one is fine; below one is not.
       await press(toggle('left'));
       expect(pressed()).toEqual(['right']);
 
@@ -318,8 +309,6 @@ describe('Toggle', () => {
     });
 
     it('leaves a controlled empty value alone', async () => {
-      // The owner holds the value; pressing one for them would be the group
-      // overruling its own controlled prop.
       const Host = defineComponent({
         setup() {
           return () =>
@@ -335,8 +324,6 @@ describe('Toggle', () => {
       await nextTick();
 
       expect(pressed()).toEqual([]);
-      // A controlled write shows up as an emission even though nothing moved,
-      // so an owner ignoring it would see a change it never made.
       expect(groupWrapper(w).emitted('update:modelValue')).toBeUndefined();
     });
 
@@ -356,7 +343,6 @@ describe('Toggle', () => {
       mount(Host, { attachTo: document.body });
       await nextTick();
 
-      // Once, not once per toggle.
       expect(warn).toHaveBeenCalledTimes(1);
       expect(warn).toHaveBeenCalledWith(expect.stringContaining('controlled and empty'));
       warn.mockRestore();
@@ -430,7 +416,6 @@ describe('Toggle', () => {
       await nextTick();
       expect(document.activeElement).toBe(toggle('center'));
       expect(toggle('center').getAttribute('tabindex')).toBe('0');
-      // Moving through them presses nothing: a toggle is pressed, not selected.
       expect(pressed()).toEqual([]);
     });
 

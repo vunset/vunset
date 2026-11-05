@@ -3,11 +3,7 @@ import { mount } from '@vue/test-utils';
 import { defineComponent, h, nextTick, ref } from 'vue';
 import { AlertRoot, AlertTitle, AlertDescription } from '../src';
 
-/**
- * Awaits a tick: the parts register during their own setup, which is inside the
- * alert's render, so the attributes that registration decides land on the
- * render after it.
- */
+// Parts register during the alert's render, so their attributes land a render later.
 async function mountAlert(props: Record<string, any> = {}, children: any[] = []) {
   const Host = defineComponent({
     setup() {
@@ -43,7 +39,6 @@ describe('Alert', () => {
     });
 
     it('lets the caller wait its turn instead', async () => {
-      // A notice that is merely present should not talk over anything.
       await mountAlert({ role: 'status' });
       expect(alert().getAttribute('role')).toBe('status');
     });
@@ -78,8 +73,6 @@ describe('Alert', () => {
     });
 
     it('claims no description when there is none', async () => {
-      // A dangling reference reads as no name at all, which is worse than
-      // falling back to the text inside.
       await mountAlert({}, [h(AlertTitle as any, null, { default: () => 'Saved' })]);
 
       expect(alert().getAttribute('aria-labelledby')).toBe(title()!.id);
@@ -101,8 +94,6 @@ describe('Alert', () => {
     });
 
     it('lets go of a title that leaves', async () => {
-      // The undo half of the registration: a reference has to disappear with
-      // the element it names, or it dangles from the next render on.
       const showTitle = ref(true);
       const Host = defineComponent({
         setup() {
@@ -123,7 +114,6 @@ describe('Alert', () => {
       await nextTick();
       expect(title()).toBeNull();
       expect(alert().getAttribute('aria-labelledby')).toBeNull();
-      // The description it still has is untouched.
       expect(alert().getAttribute('aria-describedby')).toBe(description()!.id);
     });
   });
@@ -141,7 +131,6 @@ describe('Alert', () => {
 
       expect(title()!.tagName).toBe('H3');
       expect(title()!.classList.contains('AlertTitle')).toBe(true);
-      // Its own hooks survive the caller's additions.
       expect(title()!.getAttribute('data-part')).toBe('title');
     });
 

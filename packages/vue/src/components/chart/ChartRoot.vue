@@ -5,7 +5,6 @@ import { createContext } from '../../shared/context';
 export type ChartCurve = 'smooth' | 'linear';
 export type ChartSide = 'top' | 'right' | 'bottom' | 'left';
 
-/** What `ChartArea`, `ChartLine` and `ChartBar` hand their chart. */
 export interface ChartSeriesPart {
   kind: 'area' | 'line' | 'bar';
   yKey: string;
@@ -16,7 +15,7 @@ export interface ChartSeriesPart {
   curve?: ChartCurve;
   points?: boolean;
   gradient?: boolean;
-  /** Areas only: the line along the band's top. */
+  /** Areas only. */
   line?: boolean;
   roundedCorners?: number;
   padding?: number;
@@ -90,7 +89,6 @@ export interface ChartPart<K extends ChartPartKind = ChartPartKind> {
 export interface ChartRootContext {
   add(part: ChartPart): void;
   remove(part: ChartPart): void;
-  /** A part has mounted: template order can be read off the page. */
   mounted(): void;
 }
 
@@ -99,7 +97,6 @@ export const { provideContext: provideChartRootContext, useContext: useChartRoot
 
 let seq = 0;
 
-/** Hands a part's options to the chart it sits in, for as long as it is mounted. */
 export function useChartPart<K extends ChartPartKind>(kind: K, options: () => Parts[K]): void {
   const chart = useChartRootContext();
   const part: ChartPart<K> = { kind, options, instance: getCurrentInstance(), seq: seq++ };
@@ -114,7 +111,7 @@ function anchor(part: ChartPart): Node | null {
   return typeof Node !== 'undefined' && el instanceof Node && el.isConnected ? el : null;
 }
 
-/** Template order: what comes later paints on top. A part shown later by `v-if` registers last. */
+// What comes later paints on top. A part shown later by `v-if` registers last.
 export function byTemplate(a: ChartPart, b: ChartPart): number {
   const first = anchor(a);
   const second = anchor(b);
@@ -235,7 +232,6 @@ const { colors, visible } = useChartSeries({
 });
 
 const horizontal = computed(() => props.orientation === 'horizontal');
-// Rows placed by their `x-key` value rather than spaced by index.
 const continuous = computed(() => props.xScale !== 'category');
 const shownKeys = computed(() => visible.value.map((entry) => entry.category));
 const shownColors = computed(() => visible.value.map((entry) => entry.color));
@@ -250,7 +246,6 @@ const valueId = (scale: string) => (scale === 'y' ? valueChannel.value : scale);
 const xAxis = computed(() => axes.value.find((axis) => axis.type === 'x'));
 const axisOf = (scale: string) => axes.value.find((axis) => axis.type === 'y' && (axis.scale ?? 'y') === scale);
 
-/** Every value scale a series or an axis names, `y` first. */
 const scales = computed(() => {
   const named = [
     ...series.value.map((entry) => entry.scale),
@@ -279,7 +274,6 @@ const headingText = (row: T | undefined) =>
 const tooltip = computed(() => tooltips.value[0]);
 const pointMode = computed(() => tooltip.value?.mode === 'point');
 
-/** The row's series for the tooltip, one per key showing; in `point` mode, only `key`'s. */
 function tooltipSeries(row: T, only?: string): ChartTooltipSeries[] {
   const list = shownKeys.value.map((key, index) => {
     const value = row[key];
@@ -303,9 +297,7 @@ const tooltipProps = (point: ChartPoint<Point>, pinned: boolean): ChartTooltipSl
   pinned
 });
 
-// The width each row gets, measured on render, for cutting its label to fit.
 const band = shallowRef<number>();
-// The tick labels' size, from the stylesheet through ChartFrame.
 const tickSize = shallowRef<number>();
 
 // A character averages about 0.6em of the tick labels' size.
@@ -568,7 +560,6 @@ function onRender({ scene, svg }: ChartRender) {
   }
 }
 
-// Renders what a function returns, for the caller's tooltip slot.
 const Render = (own: { render: () => VNodeChild }) => own.render();
 </script>
 

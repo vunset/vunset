@@ -2,22 +2,8 @@
 import { computed, defineComponent, type PropType } from 'vue';
 import { provideToastItemContext, type Toast } from '../../composables/use-toast';
 
-/**
- * One entry in the stack. Private to the viewport.
- *
- * It exists only to hold a `provide`, which Vue can do just once per component
- * setup — the viewport cannot provide a different toast on each pass of its own
- * loop. That is what lets the template be registered once and still have every
- * part inside it know which toast it is rendering, instead of the template
- * having to thread a `toast` prop through by hand.
- *
- * A render function rather than a template, because a toast may carry a
- * renderer of its own and `<component :is>` would mistake that function for a
- * functional component and call it with a props object instead of the toast.
- *
- * Declared in a plain `<script>` block so it is created once for the module
- * rather than once per viewport instance.
- */
+// A component of its own so each toast gets its own `provide`. A render function, since `<component :is>`
+// would call a toast's own renderer as a functional component.
 const ToastItem = defineComponent({
   name: 'ToastItem',
   inheritAttrs: false,

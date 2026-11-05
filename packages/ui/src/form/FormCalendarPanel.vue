@@ -3,7 +3,6 @@ import type { CalendarPresetsInput, CalendarSelectionMode, DatePresetKey } from 
 
 const QUARTERS = ['q1', 'q2', 'q3', 'q4'];
 
-/** What FormCalendar's and FormDatepicker's `presets`, `with-year` and `with-quarters` add up to. */
 export function calendarPresets(
   presets: CalendarPresetsInput | boolean | undefined,
   mode: CalendarSelectionMode,
@@ -24,8 +23,7 @@ const isQuarter = (key: string) => QUARTERS.includes(key);
 </script>
 
 <script setup lang="ts">
-// The calendar FormCalendar and FormDatepicker both draw. Not exported: it reads
-// the calendar of whichever root it sits in.
+// Not exported: it reads the calendar of whichever root it sits in.
 import {
   CalendarPrev,
   CalendarNext,

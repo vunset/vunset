@@ -32,11 +32,8 @@ export const { provideContext: provideTooltipGroup, useOptionalContext: useToolt
   createContext<TooltipGroup>('TooltipGroup');
 
 export interface UseTooltipGroupOptions {
-  /** How long the pointer must rest before the first tooltip opens. */
   delay?: MaybeRefOrGetter<number | undefined>;
-  /** How long after the pointer leaves before a tooltip hides. */
   closeDelay?: MaybeRefOrGetter<number | undefined>;
-  /** How long after the last tooltip closes that neighbors still open instantly. */
   timeout?: MaybeRefOrGetter<number | undefined>;
 }
 
@@ -53,20 +50,11 @@ export function useTooltipGroup(options: UseTooltipGroupOptions = {}): TooltipGr
 }
 
 export interface TooltipState {
-  /**
-   * Whether the tooltip is open.
-   * @attribute `data-open` while open, `data-closed` otherwise
-   */
+  /** Whether the tooltip is open. @attribute `data-open` while open, `data-closed` otherwise */
   open: boolean;
-  /**
-   * The side of the trigger the tooltip ended up on.
-   * @attribute `data-side="…"`
-   */
+  /** The side of the trigger the tooltip ended up on. @attribute `data-side="…"` */
   side: Side;
-  /**
-   * How the tooltip lines up along that side.
-   * @attribute `data-align="…"`
-   */
+  /** How the tooltip lines up along that side. @attribute `data-align="…"` */
   align: Align;
   /**
    * Where the tooltip is in its enter or exit animation.
@@ -78,13 +66,9 @@ export interface TooltipState {
 export interface UseTooltipOptions extends UsePositioningOptions {
   open?: MaybeRefOrGetter<boolean | undefined>;
   defaultOpen?: MaybeRefOrGetter<boolean | undefined>;
-  /** Overrides the group's open delay, in milliseconds. */
   delay?: MaybeRefOrGetter<number | undefined>;
-  /** Overrides the group's close delay, in milliseconds. */
   closeDelay?: MaybeRefOrGetter<number | undefined>;
-  /** Allow the pointer to move into the tooltip without closing it. */
   hoverable?: MaybeRefOrGetter<boolean | undefined>;
-  /** Never open. */
   disabled?: MaybeRefOrGetter<boolean | undefined>;
   onChange?: (open: boolean) => void;
 }

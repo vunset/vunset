@@ -35,10 +35,7 @@ export interface RangeChangeDetails {
 }
 
 export interface RangeState {
-  /**
-   * The thumb currently focused, or `-1`.
-   * @attribute none
-   */
+  /** The thumb currently focused, or `-1`. @attribute none */
   activeThumbIndex: number;
   /** Whether it ignores interaction. */
   disabled: boolean;
@@ -48,30 +45,15 @@ export interface RangeState {
   invalid: boolean;
   /** Which way the control runs. */
   orientation: RangeOrientation;
-  /**
-   * The highest value.
-   * @attribute none
-   */
+  /** The highest value. @attribute none */
   max: number;
-  /**
-   * The lowest value.
-   * @attribute none
-   */
+  /** The lowest value. @attribute none */
   min: number;
-  /**
-   * The least gap between thumbs, in steps.
-   * @attribute none
-   */
+  /** The least gap between thumbs, in steps. @attribute none */
   minStepsBetweenValues: number;
-  /**
-   * The grid values snap to.
-   * @attribute none
-   */
+  /** The grid values snap to. @attribute none */
   step: number;
-  /**
-   * Every thumb's value, in order.
-   * @attribute none
-   */
+  /** Every thumb's value, in order. @attribute none */
   values: readonly number[];
 }
 
@@ -94,55 +76,36 @@ export interface RangeConfig {
 
 export interface UseRangeOptions {
   value?: MaybeRefOrGetter<number | number[] | undefined>;
-  /** The initial value while uncontrolled. Defaults to `min`. */
   defaultValue?: MaybeRefOrGetter<number | number[] | undefined>;
-  /** The smallest value. @default 0 */
+  /** @default 0 */
   min?: MaybeRefOrGetter<number>;
-  /** The largest value. @default 100 */
+  /** @default 100 */
   max?: MaybeRefOrGetter<number>;
-  /** The granularity values snap to, counting from `min`. @default 1 */
+  /** @default 1 */
   step?: MaybeRefOrGetter<number>;
-  /** The step taken by Page Up/Page Down, or by a shifted arrow key. @default 10 */
+  /** @default 10 */
   largeStep?: MaybeRefOrGetter<number>;
-  /** How many steps must separate neighboring thumbs. @default 0 */
+  /** @default 0 */
   minStepsBetweenValues?: MaybeRefOrGetter<number>;
   disabled?: MaybeRefOrGetter<boolean>;
-  /** Whether the value is invalid. Also read from a surrounding field. */
+  /** Also read from a surrounding field. */
   invalid?: MaybeRefOrGetter<boolean>;
   orientation?: MaybeRefOrGetter<RangeOrientation>;
   /** @default 'center' */
   thumbAlignment?: MaybeRefOrGetter<ThumbAlignment>;
-  /**
-   * What happens when a dragged thumb meets another.
-   *
-   * - `push` shoves the others along
-   * - `swap` hands the drag over to the thumb in the way
-   * - `none` stops the dragged thumb at its neighbor
-   *
-   * @default 'push'
-   */
+  /** @default 'push' */
   thumbCollisionBehavior?: MaybeRefOrGetter<ThumbCollisionBehavior>;
-  /** Passed to `Intl.NumberFormat` when the value is displayed or announced. */
   format?: MaybeRefOrGetter<Intl.NumberFormatOptions | undefined>;
-  /** Defaults to the runtime locale. */
   locale?: MaybeRefOrGetter<Intl.LocalesArgument | undefined>;
-  /** The id of the single-thumb input. One is generated when omitted. */
   id?: MaybeRefOrGetter<string | undefined>;
-  /** Name submitted with the form, on each thumb's input. */
   name?: MaybeRefOrGetter<string | undefined>;
-  /** Id of the form to associate with, when the inputs are not descendants of it. */
   form?: MaybeRefOrGetter<string | undefined>;
-  /** Called on every change, including each move of a drag. */
+  /** Every change, including each move of a drag. */
   onChange?: (value: number | number[], details: RangeChangeDetails) => void;
-  /**
-   * Called once an interaction settles: on pointer release, or straight after a
-   * keyboard step. Never called for a change that did not move the value.
-   */
+  /** Once an interaction settles, and only if the value moved. */
   onCommit?: (value: number | number[], details: RangeChangeDetails) => void;
 }
 
-
-/** What a thumb hands its root so the root can find, measure and focus it. */
 interface ThumbSlot {
   /** The `index` prop, when given; otherwise the slot's mount order decides. */
   explicitIndex: () => number | undefined;
@@ -153,14 +116,12 @@ interface ThumbSlot {
 }
 
 export interface UseRangeReturn {
-  /** The value in the shape it was given — a number, or an array. Writable. */
+  /** In the shape it was given: a number, or an array. */
   value: WritableComputedRef<number | number[]>;
-  /** The value normalized: clamped, sorted, and always an array. */
+  /** Clamped, sorted, and always an array. */
   values: ComputedRef<readonly number[]>;
-  /** Each value run through `Intl.NumberFormat`. */
   formattedValues: ComputedRef<string[]>;
   state: ComputedRef<RangeState>;
-  /** The options resolved to plain values. */
   config: ComputedRef<RangeConfig>;
   rootProps: ComputedRef<Record<string, unknown>>;
   labelProps: ComputedRef<Record<string, unknown>>;
@@ -168,9 +129,8 @@ export interface UseRangeReturn {
   controlProps: ComputedRef<Record<string, unknown>>;
   trackProps: ComputedRef<Record<string, unknown>>;
   indicatorProps: ComputedRef<Record<string, unknown>>;
-  /** Names the range with the label element. Returns the undo. */
   registerLabel: () => () => void;
-  /** @internal The rest is what `useRangeThumb` works through. */
+  /** @internal */
   thumbs: RangeThumbHost;
 }
 
@@ -261,8 +221,6 @@ export function useRange(options: UseRangeOptions = {}): UseRangeReturn {
   );
   const formattedValues = computed(() => values.value.map((item) => formatter.value.format(item)));
 
-  // Thumbs
-
   const slots = shallowReactive<ThumbSlot[]>([]);
   const indexOf = (slot: ThumbSlot) => slot.explicitIndex() ?? slots.indexOf(slot);
   const slotAt = (index: number) => slots.find((slot) => indexOf(slot) === index);
@@ -289,8 +247,6 @@ export function useRange(options: UseRangeOptions = {}): UseRangeReturn {
   const dragging = ref(false);
   const positions = shallowReactive(new Map<number, number>());
 
-  // Changes
-
   function emitChange(next: readonly number[], reason: RangeChangeReason, event: Event, index: number): boolean {
     if (sameValues(next, values.value)) return false;
 
@@ -305,14 +261,11 @@ export function useRange(options: UseRangeOptions = {}): UseRangeReturn {
     options.onCommit?.(shaped, { reason, event, activeThumbIndex: index });
   }
 
-  /** Puts thumb `index` at `target`, snapped and kept within its neighbors. */
   function placed(index: number, target: number): number[] {
     const next = [...values.value];
     next[index] = clamp(snap(target, scale.value), ...roomFor(values.value, index, scale.value));
     return next;
   }
-
-  // Keyboard and the input itself
 
   const controlEl = ref<HTMLElement | null>(null);
   const rtl = ref(false);
@@ -373,8 +326,6 @@ export function useRange(options: UseRangeOptions = {}): UseRangeReturn {
     field?.setTouched(true);
   }
 
-  // Pointer
-
   interface Drag {
     pointerId: number;
     index: number;
@@ -394,7 +345,6 @@ export function useRange(options: UseRangeOptions = {}): UseRangeReturn {
     return vertical() ? (rect.top + rect.bottom) / 2 : (rect.left + rect.right) / 2;
   }
 
-  /** The value under a point on the control's axis. */
   function valueAt(point: number): number | undefined {
     const control = controlEl.value;
     if (!control) return undefined;
@@ -513,8 +463,6 @@ export function useRange(options: UseRangeOptions = {}): UseRangeReturn {
   }
 
   onScopeDispose(stopListening);
-
-  // Parts
 
   const state = computed<RangeState>(() => ({
     activeThumbIndex: activeIndex.value,
@@ -661,26 +609,19 @@ export const { provideContext: provideRangeContext, useContext: useRangeContext 
 
 export interface UseRangeThumbOptions {
   index?: MaybeRefOrGetter<number | undefined>;
-  /** Whether this thumb alone ignores user interaction. */
   disabled?: MaybeRefOrGetter<boolean>;
-  /** Names the thumb, for a range whose ends need distinguishing. */
   ariaLabel?: MaybeRefOrGetter<string | undefined>;
-  /** Overrides what is announced in place of the raw number. */
   valueText?: MaybeRefOrGetter<string | undefined>;
-  /** Builds what is announced, from the formatted value. Wins over `valueText`. */
+  /** Wins over `valueText`. */
   getValueText?: (formattedValue: string, value: number, index: number) => string;
   tabIndex?: MaybeRefOrGetter<number | undefined>;
 }
 
 export interface UseRangeThumbReturn {
-  /** This thumb's position in the value list. */
   index: ComputedRef<number>;
-  /** This thumb's value. */
   value: ComputedRef<number>;
   state: ComputedRef<RangeState>;
-  /** Bind to the element that looks like a thumb. Positions itself. */
   thumbProps: ComputedRef<Record<string, unknown>>;
-  /** Bind to the `<input type="range">` inside it. Required. */
   inputProps: ComputedRef<Record<string, unknown>>;
 }
 
@@ -777,8 +718,7 @@ export function useRangeThumb(options: UseRangeThumbOptions = {}): UseRangeThumb
         ? { left: '50%', bottom: offset, translate: '-50% 50%' }
         : // `inset-inline-start` follows the direction; `translate` does not.
           { top: '50%', insetInlineStart: offset, translate: `${host.rtl.value ? 50 : -50}% -50%` }),
-      // The thumb in use rises above the rest, then the one used last, so a
-      // thumb pushed on top of another can still be picked up.
+      // Active thumb on top, then the last used, so a thumb pushed onto another can still be picked up.
       zIndex: active ? 2 : host.lastUsedIndex.value === at ? 1 : undefined,
       ...(inset
         ? { '--position': `${position.value ?? 0}%`, visibility: position.value === undefined ? 'hidden' : undefined }

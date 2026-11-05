@@ -1,11 +1,7 @@
 import { nextTick } from 'vue';
 import type { VueWrapper } from '@vue/test-utils';
 
-/**
- * Reading what TanStack Charts drew. It renders its SVG during setup and again
- * on mount, measuring the host through `getBoundingClientRect`, which
- * `test/layout.ts` sizes, so a chart runs for real in jsdom.
- */
+// Charts measure the host via `getBoundingClientRect`, which `layout.ts` sizes, so they render for real in jsdom.
 
 // Redraws tween over frames unless motion is reduced; the tests read the end state.
 export function reduceMotion(reduce = true) {
@@ -34,10 +30,7 @@ export const ticks = (wrapper: VueWrapper<any>, scale: string) =>
 
 export const wait = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));
 
-/**
- * Keyboard focus is the one way in that needs no pointer geometry. Focus lands
- * on the first point, and the arrow moves it on to the second.
- */
+// Keyboard focus needs no pointer geometry: focus lands on the first point, the arrow moves to the second.
 export async function focusSecond(wrapper: VueWrapper<any>) {
   const svg = wrapper.find('svg');
   (svg.element as SVGElement).focus();

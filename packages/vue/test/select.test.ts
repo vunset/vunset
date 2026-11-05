@@ -42,15 +42,11 @@ interface Chrome {
   portal?: boolean;
   arrows?: boolean;
   optionSlot?: (option: any) => any;
-  /** The list's default slot: rows the caller renders. */
   listSlot?: (props: any) => any;
   presets?: boolean;
 }
 
-/**
- * The parts, assembled the way a caller would. The Host re-emits so
- * `wrapper.emitted()` still reports what the root emitted.
- */
+// The Host re-emits so `wrapper.emitted()` still reports what the root emitted.
 function mountSelect(props: Record<string, any> = {}, chrome: Chrome = {}) {
   const Host = defineComponent({
     emits: ['update:modelValue', 'update:open'],
@@ -201,7 +197,6 @@ describe('Select', () => {
       const groups = [...document.querySelectorAll('[data-part="group"]')];
       expect(groups[0].getAttribute('role')).toBe('group');
       expect(groups[0].getAttribute('aria-labelledby')).toBe(document.querySelector('[data-part="group-label"]')!.id);
-      // A listbox owns options and groups; a bare wrapper would break that.
       expect(groups[1].getAttribute('role')).toBe('none');
     });
 
@@ -266,7 +261,6 @@ describe('Select', () => {
       expect(trigger().getAttribute('aria-activedescendant')).toBe(labeled('France').id);
       key(trigger(), 'ArrowDown');
       await nextTick();
-      // Germany sits between the two and is skipped.
       expect(trigger().getAttribute('aria-activedescendant')).toBe(labeled('Spain').id);
     });
   });
@@ -331,12 +325,7 @@ describe('Select', () => {
     });
   });
 
-  /**
-   * jsdom performs no layout, so a list never overflows and nothing here would
-   * run. These give one element the geometry of a scroller — a viewport shorter
-   * than its content, and a `scrollTop` that clamps — so the real code paths
-   * execute against plausible numbers.
-   */
+  // jsdom has no layout, so these give one element a scroller's geometry and a clamping `scrollTop`.
   describe('scrolling', () => {
     const rectOf = (top: number, height: number) =>
       ({
@@ -373,7 +362,6 @@ describe('Select', () => {
       return list;
     }
 
-    /** Every option half off the bottom edge, so any reveal would scroll. */
     function clipOptions() {
       for (const el of optionEls()) {
         Object.defineProperty(el, 'getBoundingClientRect', {
@@ -394,9 +382,7 @@ describe('Select', () => {
       document.querySelector<HTMLElement>(`[data-part="scroll"][data-direction="${direction}"]`);
 
     it('does not scroll the list when the pointer moves over an option', async () => {
-      // The loop this guards: revealing a half-clipped row slides the list
-      // under a stationary cursor, which puts another half-clipped row under
-      // it, which reveals again.
+      // Guards a loop: revealing a half-clipped row slides another under the still cursor, which reveals again.
       mountSelect();
       await open();
       const list = makeScrollable();
@@ -419,8 +405,7 @@ describe('Select', () => {
     });
 
     it('ignores a pointer event that reports no movement', async () => {
-      // Scrolling fires `pointermove` at a cursor that never moved. Acting on
-      // those makes the highlight chase the wheel.
+      // Scrolling fires `pointermove` at a still cursor; acting on it makes the highlight chase the wheel.
       mountSelect();
       await open();
       const before = trigger().getAttribute('aria-activedescendant');
@@ -487,10 +472,6 @@ describe('Select', () => {
     });
   });
 
-  /**
-   * One part, placed by hand, rather than a pair of named slots reimplemented
-   * in every control that has room beside its value.
-   */
   describe('slots', () => {
     const mountAdorned = (...slots: Array<'start' | 'end'>) => {
       const Host = defineComponent({
@@ -533,8 +514,6 @@ describe('Select', () => {
     });
 
     it('takes control state from the trigger it sits in', () => {
-      // The slot carries no context of its own: the surrounding part already
-      // publishes the state, so there is nothing to duplicate.
       const Host = defineComponent({
         setup: () => () =>
           h(SelectRoot as any, { options: OPTIONS, disabled: true }, () => [
@@ -578,8 +557,6 @@ describe('Select', () => {
       expect(valueText()).toBe('France, Spain');
     });
 
-    // Chips belong to the combobox, where there is somewhere to type between
-    // them. A select's trigger reports a value; it is not an editing surface.
     it('renders no chips', async () => {
       mountSelect({ multiple: true, defaultValue: ['pl', 'es'] });
       await nextTick();
@@ -620,7 +597,6 @@ describe('Select', () => {
     });
   });
 
-  // A route query is always a string; the options are often coded by number.
   describe('values from a URL', () => {
     const STATUSES = [
       { value: 1, label: 'Active' },
@@ -672,7 +648,6 @@ describe('Select', () => {
       await open();
       expect(search()!.getAttribute('role')).toBe('combobox');
       expect(document.activeElement).toBe(search());
-      // The trigger yields the role, so there is only ever one combobox.
       expect(trigger().getAttribute('role')).toBe('button');
     });
 
@@ -835,8 +810,7 @@ describe('Select', () => {
 
   describe('placement before focus', () => {
     it('does not focus the search box until the popup has been placed', async () => {
-      // Focusing into a popup that still sits at the document origin scrolls
-      // the page to the top.
+      // Focusing a popup still at the document origin would scroll the page to the top.
       mountSelect({ searchable: true });
       trigger().dispatchEvent(new MouseEvent('click', { bubbles: true }));
       await nextTick();
@@ -894,7 +868,6 @@ describe('Select', () => {
     });
 
     it('stays above or below the trigger when too tall for either, and never moves beside it', async () => {
-      // As tall as most of the viewport: no room above or below, plenty on the right.
       setLayout({ x: 200, y: 300, width: 120, height: 400 });
       try {
         mountSelect();
@@ -913,7 +886,6 @@ describe('Select', () => {
     });
 
     it('falls back to an ordinary dropdown with the trigger against an edge', async () => {
-      // Too close to the top: an aligned popup would have nowhere to extend.
       setLayout({ y: 5 });
       try {
         mountSelect({ alignWithTrigger: true, defaultValue: 'es' });
@@ -932,8 +904,6 @@ describe('Select', () => {
     });
 
     it('holds the page still, having no anchor to follow', async () => {
-      // The popup is pinned to the viewport. A scroll would move the trigger
-      // out from under it, so the page does not scroll while it is open.
       mountSelect({ alignWithTrigger: true, defaultValue: 'es' });
       expect(document.body.style.overflow).toBe('');
 
@@ -971,13 +941,11 @@ describe('Select', () => {
       await settle();
       await open();
 
-      // A fresh list, capped again rather than left to inherit the last one.
       expect(listbox()!.style.maxHeight).toMatch(/px$/);
       expect(trigger().hasAttribute('data-aligned-to-item')).toBe(true);
     });
 
     it('tries again on the next opening after falling back', async () => {
-      // The fallback is about where the trigger was that time, not for ever.
       setLayout({ y: 5 });
       mountSelect({ alignWithTrigger: true, defaultValue: 'es' });
       await open();
@@ -993,8 +961,6 @@ describe('Select', () => {
 
   describe('styling hooks', () => {
     it('carries a class onto the popup wherever it is teleported to', async () => {
-      // The popup is written by the caller, so its class travels with it —
-      // no prop needed to reach past the portal.
       mountSelect({}, { popupClass: 'my-popup' });
       await open();
       const popup = document.querySelector('[data-part="popup"]')!;
@@ -1090,7 +1056,6 @@ describe('Select, virtual', () => {
   const active = () => trigger().getAttribute('aria-activedescendant');
   const spacers = () => [...listbox()!.querySelectorAll<HTMLElement>(':scope > [aria-hidden="true"]')];
 
-  /** Gives the listbox a viewport and a scrollTop that clamps, then lets the window re-measure. */
   async function makeScrollable() {
     const list = listbox()!;
     let top = 0;
@@ -1107,7 +1072,7 @@ describe('Select, virtual', () => {
     return list;
   }
 
-  /** jsdom fires no scroll event of its own. */
+  // jsdom fires no scroll event of its own.
   async function scrolled() {
     listbox()!.dispatchEvent(new Event('scroll'));
     await settle();
@@ -1181,7 +1146,7 @@ describe('Select, virtual', () => {
   });
 
   it('opens with a selected option far down the list in the middle', async () => {
-    // Opening scrolls before a test could reach the listbox, so every listbox gets the geometry up front.
+    // Opening scrolls before a test can reach the listbox, so every listbox gets the geometry up front.
     const tops = new WeakMap<Element, number>();
     const isList = (el: Element) => el.getAttribute('role') === 'listbox';
     Object.defineProperty(HTMLElement.prototype, 'clientHeight', {
@@ -1220,7 +1185,6 @@ describe('Select, virtual', () => {
     for (let i = 0; i < 12; i += 1) key(trigger(), 'ArrowDown');
     await nextTick();
 
-    // Row 12 just fits at the bottom edge, rather than being centered.
     expect(list.scrollTop).toBe(13 * ROW - VIEW);
   });
 
@@ -1247,7 +1211,6 @@ describe('Select, virtual', () => {
     expect(optionEls().length).toBeGreaterThan(0);
     expect(optionEls().length).toBeLessThan(100);
     expect(optionEls().every((el) => el.classList.contains('row'))).toBe(true);
-    // The list still holds the space around them.
     expect(spacers()).toHaveLength(2);
 
     key(trigger(), 'End');
@@ -1278,7 +1241,6 @@ describe('Select, order', () => {
     await open();
 
     expect(labels()).toEqual(['Bravo', 'Delta', 'Alpha', 'Charlie']);
-    // Indices follow what is shown, so the keyboard walks it top to bottom.
     expect(optionEls().map((el) => el.dataset.index)).toEqual(['0', '1', '2', '3']);
   });
 
@@ -1417,7 +1379,6 @@ describe('Select, presets', () => {
     [...document.querySelectorAll<HTMLElement>('[data-part="preset-group-trigger"]')].find(
       (el) => el.textContent?.trim() === label
     )!;
-  // A folded section keeps its presets, inert, so the fold can animate.
   const shown = () =>
     [...document.querySelectorAll('[data-part="preset"]')]
       .filter((el) => !el.closest('[inert]'))
@@ -1510,7 +1471,6 @@ describe('Select, rows the app renders', () => {
               h(Positioner as any, null, () =>
                 h(Popup as any, null, () =>
                   h(SelectList as any, null, {
-                    // custom content: an icon-ish prefix the label doesn't have
                     default: ({ options }: any) =>
                       options.map((option: any) =>
                         h(SelectItem as any, { key: option.value, option }, () => `🍓 ${option.label}`),

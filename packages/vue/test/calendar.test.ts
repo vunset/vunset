@@ -18,7 +18,6 @@ import {
   formatISO,
 } from '../src';
 
-/** A Wednesday, and deliberately not near a month boundary. */
 const TODAY = '2026-09-23';
 
 beforeEach(() => {
@@ -103,7 +102,6 @@ const emittedValue = (wrapper: VueWrapper<any>, index = 0) => {
 const emitCount = (wrapper: VueWrapper<any>) =>
   wrapper.findComponent(CalendarRoot).emitted('update:modelValue')?.length ?? 0;
 
-/** The keyboard lives on the grid, so that is where a key is pressed. */
 async function press(wrapper: VueWrapper<any>, key: string, modifiers: Record<string, any> = {}) {
   await wrapper.find('.grid').trigger('keydown', { key, ...modifiers });
   await nextTick();
@@ -144,8 +142,7 @@ describe('the month on screen', () => {
   it('marks the days either side of the month as outside', () => {
     const wrapper = mountCalendar();
 
-    // September 2026 starts on a Tuesday, so the first row reaches back to the
-    // 31st of August.
+    // September 2026 starts on a Tuesday, so the first row reaches back to August 31.
     expect(day(wrapper, '2026-08-31').attributes('data-outside')).toBe('');
     expect(day(wrapper, '2026-09-01').attributes('data-outside')).toBeUndefined();
   });
@@ -262,7 +259,6 @@ describe('range selection', () => {
 
     expect(day(wrapper, '2026-09-11').attributes('data-in-range')).toBe('');
     expect(day(wrapper, '2026-09-13').attributes('data-preview')).toBe('');
-    // Still nothing published: a hover is not a choice.
     expect(emitCount(wrapper)).toBe(0);
 
     await wrapper.find('.grid').trigger('pointerleave');
@@ -325,8 +321,7 @@ describe('bounds', () => {
     const early = day(wrapper, '2026-09-09');
     expect(early.attributes('aria-disabled')).toBe('true');
     expect(early.attributes('data-disabled')).toBe('');
-    // Never the native attribute: a disabled button cannot be focused, and the
-    // grid's one tab stop has to be able to rest anywhere.
+    // A disabled button can't be focused, and the grid's one tab stop must rest anywhere.
     expect(early.attributes('disabled')).toBeUndefined();
 
     await early.trigger('click');
@@ -353,7 +348,6 @@ describe('bounds', () => {
     });
 
     expect(day(wrapper, '2026-09-15').attributes('data-disabled')).toBe('');
-    // The 20th of September 2026 is a Sunday.
     expect(day(wrapper, '2026-09-20').attributes('data-disabled')).toBe('');
     expect(day(wrapper, '2026-09-16').attributes('data-disabled')).toBeUndefined();
 
@@ -490,7 +484,6 @@ describe('the month and year views', () => {
 
     await wrapper.find('.year-trigger').trigger('click');
 
-    // The page is 2016–2027; everything behind it is out of reach.
     expect(wrapper.find('.prev').attributes('disabled')).toBeDefined();
     expect(wrapper.find('.next').attributes('disabled')).toBeUndefined();
   });
@@ -688,7 +681,6 @@ describe('a controlled value', () => {
     await day(wrapper, '2026-09-15').trigger('click');
 
     expect(emittedValue(wrapper)).toBe('2026-09-15');
-    // The parent ignored the event, so nothing on screen moved.
     expect(day(wrapper, '2026-09-10').attributes('data-selected')).toBe('');
     expect(day(wrapper, '2026-09-15').attributes('data-selected')).toBeUndefined();
   });
@@ -700,7 +692,6 @@ describe('a controlled value', () => {
     await day(wrapper, '2026-09-25').trigger('click');
 
     expect(emittedValue(wrapper)).toEqual(['2026-09-20', '2026-09-25']);
-    // Nothing agreed to that range, so nothing on screen draws it.
     expect(wrapper.find('[data-part="day"][data-range-start]').attributes('data-value')).toBe(
       '2026-09-10',
     );
@@ -718,7 +709,6 @@ describe('a controlled value', () => {
 });
 
 describe('cells that render their own list', () => {
-  /** The grid as an app writes it: rows and cells with classes, no arrays, no views. */
   function mountLists(props: Record<string, any> = {}, slots: { month?: (state: any) => any } = {}) {
     const Host = defineComponent({
       setup: () => () =>

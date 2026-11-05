@@ -171,7 +171,6 @@ describe('AppDrawer', () => {
     mountOverlay(AppDrawer, { defaultOpen: true, handle: true, title: 'Filters' }, {});
     await settle();
 
-    // The handle takes the drag; the panel itself still scrolls.
     expect(document.querySelector<HTMLElement>('.app-drawer-handle')!.style.touchAction).toBe('none');
     expect(dialog()!.style.touchAction).toBe('');
   });
@@ -407,7 +406,6 @@ describe('AppTooltip', () => {
 
     const button = document.querySelector<HTMLElement>('button[aria-haspopup="dialog"]')!;
     expect(button.getAttribute('aria-describedby')).toBe(tip().id);
-    // Placed against the button: measured, where an unresolved anchor leaves it hidden.
     expect(tip().closest<HTMLElement>('[data-part="positioner"]')!.style.getPropertyValue('--anchor-width')).toBe(
       '120px'
     );

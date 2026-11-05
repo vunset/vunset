@@ -9,13 +9,11 @@ export interface SpriteIcon {
 
 export interface Sprite {
   svg: string;
-  /** The names drawn, in order. */
   names: string[];
-  /** Files with no `<svg>` in them. */
   invalid: string[];
 }
 
-/** The `.svg` files of each folder, in order; a name an earlier folder has is left out. */
+// A name an earlier folder has is left out.
 export function readIcons(folders: string[]): SpriteIcon[] {
   const icons = new Map<string, string>();
   for (const folder of folders) {
@@ -28,11 +26,7 @@ export function readIcons(folders: string[]): SpriteIcon[] {
   return [...icons].map(([name, svg]) => ({ name, svg }));
 }
 
-/**
- * One `<symbol>` per icon, parsed as an inline icon is: fills become
- * `currentColor`, and the root's own attributes (`viewBox`, a stroke) move to
- * the symbol, so a stroke icon keeps its stroke.
- */
+// The root's own attributes (`viewBox`, a stroke) move to the symbol, so a stroke icon keeps its stroke.
 export function buildSprite(icons: SpriteIcon[]): Sprite {
   const names: string[] = [];
   const invalid: string[] = [];
@@ -44,8 +38,7 @@ export function buildSprite(icons: SpriteIcon[]): Sprite {
       invalid.push(name);
       continue;
     }
-    // `Icon` draws a sprite icon with `fill="none"`, which a shape with no fill
-    // of its own would inherit through `<use>`: such a file is filled, as it is alone.
+    // `Icon` draws sprites with `fill="none"`, which an unfilled shape would inherit through `<use>`.
     const attrs = { fill: 'currentColor', ...parsed.attrs };
     const attributes = Object.entries(attrs)
       .map(([key, value]) => ` ${key}="${value}"`)

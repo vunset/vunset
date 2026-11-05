@@ -14,12 +14,7 @@ import {
 } from '../src';
 import { dragTo, roomFor, snap, type Scale } from '../src/components/range/range-math';
 
-/**
- * jsdom performs no layout and `test/setup.ts` hands every element the same
- * box, which would put every thumb at the same midpoint. Pointer behavior is
- * all about where things are, so these tests place the control and its thumbs
- * by hand.
- */
+// `test/setup.ts` gives every element the same box, so these tests place the control and thumbs by hand.
 const CONTROL_WIDTH = 200;
 const THUMB_SIZE = 20;
 
@@ -31,7 +26,6 @@ function setRect(element: Element, rect: Partial<DOMRect>) {
   (element as any).getBoundingClientRect = () => ({ ...box, toJSON: () => ({}) });
 }
 
-/** Lays the control out as a 200px-wide bar at the origin, with thumbs on their values. */
 function layoutRange(wrapper: VueWrapper<any>, options: { min?: number; max?: number } = {}) {
   const { min = 0, max = 100 } = options;
   const control = wrapper.find('[data-part="control"]').element;
@@ -75,8 +69,6 @@ function mountRange(props: Record<string, any> = {}, thumbProps: Record<string, 
     slots: {
       default: () => [
         h(RangeValue as any),
-        // The thumbs sit inside the track, which is the box they position
-        // against — the composition the parts are designed for.
         h(RangeControl as any, null, {
           default: () =>
             h(RangeTrack as any, null, {
@@ -100,7 +92,6 @@ const control = (w: VueWrapper<any>) => w.find('[data-part="control"]');
 const indicator = (w: VueWrapper<any>) => w.find('[data-part="indicator"]');
 const values = (w: VueWrapper<any>) => inputs(w).map((i) => Number((i.element as HTMLInputElement).value));
 
-/** Presses the control at `x`, drags through `path`, and releases. */
 async function drag(w: VueWrapper<any>, x: number, path: number[] = [], release = true) {
   control(w).element.dispatchEvent(pointer('pointerdown', x));
   await nextTick();
@@ -157,24 +148,17 @@ describe('Range', () => {
     });
 
     it('hides a thumb that has no position to take', () => {
-      // An empty interval leaves the percentage undefined rather than at an end.
       const w = mountRange({ defaultValue: 5, min: 5, max: 5 });
       const style = w.find('[data-part="thumb"]').attributes('style') ?? '';
-      // The visually-hidden box, rather than a position derived from NaN.
       expect(style).toContain('width: 1px');
       expect(style).not.toContain('inset-inline-start');
     });
   });
 
   describe('inset thumbs', () => {
-    /**
-     * `thumbAlignment: 'edge'` cannot be derived from the value — the thumb's
-     * own width shortens the distance it travels, so it has to be measured.
-     */
+    // The thumb's own width shortens its travel, so `edge` alignment has to be measured.
     async function mountInset(value: number) {
-      // Mounted at a different value on purpose: the first measurement happens
-      // before the test geometry below is in place, so the value has to move
-      // afterwards to trigger a second one.
+      // Mounted at another value: the first measurement precedes the test geometry, so the value moves to trigger a second.
       const w = mountRange({ modelValue: value === 0 ? 100 : 0, thumbAlignment: 'edge' });
       layoutRange(w);
       await w.setProps({ modelValue: value });
@@ -186,9 +170,7 @@ describe('Range', () => {
       const w = await mountInset(100);
       const style = w.find('[data-part="thumb"]').attributes('style') ?? '';
 
-      // At the maximum, a centered thumb would sit at 100% with half of it
-      // hanging off. Inset, its center stops half a thumb short: with a 20px
-      // thumb in a 200px control, that is 190/200 = 95%.
+      // Inset, its center stops half a thumb short: a 20px thumb in 200px is 190/200 = 95%.
       expect(style).toContain('--position: 95%');
       expect(style).not.toContain('--position: 100%');
     });
@@ -199,8 +181,7 @@ describe('Range', () => {
     });
 
     it('measures on mount, without waiting for a resize', async () => {
-      // `ResizeObserver` is stubbed inert in this environment, so nothing but
-      // the mount itself can produce the first measurement.
+      // `ResizeObserver` is stubbed inert, so only the mount can produce the first measurement.
       const w = mountRange({ defaultValue: 40, thumbAlignment: 'edge' });
       await nextTick();
 
@@ -272,7 +253,6 @@ describe('Range', () => {
 
     it('holds each thumb of a range behind its neighbor', async () => {
       const w = mountRange({ defaultValue: [20, 70] });
-      // End on the lower thumb reaches the upper one, not the maximum.
       await inputs(w)[0].trigger('keydown', { key: 'End' });
       expect(values(w)).toEqual([70, 70]);
     });
@@ -345,7 +325,7 @@ describe('Range', () => {
       const w = mountRange({ defaultValue: [20, 70] });
       layoutRange(w);
 
-      // 160px of 200 is 80 — closer to the upper thumb at 70 than the lower at 20.
+      // 160px of 200 is 80, closer to the upper thumb at 70 than the lower at 20.
       await drag(w, 160);
       expect(values(w)).toEqual([20, 80]);
     });
@@ -354,8 +334,6 @@ describe('Range', () => {
       const w = mountRange({ defaultValue: 40 });
       layoutRange(w);
 
-      // Press the thumb itself, off its center: the value must not jump to the
-      // press position, and must not jump by the grab offset either.
       const thumb = w.find('[data-part="thumb"]').element;
       thumb.dispatchEvent(pointer('pointerdown', 85));
       await nextTick();
@@ -419,12 +397,10 @@ describe('Range', () => {
       await nextTick();
       layoutRange(w as any);
 
-      // One thumb claims the index the other is releasing. If the release wins,
-      // that slot ends up empty and the press can no longer find the thumb.
+      // If the release wins, the slot ends up empty and the press can't find the thumb.
       await drag(w as any, 160);
 
-      // Read by index rather than document order: the thumbs render in their
-      // original order while controlling swapped values.
+      // By index: the thumbs render in their original order while controlling swapped values.
       const byIndex = w
         .findAll('[data-part="thumb"]')
         .map((thumb) => ({
@@ -477,8 +453,6 @@ describe('Range', () => {
       const w = mountRange({ defaultValue: 10, onCommit });
       layoutRange(w);
 
-      // Pressed at 40px of 200, so the value actually moves and there is
-      // something to commit.
       control(w).element.dispatchEvent(pointer('pointerdown', 40));
       await nextTick();
       // A pointermove with no buttons held means the pointerup went elsewhere.
@@ -573,7 +547,6 @@ describe('Range', () => {
       const w = mountRange({ defaultValue: [20, 40] });
       layoutRange(w);
 
-      // Drag the lower thumb past the upper one.
       await drag(w, 40, [180]);
       expect(values(w)).toEqual([90, 90]);
     });
@@ -720,8 +693,7 @@ describe('Range', () => {
         attachTo: document.body,
       });
 
-      // The label names itself to the root as it mounts, so the reference
-      // lands a tick after the first render.
+      // The label registers as it mounts, so the reference lands a tick after the first render.
       await nextTick();
 
       const labelId = w.find('[data-part="label"]').attributes('id');
@@ -748,7 +720,6 @@ describe('Range', () => {
 
     it('points at every thumb input', async () => {
       const w = mountRange({ defaultValue: [20, 70] });
-      // Thumbs register their ids as they mount, one tick behind the output.
       await nextTick();
 
       const ids = inputs(w).map((i) => i.attributes('id'));
@@ -756,8 +727,6 @@ describe('Range', () => {
     });
 
     it('keeps the group\'s own id off the thumb input', () => {
-      // Both would otherwise answer to the same id, and `getElementById` would
-      // reach whichever came first.
       const w = mountRange({ defaultValue: 40, id: 'volume' });
       expect(w.attributes('id')).toBe('volume');
       expect(firstInput(w).attributes('id')).not.toBe('volume');
@@ -818,7 +787,6 @@ describe('Range', () => {
     it('snaps to the step, counting from min', () => {
       expect(snap(3.7, scale())).toBe(4);
       expect(snap(3.7, scale({ step: 0.5 }))).toBe(3.5);
-      // Counting from min, not from zero.
       expect(snap(3, scale({ min: 1, step: 2 }))).toBe(3);
     });
 
@@ -844,7 +812,6 @@ describe('Range', () => {
       const pushed = dragTo([10, 20], 0, 50, scale(), 'push').values;
       expect(pushed).toEqual([50, 50]);
 
-      // Dragging back leaves the pushed thumb where it started, not stranded.
       expect(dragTo(pushed, 0, 5, scale(), 'push', [10, 20]).values).toEqual([5, 20]);
     });
 

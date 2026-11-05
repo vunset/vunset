@@ -33,7 +33,6 @@ function mountTable(props: Record<string, any> = {}, slots: Record<string, any> 
 }
 
 const heads = (wrapper: VueWrapper<any>) => wrapper.findAll('thead th').map((th) => th.text());
-/** A width as drawn: the value itself, or the `var(--dt-col-n)` it names, from the table's container. */
 const px = (cell: Element, value: string) => {
   const name = /^var\((--[\w-]+)\)$/.exec(value)?.[1];
   return name ? cell.closest<HTMLElement>('[data-part="table-container"]')!.style.getPropertyValue(name) : value;
@@ -145,7 +144,6 @@ describe('class props', () => {
     expect(every('thead th', 'on-th')).toBe(true);
     expect(every('tbody td', 'on-td')).toBe(true);
     expect(every('tfoot td', 'on-tf')).toBe(true);
-    // Each stays on its own part.
     expect(wrapper.find('thead tr').classes()).not.toContain('on-row');
     expect(wrapper.find('tbody td').classes()).not.toContain('on-th');
   });
@@ -241,7 +239,6 @@ describe('sorting', () => {
 
     await sortButton(wrapper, 'name').trigger('click');
 
-    // The state moved and is reported; the rows are left as the server sent them.
     expect(headOf(wrapper, 'name').attributes('aria-sort')).toBe('ascending');
     expect(column(wrapper, 'name')).toEqual(['Grace', 'Ada', 'Alan']);
   });
@@ -346,8 +343,6 @@ describe('columns', () => {
 
     expect(widths(wrapper.find('thead th[data-column="name"]').element)).toEqual(['200px', '200px', '200px']);
     expect(style('thead th[data-column="age"]').width).toBe('');
-    // Every cell holds it, so a long value is clipped instead of widening the column. They all
-    // read one value on the container, which a resize rewrites alone.
     expect(style('[data-part="table-container"]').getPropertyValue('--dt-col-0')).toBe('200px');
     for (const td of wrapper.findAll('tbody td[data-column="name"]')) {
       expect((td.element as HTMLElement).style.width).toBe('var(--dt-col-0)');
@@ -396,7 +391,6 @@ describe('columns', () => {
     expect(inset('age', 'inset-inline-start')).toBe('120px');
     expect(inset('city', 'inset-inline-end')).toBe('0px');
 
-    // The last start column and the first end column are the ones the rest slide under.
     expect(cell('name').attributes('data-pinned-edge')).toBeUndefined();
     expect(cell('age').attributes('data-pinned-edge')).toBe('');
     expect(cell('city').attributes('data-pinned-edge')).toBe('');
@@ -413,7 +407,6 @@ describe('columns', () => {
     const inset = (id: string) =>
       (wrapper.find(`tbody td[data-column="${id}"]`).element as HTMLElement).style.getPropertyValue('inset-inline-end');
 
-    // `city` is at the edge; `age` sits inside it, by city's width.
     expect(inset('city')).toBe('0px');
     expect(inset('age')).toBe('90px');
   });
@@ -459,26 +452,16 @@ describe('columns', () => {
   });
 
   describe('resizing', () => {
-    /**
-     * jsdom has no layout. The header stands in for the browser: asked for no
-     * width, it settles at 90px — its content — and otherwise draws at the
-     * width it was given. As in a table, its column is no narrower than any of
-     * its body cells' `min-width`, nor than their content where nothing holds
-     * them (`body`).
-     */
-    /** What each column's header needs; it is drawn at no less. */
+    // jsdom has no layout: a header settles at its content's 90px unless given a width, and is no narrower than its body cells.
     let content: Record<string, number> = {};
-    /** What each column's body content needs, where its cells hold no width. */
     let body: Record<string, number> = {};
-    /** Spare room the table shares among its columns, when it is wider than they are. */
     let spare = 0;
 
     function mountResizable(props: Record<string, any> = {}) {
       content = { name: 90 };
       body = {};
       spare = 0;
-      // Stubbed on the prototype, so it is in place before the first render
-      // measures anything. Only the header cells are asked.
+      // Stubbed on the prototype so it is in place before the first render measures.
       const original = HTMLTableCellElement.prototype.getBoundingClientRect;
       Object.defineProperty(HTMLTableCellElement.prototype, 'getBoundingClientRect', {
         configurable: true,
@@ -491,7 +474,6 @@ describe('columns', () => {
           const held = Math.max(0, ...cells.map((cell) => parseFloat(widths(cell)[1]!) || 0));
           const free = cells.some((cell) => cell.style.maxWidth === '') ? (body[column] ?? 0) : 0;
           const needs = Math.max(content[column] ?? 0, held, free);
-          // A collapsed column is at its content; the spare room goes elsewhere.
           return { width: Math.max(given, needs) + (collapsed ? 0 : spare) };
         }
       });
@@ -528,12 +510,10 @@ describe('columns', () => {
     it('stops at the narrowest the column can really be drawn', async () => {
       const wrapper = mountResizable();
 
-      // Asked for 50px; the content will not go below 90.
       await resize(wrapper, 200, 50);
 
       expect(width(wrapper)).toBe('90px');
       expect(wrapper.emitted('update:columnSizing')!.at(-1)).toEqual([{ name: 90 }]);
-      // Never below it on the way, either: nothing is drawn at a size the content refuses.
       expect(wrapper.emitted('update:columnSizing')!.every(([next]: any) => next.name >= 90)).toBe(true);
     });
 
@@ -600,14 +580,12 @@ describe('columns', () => {
       });
       await nextTick();
 
-      // Otherwise its neighbors are offset by 60 while it is drawn at 90.
       expect(width(wrapper)).toBe('90px');
     });
 
     it('does not take the table’s spare room into a column’s size', async () => {
       const wrapper = mountResizable();
 
-      // Every column drawn 40px wider than it was sized, content unchanged.
       spare = 40;
       await wrapper.setProps({ data: [...USERS] });
       await nextTick();
@@ -630,8 +608,7 @@ describe('columns', () => {
     it('puts the column back as it was after measuring it, even when nothing moves', async () => {
       const wrapper = mountResizable();
 
-      // A press with no drag — the first half of a double-click reset. Nothing
-      // re-renders, so nothing would put the measured-away width back.
+      // A press with no drag re-renders nothing, so nothing would put the measured-away width back.
       await resize(wrapper, 200, 200);
 
       expect(widths(headOf(wrapper, 'name').element)).toEqual(['200px', '200px', '200px']);
@@ -673,7 +650,6 @@ describe('nested rows', () => {
     const wrapper = mountNested();
 
     expect(wrapper.find('thead th[data-column="expander"]').attributes('data-pinned')).toBe('start');
-    // Only a row with children gets a button.
     expect(wrapper.findAll('[data-part="table-expander"]')).toHaveLength(1);
   });
 
@@ -826,7 +802,6 @@ describe('virtual rows', () => {
 
     it("hands a jump's rows to the elements and components already drawn", async () => {
       const { wrapper, scrollTo } = await mountVirtual({}, slots);
-      // Mid-table the window is wider than at the top, overscan on both sides: draw that once.
       await scrollTo(30 + 300 * 20);
       const elements = drawn(wrapper).map((tr) => tr.element);
       mounts.count = 0;
@@ -844,7 +819,6 @@ describe('virtual rows', () => {
       const kept = drawn(wrapper).find((tr) => tr.attributes('data-index') === '500')!.element;
       mounts.count = 0;
 
-      // Five rows on: five leave the top, and five come in at the bottom in their elements.
       await scrollTo(30 + 505 * 20);
 
       expect(mounts.count).toBe(0);
@@ -874,7 +848,6 @@ describe('virtual rows', () => {
       await scrollTo(30 + 500 * 20);
       await scrollTo(0);
 
-      // Row 0 again, in whichever element it landed: as it was never touched.
       expect(cell().find('.stand-in').exists()).toBe(true);
       expect(wrapper.findAll('.real')).toHaveLength(0);
     });
@@ -913,7 +886,6 @@ describe('virtual rows', () => {
     await scrollTo(30 + 500 * 20);
 
     const first = drawn(wrapper)[0]!;
-    // Stripes and position come from the index in the data, not in the DOM.
     expect(first.attributes('data-index')).toBe('492');
     expect(first.attributes('data-even')).toBe('');
     expect(spacers(wrapper)[0]).toBe(`${492 * 20}px`);
@@ -925,7 +897,6 @@ describe('virtual rows', () => {
 
     expect(wrapper.find('table').attributes('aria-rowcount')).toBe('1001');
     expect(wrapper.find('thead tr').attributes('aria-rowindex')).toBe('1');
-    // After one header row, row 492 of the data is row 494 of the table.
     expect(drawn(wrapper)[0]!.attributes('aria-rowindex')).toBe('494');
   });
 
@@ -970,7 +941,6 @@ describe('virtual rows', () => {
 
     expect(drawn(wrapper)[0]!.find('td[data-column="age"]').text()).toBe('0');
 
-    // Numbers sort largest first; the drawn slice is the top of the sorted rows.
     await headOf(wrapper, 'age').find('[data-part="table-sort"]').trigger('click');
     await nextTick();
 
@@ -989,7 +959,6 @@ describe('virtual rows', () => {
 });
 
 describe('sort in the URL', () => {
-  // The app's route, as the Nuxt module provides it: a write navigates, and the query follows.
   function mountWithRoute(props: Record<string, any> = {}, initial: Record<string, string> = {}) {
     const query = reactive<Record<string, string | undefined>>({ ...initial });
     const set = vi.fn((key: string, value: string | undefined) => (query[key] = value));
@@ -1078,7 +1047,6 @@ describe('parseSort', () => {
       { id: 'a', desc: true },
       { id: 'b', desc: false }
     ]);
-    // Only a direction after the last `:` is one.
     expect(parseSort('meta:created')).toEqual([{ id: 'meta:created', desc: false }]);
     expect(parseSort('meta:created:desc')).toEqual([{ id: 'meta:created', desc: true }]);
     expect(parseSort('')).toEqual([]);

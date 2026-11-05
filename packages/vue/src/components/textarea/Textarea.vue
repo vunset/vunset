@@ -75,8 +75,7 @@ const merged = usePartProps(() => ({ ...api.controlProps.value, 'data-part': 'te
 
 const px = (value: string) => parseFloat(value) || 0;
 
-// Collapse to `rows`, then take the content's height: `scrollHeight` is never
-// less than the box, so `rows` stays the floor.
+// Collapse first: `scrollHeight` is never less than the box, so `rows` stays the floor.
 function resize() {
   const el = api.controlRef.value;
   if (!el) return;

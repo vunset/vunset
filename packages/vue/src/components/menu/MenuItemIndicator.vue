@@ -19,10 +19,7 @@ const props = withDefaults(
 
 defineSlots<{
   default(props: {
-    /**
-     * Whether it is its item's checked.
-     * @attribute `data-checked` while its item's checked, `data-unchecked` otherwise
-     */
+    /** Whether it is its item's checked. @attribute `data-checked` while its item's checked, `data-unchecked` otherwise */
     checked: boolean;
     /** Whether it ignores interaction. */
     disabled: boolean;

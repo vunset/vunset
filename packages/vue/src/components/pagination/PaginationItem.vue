@@ -15,32 +15,17 @@ const props = defineProps<{
 
 defineSlots<{
   default(props: {
-    /**
-     * The current page.
-     * @attribute none
-     */
+    /** The current page. @attribute none */
     page: number;
-    /**
-     * How many pages there are.
-     * @attribute none
-     */
+    /** How many pages there are. @attribute none */
     totalPages: number;
     /** Whether it ignores interaction. */
     disabled: boolean;
-    /**
-     * Whether the current page is the first.
-     * @attribute none
-     */
+    /** Whether the current page is the first. @attribute none */
     first: boolean;
-    /**
-     * Whether the current page is the last.
-     * @attribute none
-     */
+    /** Whether the current page is the last. @attribute none */
     last: boolean;
-    /**
-     * The page it goes to.
-     * @attribute `data-page="…"`
-     */
+    /** The page it goes to. @attribute `data-page="…"` */
     value: number;
     /** Whether it is the current page. */
     selected: boolean;

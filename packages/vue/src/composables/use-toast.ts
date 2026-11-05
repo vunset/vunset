@@ -57,7 +57,6 @@ export function provideToastStore(store: ToastStore, app?: App): ToastStore {
   return store;
 }
 
-/** The store named, else the provided one, else the shared default. */
 function resolveToastStore(store?: ToastStore): ToastStore {
   return store ?? (hasInjectionContext() ? useProvidedToastStore() : null) ?? defaultToastStore;
 }
@@ -219,36 +218,21 @@ export interface ToastRootState {
   limited: boolean;
   /** Whether it was just raised again under the same id; on until its animation ends. */
   repeated: boolean;
-  /**
-   * How many times it has been raised again under the same id.
-   * @attribute `data-repeat-count="…"` once repeated
-   */
+  /** How many times it has been raised again under the same id. @attribute `data-repeat-count="…"` once repeated */
   repeatCount: number;
-  /**
-   * Where it is in its enter or exit animation.
-   * @attribute `data-enter-from` as it enters, `data-leave-to` as it leaves
-   */
+  /** Where it is in its enter or exit animation. @attribute `data-enter-from` as it enters, `data-leave-to` as it leaves */
   transitionStatus: ToastTransitionStatus;
   /** Whether it is being dragged. */
   swiping: boolean;
-  /**
-   * The way it was swiped out, once it has been.
-   * @attribute `data-swipe-direction="…"` once swiped out
-   */
+  /** The way it was swiped out, once it has been. @attribute `data-swipe-direction="…"` once swiped out */
   swipeDirection: ToastSwipeDirection | undefined;
 }
 
 /** What each toast part hands its slot. */
 export type ToastSlotProps = ToastRootState & {
-  /**
-   * The toast itself: what was passed to `setToast`, plus its `id`.
-   * @attribute none
-   */
+  /** The toast itself: what was passed to `setToast`, plus its `id`. @attribute none */
   toast: Toast<any>;
-  /**
-   * Dismisses it.
-   * @attribute none
-   */
+  /** Dismisses it. @attribute none */
   close: () => void;
 };
 
@@ -538,11 +522,7 @@ export function useToastRoot(options: UseToastRootOptions = {}): UseToastRootRet
 export const { provideContext: provideToastRootContext, useContext: useToastRootContext } =
   createContext<UseToastRootReturn>('ToastRoot');
 
-/**
- * The height a toast's content asks for, whatever a stylesheet pins it to while
- * it sits in a collapsed pile. Lifted with `important`, which also outranks a
- * stylesheet's own `!important`, then put back exactly as it was.
- */
+// Lifted with `important`, which outranks a stylesheet's own `!important`, then put back as it was.
 function naturalHeight(element: HTMLElement): number {
   const { style } = element;
   const inline = style.getPropertyValue('height');

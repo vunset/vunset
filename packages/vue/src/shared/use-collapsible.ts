@@ -36,15 +36,11 @@ export interface CollapsibleState {
 }
 
 export interface UseCollapsibleOptions {
-  /** The open state. Supplying this makes the value controlled. */
   open?: MaybeRefOrGetter<boolean | undefined>;
-  /** The initial open state while uncontrolled. */
   defaultOpen?: MaybeRefOrGetter<boolean>;
-  /** Whether the trigger ignores user interaction. */
   disabled?: MaybeRefOrGetter<boolean>;
   /** The panel id, referenced by the trigger's `aria-controls`. Generated when omitted. */
   id?: MaybeRefOrGetter<string | undefined>;
-  /** Called whenever the open state changes. */
   onChange?: (open: boolean) => void;
 }
 

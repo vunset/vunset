@@ -108,8 +108,7 @@ function start(options: UseThemeOptions) {
 let pending: ThemeMode | null = null;
 
 function setTheme(value: ThemeMode) {
-  // Set again before it shows (a storage that echoes the write back), it would start a
-  // second transition, which skips the first.
+  // A storage echoing the write back would start a second transition, which skips the first.
   if (value === (pending ?? mode.value)) return;
 
   const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
@@ -132,10 +131,7 @@ function setTheme(value: ThemeMode) {
   }
 }
 
-/**
- * The page's color scheme: light, dark, or the system's, applied to `<html>` and
- * remembered. Every call shares one choice; the first call's options set it up.
- */
+/** The page's color scheme, applied to `<html>` and remembered. Every call shares one; the first call's options win. */
 export function useTheme(options: UseThemeOptions = {}): UseThemeReturn {
   // A server render has no page to theme: it gets the default, applied by nothing.
   if (!started && typeof window !== 'undefined') start(options);
@@ -152,11 +148,7 @@ export function useTheme(options: UseThemeOptions = {}): UseThemeReturn {
   };
 }
 
-/**
- * For a test, or an app that tears its page down: forgets the choice and the
- * listeners, so the next `useTheme` starts over.
- * @internal
- */
+/** @internal Forgets the choice and listeners, so the next `useTheme` starts over. */
 export function resetTheme() {
   stop?.();
   stop = null;

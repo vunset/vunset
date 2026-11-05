@@ -15,7 +15,6 @@ function press(target: EventTarget) {
   target.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, composed: true }));
 }
 
-// A panel holding a popover, a toggle beside it, and a button elsewhere.
 function setup(options: (refs: { toggle: Ref<HTMLElement | undefined> }) => UseClickOutsideOptions = () => ({})) {
   const handler = vi.fn();
   const shown = ref(true);
@@ -116,7 +115,6 @@ describe('useClickOutside', () => {
   });
 
   it('stops with the component', () => {
-    // A target that outlives the component, so only the listener's removal keeps it quiet.
     const handler = vi.fn();
     const target = document.createElement('div');
     const outside = document.createElement('button');

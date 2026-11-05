@@ -40,10 +40,7 @@ export interface UseVirtualListReturn<T> {
   scrollToIndex: (index: number) => void;
 }
 
-/**
- * Draws only the items near the viewport of a long list, with spacers standing
- * in for the rest.
- */
+/** Draws only the items near the viewport of a long list, with spacers standing in for the rest. */
 export function useVirtualList<T>(options: UseVirtualListOptions<T>): UseVirtualListReturn<T> {
   const overscan = () => toValue(options.overscan) ?? 20;
   const threshold = () => toValue(options.threshold) ?? Math.floor(overscan() / 2);
@@ -57,8 +54,7 @@ export function useVirtualList<T>(options: UseVirtualListOptions<T>): UseVirtual
   const end = ref(Math.min(total.value, overscan() * 2));
 
   let offset = 0;
-  // The scroller's ancestors that clip it. A scroller with no height of its own grows to hold every
-  // item, and what really scrolls is one of these, or the page.
+  // A scroller with no height of its own grows to hold every item; one of these clipping ancestors scrolls instead.
   let clips: HTMLElement[] = [];
 
   function clipsOf(element: HTMLElement): HTMLElement[] {

@@ -157,7 +157,6 @@ describe('FormInput', () => {
   it('keeps letters out of a number input', async () => {
     mountInput({ type: 'number', min: 0 });
 
-    // A browser asks first and commits only what is let through.
     for (const character of '1a2') {
       const gate = new InputEvent('beforeinput', {
         bubbles: true,

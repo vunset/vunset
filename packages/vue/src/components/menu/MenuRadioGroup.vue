@@ -33,10 +33,7 @@ const emit = defineEmits<{
 
 defineSlots<{
   default(props: {
-    /**
-     * The chosen value.
-     * @attribute none
-     */
+    /** The chosen value. @attribute none */
     value: MenuRadioValue | undefined;
     /** Whether the group ignores interaction. */
     disabled: boolean;
@@ -84,11 +81,7 @@ const groupProps = computed(() => ({
 </script>
 
 <template>
-  <!--
-    A `group`, not a `radiogroup`: the menu already owns the items, and an
-    element cannot be owned twice. The exclusivity is carried by the items'
-    `menuitemradio` role, which is what a screen reader reads it from.
-  -->
+  <!-- `group`, not `radiogroup`: the menu already owns the items; `menuitemradio` carries exclusivity. -->
   <Part :as="props.as" v-bind="{ ...groupProps, ...$attrs }">
     <slot :value="value" :disabled="props.disabled" />
   </Part>

@@ -1,10 +1,7 @@
 import type { MarkdownRenderer } from 'vitepress';
 import { fences, quote, section, type Section } from './sections.ts';
 
-// `## Examples` → <Examples>, one window. Two or more `###` become tabs beside
-// it, any text before the first `###` under the heading; a single example keeps
-// its `##` above the window. Inside, each run of text is a card of its own,
-// between the previews and code blocks.
+// `## Examples` → <Examples>: two or more `###` become tabs, a single example keeps its `##` above.
 export function framesContainer(md: MarkdownRenderer) {
   md.core.ruler.before('normalize', 'framed-sections', (state) => {
     state.src = frames(state.src);
@@ -39,8 +36,7 @@ function exampleTabs(lines: string[], { start, lead, items }: Section): string[]
   ];
 }
 
-// text runs wrapped in `.example-text`; previews (already expanded to
-// <Preview>, or still `::: preview`) and fenced code left as they are
+// text runs wrapped in `.example-text`; previews and fenced code left as they are
 const OPEN = /^(?:<Preview\b|:::\s*preview\b)/;
 const CLOSE = /^(?:<\/Preview>|:::)\s*$/;
 

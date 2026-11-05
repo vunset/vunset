@@ -18,19 +18,14 @@ import {
 import { ENTRIES, UTILS } from './components.js';
 import { buildSprite, readIcons } from './sprite.js';
 
-/** The kit's own packages: dependencies of the module, so an app lists the module alone. */
 const OWN = ['@vunset/vue', '@vunset/ui', '@vunset/utils'];
 
 const isOwn = (id: string) => OWN.some((name) => id === name || id.startsWith(`${name}/`));
 
 const toPath = (resolved: string) => (resolved.startsWith('file:') ? fileURLToPath(resolved) : resolved);
 
-/**
- * An alias per entry a package exports, to the file the entry names: the app
- * imports `@vunset/vue` without listing it, so its own resolution would not
- * find it under pnpm or through a `file:` link. Longest first: Vite and Nitro
- * take the first alias that matches, and a bare name matches its subpaths too.
- */
+// The app doesn't list our packages, so pnpm or a `file:` link hides them from its resolution.
+// Longest first: Vite and Nitro take the first match, and a bare name matches its subpaths.
 function exportAliases(name: string, resolved: string): Record<string, string> {
   let dir = dirname(toPath(resolved));
   for (;;) {
@@ -43,7 +38,6 @@ function exportAliases(name: string, resolved: string): Record<string, string> {
         return Object.fromEntries(
           entries.map(([key, target]) => {
             const file = typeof target === 'string' ? target : (target.import ?? target.default ?? '');
-            // `./css/*` maps a folder: the alias is its prefix.
             return key.endsWith('/*')
               ? [`${name}${key.slice(1, -2)}`, join(dir, file.slice(0, -2))]
               : [`${name}${key.slice(1)}`, join(dir, file)];
@@ -57,7 +51,7 @@ function exportAliases(name: string, resolved: string): Record<string, string> {
   }
 }
 
-/** Types an app uses without importing them, as Nuxt's own `Ref` is. The later entry wins: ui's, where an app may not list vue. */
+// The later entry wins: ui's, where an app may not list vue.
 const GLOBAL_TYPES: Record<string, string[]> = {
   '@vunset/vue': [
     'ListboxItem',
@@ -87,7 +81,6 @@ const GLOBAL_TYPES: Record<string, string[]> = {
 /** lightningcss' `Features.LightDark`. */
 const LIGHT_DARK = 1 << 20;
 
-/** Where `dir` and `spriteDir` look when they aren't set. */
 const ICONS_DIR = '~/assets/icons';
 
 export interface ModuleOptions {
@@ -176,10 +169,9 @@ export default defineNuxtModule<ModuleOptions>({
     const logger = useLogger('@vunset/nuxt');
     const resolver = createResolver(import.meta.url);
     const roots = [nuxt.options.rootDir, ...nuxt.options.modulesDir].map((dir) => directoryToURL(dir));
-    // The kit's packages are found from the module, which depends on them; a peer such as TanStack, from the app.
+    // Our packages resolve from the module, peers such as TanStack from the app.
     const resolveFrom = (id: string) => tryResolveModule(id, isOwn(id) ? [new URL(import.meta.url)] : roots);
     const installed = async (id: string) => Boolean(await resolveFrom(id));
-    // Linked from elsewhere (`file:` a checkout) rather than installed into `node_modules`.
     const linked = async (id: string) => {
       const path = await resolveFrom(id);
       if (!path) return false;
@@ -207,7 +199,6 @@ export default defineNuxtModule<ModuleOptions>({
     for (const entry of ENTRIES) {
       if (entry.package === '@vunset/ui' && !ui) continue;
       if (!(await installed(entry.from))) continue;
-      // A chart or data table needs its optional peers; without them, importing the entry fails.
       if (!(await Promise.all(entry.peers.map(installed))).every(Boolean)) {
         missingPeers = true;
         continue;
@@ -220,7 +211,6 @@ export default defineNuxtModule<ModuleOptions>({
           name: `${options.prefix}${name}`,
           export: name,
           filePath: entry.from,
-          // An app's own component of the same name wins, without a warning.
           priority: -1
         });
       }
@@ -230,10 +220,8 @@ export default defineNuxtModule<ModuleOptions>({
       }
       for (const name of GLOBAL_TYPES[entry.from] ?? []) types.set(name, entry.from);
 
-      // Pre-bundled when the dev server starts, rather than found by the first page
-      // and reloaded. Not the chart or data table, which would pull TanStack into every app.
-      // A linked package is kept out: Vite would serve the copy it bundled once,
-      // through every rebuild, where served as source a rebuild shows at once.
+      // Pre-bundled to avoid a reload on first page, except peer entries (TanStack) and linked
+      // packages, whose rebuilds Vite would otherwise never pick up.
       const optimizeDeps = (nuxt.options.vite.optimizeDeps ??= {});
       if (await linked(entry.from)) (optimizeDeps.exclude ??= []).push(entry.from);
       else if (entry.peers.length === 0) (optimizeDeps.include ??= []).push(entry.from);
@@ -241,8 +229,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     addImports([...types].map(([name, from]) => ({ name, from, type: true })));
 
-    // Peers are looked for once, here: installing one restarts Nuxt, so its entry
-    // registers without the dev server being stopped and started by hand.
+    // Peers are checked only here, so installing one restarts Nuxt.
     if (missingPeers && nuxt.options.dev) nuxt.options.watch.push(join(nuxt.options.rootDir, 'package.json'));
 
     if (options.composables) {
@@ -257,7 +244,6 @@ export default defineNuxtModule<ModuleOptions>({
     }
     if (await linked('@vunset/utils')) ((nuxt.options.vite.optimizeDeps ??= {}).exclude ??= []).push('@vunset/utils');
 
-    // A store per server request, carried to the page; see the plugin.
     nuxt.options.build.transpile.push(resolver.resolve('./runtime'));
     addPlugin(resolver.resolve('./runtime/toasts'));
     addPlugin(resolver.resolve('./runtime/link'));
@@ -272,20 +258,16 @@ export default defineNuxtModule<ModuleOptions>({
 
     if (options.icons !== false) addIcons(options.icons ?? {});
 
-    // Before the app's own, so its `components` rules come after ui's and win. ui
-    // declares Tailwind's layer order, so going first doesn't change how they rank.
+    // First, so the app's `components` rules win; ui declares the layer order itself.
     if (ui && (options.css ?? true)) nuxt.options.css.unshift('@vunset/ui/all.css');
     if (ui && options.preflight) nuxt.options.css.unshift('@vunset/ui/preflight.css');
 
-    // Vite minifies CSS with lightningcss, which rewrites `light-dark()` for older
-    // browsers into variables only a `color-scheme` in the same CSS sets. One set
-    // on `<html>` by `useTheme()`, or none, leaves ui's colors invalid.
+    // lightningcss rewrites `light-dark()` into variables that a `color-scheme` set on `<html>` never fills.
     if (ui) {
       const lightningcss = ((nuxt.options.vite.css ??= {}).lightningcss ??= {});
       lightningcss.exclude = (lightningcss.exclude ?? 0) | LIGHT_DARK;
     }
 
-    /** The folders an option names, as absolute paths; a missing one is reported. */
     function folders(option: string | string[] | undefined) {
       return [option ?? []].flat().map((folder) => {
         const path = resolveAlias(folder);
@@ -295,7 +277,7 @@ export default defineNuxtModule<ModuleOptions>({
       });
     }
 
-    /** The default folder, when the app has it: unasked for, its absence isn't reported. */
+    // Unasked for, so its absence isn't reported.
     function conventional() {
       const path = resolveAlias(ICONS_DIR);
       const absolute = isAbsolute(path) ? path : resolve(nuxt.options.srcDir, path);
@@ -306,19 +288,16 @@ export default defineNuxtModule<ModuleOptions>({
       const inlineDirs = dir === undefined ? conventional() : folders(dir);
       // A `sprite` alone is one the app made itself: nothing is built over it.
       const spriteDirs = spriteDir !== undefined ? folders(spriteDir) : sprite === undefined ? conventional() : [];
-      // Neither asked for nor there: the app's icons are its own business.
       if (!options.icons && inlineDirs.length === 0 && spriteDirs.length === 0) return;
 
-      // Nuxt's templates are virtual, so a glob can't be relative to one: it starts
-      // with `/`, from Vite's root, which is the app's source folder.
+      // Templates are virtual, so the glob starts with `/`: Vite's root, the app's source folder.
       const root = nuxt.options.vite.root ?? nuxt.options.srcDir;
       const globs = inlineDirs.map((folder) => {
         const pattern = `/${relative(root, folder).replaceAll('\\', '/')}/*.svg`;
         return `...import.meta.glob(${JSON.stringify(pattern)}, { query: '?raw', import: 'default' })`;
       });
 
-      // Only the globs are written out: a glob takes no variable. Spread in order,
-      // so the first folder's file comes first, and is found first.
+      // Written out because a glob takes no variable; in order, so the first folder wins.
       const template = addTemplate({
         filename: 'vunset-icons.mjs',
         getContents: () => `export const inline = ${globs.length > 0 ? `{ ${globs.join(', ')} }` : 'undefined'};\n`
@@ -328,16 +307,14 @@ export default defineNuxtModule<ModuleOptions>({
       const url = sprite ?? '/sprite.svg';
       if (spriteDirs.length > 0) addSprite(spriteDirs, url);
 
-      // The rest reaches the plugin through runtime config; an app's own value wins.
-      // A value, not `undefined`, which Nuxt would serve as `''` and no variable could set.
+      // A value, not `undefined`, which Nuxt would serve as `''`.
       const runtime = nuxt.options.runtimeConfig.public;
       runtime.vunset = defu(runtime.vunset as Record<string, unknown> | undefined, { icons: { sprite: url } });
 
       addPlugin(resolver.resolve('./runtime/icons'));
     }
 
-    // Built into the build folder and served from there, as a public asset: in
-    // development, and copied to whatever output the deploy preset makes.
+    // A Nitro public asset, so it is served in dev and copied by every deploy preset.
     function addSprite(sources: string[], url: string) {
       if (!url.startsWith('/')) {
         logger.warn(`\`spriteDir\` builds a sprite the app serves, but \`sprite\` is \`${url}\`: give it a path.`);

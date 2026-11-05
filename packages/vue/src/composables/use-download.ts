@@ -1,9 +1,6 @@
 import { formatCsv } from '@vunset/utils';
 
-/**
- * Saves `content` as a file: a `Blob` as it is, anything else as JSON. A CSV
- * gets `.csv` when `filename` has no such ending.
- */
+/** Saves `content` as a file: a `Blob` as it is, anything else as JSON. */
 export function useDownload(content: unknown, filename: string): void {
   const blob =
     content instanceof Blob

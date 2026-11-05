@@ -21,7 +21,6 @@ const slots = defineSlots<{
   default?(props: ChartTooltipSlotProps): unknown;
 }>();
 
-// The attributes land on the box, `data-part="chart-tooltip"`.
 const attrs = useAttrs();
 
 useChartPart('tooltip', () => ({

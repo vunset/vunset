@@ -21,14 +21,10 @@ import { useFieldValue, useOptionalFieldContext } from '../../shared/use-field';
 /** What identifies a toggle inside a group. */
 export type ToggleValue = string | number;
 
-/** Any button carrying a pressed state is an item of the group. */
 const TOGGLE_SELECTOR = '[aria-pressed]';
 
 export interface ToggleState {
-  /**
-   * Whether the toggle is on.
-   * @attribute `data-pressed` while on, `data-unpressed` while off
-   */
+  /** Whether the toggle is on. @attribute `data-pressed` while on, `data-unpressed` while off */
   pressed: boolean;
   /** Whether the toggle ignores user interaction. */
   disabled: boolean;
@@ -37,28 +33,18 @@ export interface ToggleState {
 }
 
 export interface UseToggleOptions {
-  /** The pressed state. Supplying this makes it controlled. */
   pressed?: MaybeRefOrGetter<boolean | undefined>;
-  /** The initial pressed state while uncontrolled. @default false */
   defaultPressed?: MaybeRefOrGetter<boolean | undefined>;
-  /** Whether the toggle ignores user interaction. Also read from a group. */
   disabled?: MaybeRefOrGetter<boolean | undefined>;
-  /**
-   * Identifies the toggle within a `useToggleGroup`, which then owns the
-   * pressed state. Required there, and ignored outside one.
-   */
+  /** Required inside a group, which then owns the pressed state. */
   value?: MaybeRefOrGetter<ToggleValue | undefined>;
-  /** Called whenever the pressed state changes. */
   onChange?: (pressed: boolean, event?: Event) => void;
 }
 
 export interface UseToggleReturn {
-  /** The pressed state. Writable — assign to it to toggle programmatically. */
   pressed: WritableComputedRef<boolean>;
   state: ComputedRef<ToggleState>;
-  /** Bind to the button. Carries the `data-*` hooks. */
   rootProps: ComputedRef<Record<string, unknown>>;
-  /** Flips the toggle, respecting `disabled`. */
   toggle: (event?: Event) => void;
 }
 
@@ -188,60 +174,29 @@ export interface ToggleGroupState {
 export type ToggleGroupValue = ToggleValue | ToggleValue[] | null;
 
 export interface UseToggleGroupOptions {
-  /** The pressed toggles. Supplying this makes the value controlled. */
   value?: MaybeRefOrGetter<ToggleGroupValue | undefined>;
-  /** The initially pressed toggles while uncontrolled. */
   defaultValue?: MaybeRefOrGetter<ToggleGroupValue | undefined>;
-  /**
-   * Whether more than one toggle can be pressed. The value follows: one value
-   * (or `null`) while single, an array while multiple.
-   *
-   * @default false
-   */
   multiple?: MaybeRefOrGetter<boolean | undefined>;
-  /**
-   * Whether the group always holds a value: the last pressed toggle refuses to
-   * come up, and an uncontrolled group with nothing pressed presses its first
-   * enabled toggle rather than starting in a state it forbids.
-   *
-   * This is a segmented control — one of these is the answer — rather than a
-   * set of independent switches. Note that it only constrains what the group
-   * does; a controlled value is still whatever its owner sets, empty included.
-   *
-   * @default false
-   */
+  /** Constrains only what the group does; a controlled value may still be empty. */
   required?: MaybeRefOrGetter<boolean | undefined>;
-  /** Whether every toggle in the group ignores user interaction. Also read from a surrounding field. */
   disabled?: MaybeRefOrGetter<boolean | undefined>;
-  /** Whether the value is invalid. Also read from a surrounding field. */
   invalid?: MaybeRefOrGetter<boolean | undefined>;
-  /** The form field name each pressed toggle's value is submitted under. Also read from a surrounding field. */
   name?: MaybeRefOrGetter<string | undefined>;
-  /** The id of a `<form>` to submit with. */
   form?: MaybeRefOrGetter<string | undefined>;
-  /** @default 'horizontal' */
   orientation?: MaybeRefOrGetter<Orientation | undefined>;
-  /** Wrap around at the ends of the group. @default true, or `false` inside a toolbar */
   loop?: MaybeRefOrGetter<boolean | undefined>;
-  /** Called whenever the pressed toggles change. */
   onChange?: (value: ToggleGroupValue) => void;
 }
 
 export interface UseToggleGroupReturn {
-  /** The pressed toggles, shaped by `multiple`. Writable. */
   value: WritableComputedRef<ToggleGroupValue>;
-  /** The pressed values, always as an array, whatever `multiple` says. */
   pressedValues: ComputedRef<ToggleValue[]>;
   state: ComputedRef<ToggleGroupState>;
-  /** Bind to the element wrapping the toggles. Owns the arrow keys. */
   rootProps: ComputedRef<Record<string, unknown>>;
-  /** One hidden input per pressed toggle, while there's a name. */
   hiddenInputs: ComputedRef<Array<{ name: string; value: string; form: string | undefined }>>;
   isPressed: (value: ToggleValue) => boolean;
-  /** Presses or unpresses one toggle, applying the single/multiple rule. */
   setPressed: (value: ToggleValue, pressed: boolean) => void;
 
-  // Shared with `useToggle`, which is how a toggle finds its own state.
   /** @internal */ register: (item: {
     id: string;
     value: ToggleValue;

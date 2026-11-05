@@ -218,7 +218,6 @@ const text = computed(() => {
   return dates.map((date) => formatDate(date, { locale })).join(', ');
 });
 
-// Focus counts as inside while it's in the trigger or the popup.
 const triggerEl = ref<HTMLElement | null>(null);
 const popupEl = ref<HTMLElement | null>(null);
 

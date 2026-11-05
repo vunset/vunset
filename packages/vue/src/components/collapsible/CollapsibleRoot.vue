@@ -32,10 +32,7 @@ const emit = defineEmits<{
 
 defineSlots<{
   default(props: CollapsibleState): unknown;
-  /**
-   * Renders no element of its own: lay the collapsible out yourself and bind its API.
-   * @internal
-   */
+  /** Renders no element of its own: lay the collapsible out yourself and bind its API. @internal */
   custom(props: UseCollapsibleReturn): unknown;
 }>();
 

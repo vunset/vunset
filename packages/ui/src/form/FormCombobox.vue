@@ -124,8 +124,7 @@ const emit = defineEmits<{
   create: [value: string];
 }>();
 
-// Everything the combobox itself takes; the field-wide state goes to `FormField`,
-// which the combobox inherits it from.
+// Field-wide state goes to `FormField`, which the combobox inherits it from.
 const comboboxProps = computed(() => {
   const {
     label,

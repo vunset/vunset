@@ -17,10 +17,7 @@ const props = withDefaults(
 defineSlots<{
   default(
     props: RangeState & {
-      /**
-       * Each value written with the root's `format`.
-       * @attribute none
-       */
+      /** Each value written with the root's `format`. @attribute none */
       formattedValues: string[];
     }
   ): unknown;

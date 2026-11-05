@@ -53,9 +53,7 @@ describe('AppDotMatrix', () => {
     const delay = (index: number) => Number(/animation-delay: (-?[\d.]+)s/.exec(dots()[index]!.attributes('style') ?? '')?.[1]);
 
     expect(dots()[12]!.attributes('data-rest')).toBe('true');
-    // The outer ring clockwise from the corner, a tenth of a second apart.
     expect([delay(0), delay(1), delay(4), delay(9)]).toEqual([-1.6, -1.5, -1.2, -1.1]);
-    // The inner ring the other way: down the left first.
     expect(delay(11)).toBeLessThan(delay(7));
     expect(dots().filter((dot) => dot.attributes('data-rest'))).toHaveLength(1);
   });

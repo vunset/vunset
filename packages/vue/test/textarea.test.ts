@@ -30,7 +30,7 @@ function mountTextarea(props: Record<string, unknown> = {}) {
   return { model, el: wrapper.find('textarea').element as HTMLTextAreaElement };
 }
 
-/** jsdom lays nothing out: the content is its lines, plus the padding. */
+// jsdom lays nothing out: the content is its lines, plus the padding.
 function measureByLines(el: HTMLTextAreaElement, rows = 2) {
   Object.defineProperty(el, 'scrollHeight', {
     configurable: true,
@@ -104,7 +104,6 @@ describe('Textarea', () => {
       expect(el.hasAttribute('data-autosize')).toBe(true);
 
       await type(el, 'a');
-      // `rows` (2 by default) is the floor.
       expect(el.style.height).toBe(`${2 * LINE + PADDING * 2}px`);
     });
 

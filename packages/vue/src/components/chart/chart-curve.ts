@@ -3,11 +3,7 @@ type Point = readonly [x: number, y: number];
 // Thousandths of a pixel: finer changes nothing on screen, only lengthens the path.
 const round = (value: number) => Math.round(value * 1000) / 1000;
 
-/**
- * Each tangent of a monotone cubic through `points` (Steffen's limiter): the
- * curve bends through every point but never past one, so a peak is drawn at
- * its value. The ends take the tangent that leaves the curve straight there.
- */
+// Steffen's limiter: the curve never overshoots a point, so a peak is drawn at its value.
 function monotoneTangents(points: readonly Point[]): number[] {
   const last = points.length - 1;
   const widths: number[] = [];
@@ -33,7 +29,6 @@ function monotoneTangents(points: readonly Point[]): number[] {
   return tangents.map((tangent) => (Number.isFinite(tangent) ? tangent : 0));
 }
 
-/** The path commands after the first point: cubic segments, or a straight one between two points. */
 function monotoneSegments(points: readonly Point[]): string[] {
   if (points.length < 3) return points.slice(1).map(([x, y]) => `L${round(x)},${round(y)}`);
 
@@ -45,17 +40,13 @@ function monotoneSegments(points: readonly Point[]): string[] {
   });
 }
 
-/** An SVG path bending smoothly through `points`, in `x` order, without overshooting any of them. */
 export function monotonePath(points: readonly Point[]): string {
   if (points.length === 0) return '';
   const start = `M${round(points[0][0])},${round(points[0][1])}`;
   return points.length === 1 ? `${start}Z` : start + monotoneSegments(points).join('');
 }
 
-/**
- * The closed SVG path between two such curves: along `top`, then back along
- * `bottom`. Both run through the same `x` positions, in order.
- */
+// `top` and `bottom` run through the same `x` positions, in order.
 export function monotoneAreaPath(top: readonly Point[], bottom: readonly Point[]): string {
   if (top.length === 0 || bottom.length === 0) return '';
   const back = [...bottom].reverse();

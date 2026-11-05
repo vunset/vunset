@@ -1,6 +1,3 @@
-// Ready-to-use components: the `@vunset/vue` parts already composed. `Form*`
-// components hold a value a form submits; `App*` are everything else. Styles
-// ship apart: `@vunset/ui/all.css`, or one per component in `@vunset/ui/css/`.
 export { default as FormField, type FormFieldLayout, type FormSize } from './form/FormField.vue';
 export { default as FormInput } from './form/FormInput.vue';
 export { default as FormTextarea } from './form/FormTextarea.vue';

@@ -1,9 +1,4 @@
-/**
- * Forwards a click from a custom control to its hidden native input, or turns a
- * key press into the click it stands for, preserving the modifier keys so that
- * behaviors keyed off them (for example a middle/ctrl-click on an enclosing
- * link) stay consistent.
- */
+/** Forwards a click or key press to the hidden input as a click, keeping the modifier keys. */
 export function dispatchClickWithModifiers(
   target: HTMLElement,
   source: MouseEvent | KeyboardEvent,

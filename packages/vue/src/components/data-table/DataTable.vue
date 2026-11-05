@@ -72,9 +72,7 @@ export interface DataTableHeadSlotProps<TData extends RowData> {
   getValues: () => unknown[];
 }
 
-// Typed per key for the row's own fields; any other column id (a nested accessor, a display
-// column) falls back to `unknown`. Where several halves match a name Vue reads the last one, so
-// they run from loosest to most specific; the bare `#<id>` (the old name) is the loosest of all.
+// Vue reads the last matching half, so they run from loosest to most specific.
 export type DataTableSlots<TData extends RowData> = {
   [name: string]: (props: DataTableCellSlotProps<TData>) => any;
 } & {
@@ -97,7 +95,6 @@ export type DataTableSlots<TData extends RowData> = {
   ) => any;
 };
 
-// Around each body row: what it is drawn for, which a virtual table changes in place.
 const RowScope = defineComponent({
   props: { item: { type: null, required: true } },
   setup(props, { slots }) {
@@ -270,14 +267,12 @@ const columns = computed<DataTableColumn<TData>[]>(() => {
     enableSorting: false,
     enableResizing: false,
     enableHiding: false,
-    // Not `''`: an empty text node renders as nothing on the server, so the
-    // client would hydrate one that isn't there.
+    // Not `''`: an empty text node breaks hydration.
     header: () => null
   };
   return [expander, ...own];
 });
 
-/** Every leaf column, flattened out of any groups. */
 const leaves = computed(() => {
   const out: DataTableColumn<TData>[] = [];
   const walk = (list: DataTableColumn<TData>[]) => {
@@ -294,7 +289,6 @@ const leaves = computed(() => {
 const idOf = (column: DataTableColumn<TData>) =>
   column.id ?? ((column as { accessorKey?: string }).accessorKey as string);
 
-/** Each slice of state is a `v-model`, owned by the caller or kept here. */
 function slice<T>(name: string, value: () => T | undefined, fallback: () => T, change: (next: T) => void) {
   const state = useControlled<T>({ value, defaultValue: fallback, onChange: change, name: 'DataTable', label: name });
   return {
@@ -305,7 +299,6 @@ function slice<T>(name: string, value: () => T | undefined, fallback: () => T, c
   };
 }
 
-// The sort in the URL, unless the caller binds it: read from the query, written back on a change.
 const routeQuery = inject(routeQueryKey, null);
 const queryKey = () =>
   props.sortQuery === false ? null : (props.sortQuery ?? (props.manualSorting ? 'sortBy' : null));
@@ -337,9 +330,7 @@ const floors = new Map<string, number>();
 
 const byColumn = (columnId: string) => `[data-column="${columnId.replace(/["\\]/g, '\\$&')}"]`;
 
-// The narrowest the column's header can be drawn. With its width at 0 every cell of it collapses,
-// the body and foot ones clipping, so a long value doesn't hold the column wide; the header is
-// let out to its content.
+// Collapses the column to 0 so only the header's content sets its minimum width.
 function floorOf(container: HTMLElement, columnId: string): number | undefined {
   const heads = Array.from(container.querySelectorAll<HTMLElement>(`thead th${byColumn(columnId)}`));
   const head = heads.at(-1);
@@ -409,8 +400,7 @@ const pinning = slice<ColumnPinningState>(
   (next) => emit('update:columnPinning', next)
 );
 
-// Without getRowId a row is keyed by its data object, not its position, so a
-// filter or a sort moves each row's DOM (and the state inside it) with the row.
+// Keyed by data object, not position, so a sort or filter moves each row's DOM with it.
 const objectIds = new WeakMap<object, string>();
 let nextObjectId = 0;
 function objectId(row: TData, index: number, parent?: Row<DataTableFeatures, TData>): string {
@@ -473,9 +463,7 @@ const endEdge = computed(() => table.getEndVisibleLeafColumns()[0]?.id);
 const isSized = (column: AnyColumn) =>
   column.columnDef.size !== undefined || column.getCanResize() || column.getIsPinned() !== false;
 
-// Each sized column's width, once, on the container as `--dt-col-<n>`: n is its place among the
-// leaf columns, as an id may hold what a custom property name can't. Its cells all read it, so a
-// resize rewrites one value rather than every cell's style.
+// Indexed, not by id: an id may hold what a custom property name can't. One var per column keeps a resize cheap.
 const columnIndex = computed(() => new Map(table.getAllLeafColumns().map((column, index) => [column.id, index])));
 const widthVar = (columnId: string) => `--dt-col-${columnIndex.value.get(columnId)}`;
 const widthVars = computed(() => {
@@ -500,7 +488,6 @@ function columnProps(column: AnyColumn) {
   return { 'data-column': column.id, ...pinOf(column) };
 }
 
-// Every cell of a column with a width holds it, so content wider than the column is clipped rather than widening it.
 function sizedProps(column: AnyColumn) {
   return { ...columnProps(column), width: isSized(column) ? `var(${widthVar(column.id)})` : undefined };
 }
@@ -515,8 +502,7 @@ const metaTdClass = (cell: Cell<DataTableFeatures, TData, unknown>) => {
 
 const getValues = (columnId: string) => () => table.getPreExpandedRowModel().rows.map((row) => row.getValue(columnId));
 
-// `#<id>` is the old name for `#cell-<id>`, kept for apps moving over. Typed as the
-// new name so the bare one doesn't widen every other slot's props to a cell's.
+// Typed as `cell-*` so the deprecated bare `#<id>` doesn't widen every other slot's props.
 const cellSlot = (columnId: string) => (slots[columnId] ? columnId : `cell-${columnId}`) as `cell-${string}`;
 
 const hasFooter = computed(() =>
@@ -527,9 +513,7 @@ const leafCount = computed(() => table.getVisibleLeafColumns().length);
 
 const root = ref<{ $el: HTMLElement } | null>(null);
 
-// A column given less than its header needs grows to the header, so it is drawn at the width
-// the table holds for it (a pinned column's neighbors are offset by that width). Wider body
-// content doesn't grow it: it is clipped. Again as rows change, for a header that shows them.
+// Grows a sized column to its header, so pinned neighbors are offset by the drawn width.
 function fitToHeaders(): void {
   const container = root.value?.$el;
   if (!container) return;
@@ -573,10 +557,7 @@ const virtual = useVirtualList({
   list: computed(() => body.value?.$el)
 });
 
-// Virtual rows are keyed by a slot, not their id. A row still in view keeps its slot; one
-// scrolled in takes the slot of one scrolled out, so its cells update in place rather than a
-// new row of components being built and the old one dropped. Parts reset what they held for
-// the old row (`onRecycle`).
+// Virtual rows are keyed by a recycled slot, so cells update in place; parts reset via `onRecycle`.
 let slotOf = new Map<string, number>();
 let slotCount = 0;
 const rowSlots = computed(() => {

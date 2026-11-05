@@ -51,9 +51,7 @@ const positioner = () => popup()!.parentElement as HTMLElement;
 describe('Popover', () => {
   describe('placement before focus', () => {
     it('does not move focus into the popup until it has been placed', async () => {
-      // Floating UI places the popup a frame after it mounts. Until then it
-      // sits at the document origin, and focusing into it makes the browser
-      // scroll the page to the top, away from whatever was clicked.
+      // Until Floating UI places it a frame later, the popup sits at the origin, and focusing it scrolls the page to the top.
       mountPopover();
       trigger().dispatchEvent(new MouseEvent('click', { bubbles: true }));
       await nextTick();
@@ -73,7 +71,6 @@ describe('Popover', () => {
     });
 
     it('shows for an anchor narrower than the collision padding at the viewport edge', async () => {
-      // A status strip pinned to a table's left edge: on screen, only inside the padding.
       setLayout({ x: 0, width: 8 });
       mountPopover();
       trigger().dispatchEvent(new MouseEvent('click', { bubbles: true }));
@@ -251,13 +248,7 @@ describe('Popover', () => {
 
     const SIDES = ['top', 'right', 'bottom', 'left'] as const;
 
-    // The arrow pins itself to the popup edge facing the anchor, which is the
-    // edge named by the rendered side. Asserted against `data-side` rather than
-    // the requested side because collision handling may flip it — and because
-    // jsdom has no layout, so the resolved side there is not the requested one.
-    //
-    // Using the flipped mapping instead pins the arrow to the opposite edge,
-    // which is the bug this guards.
+    // Asserted against `data-side`, not the requested side, which jsdom never resolves; the flipped mapping pinned the opposite edge.
     it.each(SIDES)('pins to its own rendered edge when asked for %s', async (requested) => {
       mountPopover({ defaultOpen: true, side: requested });
       await settle();
@@ -266,10 +257,7 @@ describe('Popover', () => {
       expect(SIDES).toContain(rendered);
       expect(arrow().style.getPropertyValue(rendered)).toBe('100%');
 
-      // Exactly one edge may be pinned. `left`/`top` are not checked for being
-      // empty because they also carry the arrow's cross-axis offset; what must
-      // never happen is a second edge claiming the 100% pin, which is what the
-      // flipped mapping produced.
+      // `left`/`top` also carry the cross-axis offset; what must never happen is a second edge claiming the 100% pin.
       const pinned = SIDES.filter((side) => arrow().style.getPropertyValue(side) === '100%');
       expect(pinned).toEqual([rendered]);
     });
@@ -277,7 +265,6 @@ describe('Popover', () => {
     it('exposes the rendered side for styling', async () => {
       mountPopover({ defaultOpen: true });
       await settle();
-      // The popup and its arrow must agree, or they would point apart.
       expect(arrow().getAttribute('data-side')).toBe(popup()!.getAttribute('data-side'));
     });
   });

@@ -2,8 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
-// The sizes live in base.css's tokens; a component's sheet takes them as they
-// are, so changing a token changes every component that draws it.
+// Components take sizes from base.css's tokens as they are, so changing a token changes every component.
 const src = join(__dirname, '../src');
 const sheets = readdirSync(src, { recursive: true, encoding: 'utf8' }).filter(
   (file) => file.endsWith('.css') && file !== 'base.css'

@@ -5,7 +5,6 @@ import { ChartArea, ChartAxis, ChartBar, ChartGrid, ChartLegend, ChartLine, Char
 import { resetLayout, setLayout } from './layout';
 import { focusSecond, marks, strokes, ticks } from './chart-dom';
 
-// Two series in different units, each against an axis of its own.
 const ROWS = [
   { month: 'Jan', revenue: 42000, rate: 3.1 },
   { month: 'Feb', revenue: 51000, rate: 4.4 },
@@ -49,8 +48,6 @@ describe('a second value axis', () => {
   });
 
   it('puts each series on its own scale', () => {
-    // Revenue in the tens of thousands, the rate under five: on one scale the
-    // rate would be a flat line along the bottom.
     const top = (scale: string) => Number(ticks(mountDual(), scale).at(-1)!.replace(/,/g, ''));
 
     expect(top('y')).toBeGreaterThanOrEqual(51000);
@@ -101,7 +98,6 @@ describe('hiding a series on its own axis', () => {
     await entries(wrapper)[0]!.trigger('click');
 
     expect(strokes(wrapper)).toEqual(['var(--chart-color-1, currentColor)']);
-    // An axis left behind would read 0 to 1 over nothing.
     expect(ticks(wrapper, 'y')).toEqual([]);
     expect(ticks(wrapper, 'right').length).toBeGreaterThan(0);
   });
@@ -109,7 +105,6 @@ describe('hiding a series on its own axis', () => {
   it('moves the grid onto the axis still drawn', async () => {
     const wrapper = mountDual();
     await nextTick();
-    // A line per tick of the scale it follows, at that tick's height.
     const heights = (selector: string) =>
       wrapper.findAll(selector).map((node) => Math.round(Number(node.attributes('y1') ?? node.attributes('y'))));
     const grid = () => heights('.ts-chart__grid line');

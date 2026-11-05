@@ -38,7 +38,6 @@ const click = (el: Element) => el.dispatchEvent(new MouseEvent('click', { bubble
 const hover = (el: Element, type: 'pointerenter' | 'pointerleave') =>
   el.dispatchEvent(new PointerEvent(type, { bubbles: false }));
 
-/** A standalone menu — no menubar above it. */
 function mountMenu(rootProps: Record<string, any> = {}, body?: () => any) {
   return mount(
     defineComponent({
@@ -179,10 +178,8 @@ describe('Menu', () => {
       await settle();
       expect(menu()).not.toBeNull();
 
-      // Off the trigger, heading for the popup.
       hover(trigger(), 'pointerleave');
       vi.advanceTimersByTime(100);
-      // Arrived, which has to call off the pending close.
       hover(menu()!, 'pointerenter');
       vi.advanceTimersByTime(1000);
       await settle();
@@ -207,11 +204,7 @@ describe('Menu', () => {
   });
 
   describe('a click on a hover-opened menu', () => {
-    /**
-     * Hovering opens it, so by the time the user clicks — the one thing they
-     * are most likely to do next — it is already open. Toggling there would
-     * shut the menu the instant they reached for it.
-     */
+    // Hover already opened it, so a click toggling would shut it the instant the user reached for it.
     it('keeps it open rather than toggling it shut', async () => {
       vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
       mountMenu({ openOnHover: true, delay: 0 });
@@ -237,7 +230,6 @@ describe('Menu', () => {
       click(trigger());
       await settle();
 
-      // Pinned now, so it behaves like any click-opened menu.
       click(trigger());
       await settle();
       expect(menu()).toBeNull();
@@ -263,7 +255,6 @@ describe('Menu', () => {
     });
 
     it('follows the pointer out again after it has closed and reopened', async () => {
-      // The pin belongs to one opening, not to the menu.
       vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
       mountMenu({ openOnHover: true, delay: 0, closeDelay: 100 });
       await settle();
@@ -325,8 +316,6 @@ describe('Menu', () => {
       click(items('menuitemcheckbox')[0]);
       await settle();
 
-      // Open on purpose: setting two of these in a row should not need the
-      // menu reopening between them.
       expect(menu()).not.toBeNull();
       expect(items('menuitemcheckbox')[0].getAttribute('aria-checked')).toBe('true');
       expect(items('menuitemcheckbox')[0].hasAttribute('data-checked')).toBe(true);
@@ -371,7 +360,6 @@ describe('Menu', () => {
       await settle();
       expect(items('menuitemcheckbox')[0].getAttribute('aria-checked')).toBe('false');
 
-      // Clicking must not move it on its own.
       click(items('menuitemcheckbox')[0]);
       await settle();
       expect(items('menuitemcheckbox')[0].getAttribute('aria-checked')).toBe('false');
@@ -382,8 +370,7 @@ describe('Menu', () => {
     });
 
     it('round-trips through v-model', async () => {
-      // `v-model` compiles to `:model-value` plus `@update:model-value`, so a
-      // mismatched emit name breaks the binding while every other test passes.
+      // `v-model` compiles to `:model-value` plus `@update:model-value`, so a wrong emit name breaks only the binding.
       const onUpdate = vi.fn();
       mountMenu({}, () => [
         h(MenuCheckboxItem as any, { 'onUpdate:modelValue': onUpdate }, { default: () => 'Wrap' }),
@@ -535,8 +522,6 @@ describe('Menu', () => {
 
   describe('keyboard', () => {
     it('reaches checkbox and radio rows too, not only plain items', async () => {
-      // The roving focus selects on role, so a selector naming only
-      // `menuitem` would step straight past both.
       mountMenu({}, () => [
         h(MenuItem as any, null, { default: () => 'Plain' }),
         h(MenuCheckboxItem as any, null, { default: () => 'Toggle' }),
@@ -580,7 +565,6 @@ describe('Menu', () => {
         new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true, cancelable: true }),
       );
       await settle();
-      // Looping would have wrapped round to the last item.
       expect(document.activeElement?.textContent).toBe('One');
     });
   });
@@ -588,11 +572,7 @@ describe('Menu', () => {
   describe('arrow', () => {
     const positioner = () => menu()!.parentElement as HTMLElement;
 
-    /**
-     * The arrow mounts inside the popup, so it can miss the placement the
-     * popup itself triggered. The popup waits for it before revealing itself,
-     * which is only safe if the wait actually ends.
-     */
+    // The arrow can miss the placement the popup triggered; the popup waits for it, which is only safe if the wait ends.
     it('reveals the popup once the arrow has been placed', async () => {
       mountMenu({ defaultOpen: true }, () => [
         h(MenuItem as any, null, { default: () => 'One' }),
@@ -606,20 +586,13 @@ describe('Menu', () => {
     });
 
     it('does not wait for an arrow that was never rendered', async () => {
-      // Waiting unconditionally would leave every arrowless popup — which is
-      // most of them — hidden for good.
       mountMenu({ defaultOpen: true });
       await settle();
 
       expect(positioner().style.visibility).not.toBe('hidden');
     });
 
-    /**
-     * Note: that the arrow is placed by the *first* positioning pass rather
-     * than a frame later is not asserted here. Both orderings settle within a
-     * single frame under jsdom, so a test could not tell them apart — see the
-     * comment on the arrow middleware in `usePositioning`.
-     */
+    // Whether the arrow is placed on the first pass or a frame later can't be told apart under jsdom.
     it('is given an offset along the popup edge', async () => {
       mountMenu({ defaultOpen: true }, () => [
         h(MenuItem as any, null, { default: () => 'One' }),
@@ -629,7 +602,6 @@ describe('Menu', () => {
 
       const arrow = document.querySelector('.arrow') as HTMLElement;
       expect(arrow).not.toBeNull();
-      // A menu on the bottom is offset along x; the middleware has to have run.
       expect(arrow.style.left).not.toBe('');
     });
 
@@ -641,7 +613,6 @@ describe('Menu', () => {
       await settle();
 
       const arrow = document.querySelector('.arrow') as HTMLElement;
-      // A menu below its trigger points up, from its own top edge.
       expect(arrow.getAttribute('data-side')).toBe('bottom');
       expect(arrow.style.bottom).toBe('100%');
     });

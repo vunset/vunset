@@ -2,9 +2,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import type { Component } from 'vue';
 import type { SSRContext } from 'vue/server-renderer';
 
-// Every docs demo is a real composition of the parts, so together they are
-// the fixture: each renders on the "server", then hydrates in jsdom. The demos
-// start closed; `ssr/` holds the open states.
+// Every docs demo renders on the "server", then hydrates in jsdom; `ssr/` holds the open states.
 const demos = {
   ...import.meta.glob<{ default: Component }>('../../../docs/.vitepress/demos/**/*.vue'),
   ...import.meta.glob<{ default: Component }>('./ssr/*.vue')
@@ -12,17 +10,12 @@ const demos = {
 
 type Vue = typeof import('vue');
 
-/**
- * A fresh Vue, and with it fresh copies of the parts and the demo: Vue reports
- * "contains mismatches" once per runtime, so a shared one would let a demo's
- * mismatch go unreported after the first.
- */
+// A fresh Vue each time: it reports "contains mismatches" once per runtime.
 async function fresh(load: () => Promise<{ default: Component }>) {
   vi.resetModules();
   const vue: Vue = await import('vue');
   const { renderToString } = await import('vue/server-renderer');
   const demo = (await load()).default;
-  // Docs-only, registered globally by the docs theme.
   const DemoOutput = vue.defineComponent(
     (_, { slots }) =>
       () =>
@@ -68,8 +61,7 @@ async function hydrate({ createApp, vue }: Fresh, html: string, teleports: Recor
   const warnings: string[] = [];
   const errors: unknown[] = [];
 
-  // The page a server sends, laid out as Nuxt's is: the app, then the
-  // container a `Portal` teleports into.
+  // Laid out as Nuxt's: the app, then the container a `Portal` teleports into.
   const container = document.createElement('div');
   container.innerHTML = html;
   document.body.append(container);
@@ -77,8 +69,7 @@ async function hydrate({ createApp, vue }: Fresh, html: string, teleports: Recor
   portals.id = 'teleports';
   portals.innerHTML = teleports['#teleports'] ?? '';
   document.body.append(portals);
-  // Vue hydrates a teleport into `body` from its first child on, so that is
-  // where a server page has to put it.
+  // Vue hydrates a teleport into `body` from its first child on.
   if (teleports.body) document.body.insertAdjacentHTML('afterbegin', teleports.body);
 
   const consoleError = vi.spyOn(console, 'error').mockImplementation((...args) => warnings.push(args.join(' ')));
@@ -114,8 +105,6 @@ describe('server rendering', () => {
   });
 
   it('catches a mismatch Vue reports without details, after another (the harness itself)', async () => {
-    // A component rendering `''` leaves nothing on the server; Vue only says
-    // "contains mismatches", once per runtime, so this needs a fresh one.
     const { client } = await check(async () => {
       const { defineComponent, h, Fragment, createCommentVNode } = await import('vue');
       const Empty = defineComponent(() => () => '');
@@ -165,7 +154,6 @@ describe('server rendering', () => {
 
 describe('one server request to the next', () => {
   it('keeps the shared toast store out of a server render', async () => {
-    // One module instance for both requests, as a server process has.
     vi.resetModules();
     const vue: Vue = await import('vue');
     const { renderToString } = await import('vue/server-renderer');

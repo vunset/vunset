@@ -1,6 +1,4 @@
-// The charts, apart from the main entry so that `@tanstack/charts`, an
-// optional peer, is never resolved by an app that draws none. The types come
-// along; the parts to compose with are `@vunset/vue/chart`'s.
+// Its own entry, so an app drawing no chart never resolves the optional `@tanstack/charts`.
 export { default as AppChartArea } from './app/AppChartArea.vue';
 export { default as AppChartLine } from './app/AppChartLine.vue';
 export { default as AppChartBar } from './app/AppChartBar.vue';

@@ -21,12 +21,7 @@ async function settle() {
 
 const click = (el: Element) => el.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 
-/**
- * `<Portal>`, `<Positioner>` and `<Popup>` are one component each rather than
- * one per surface. What makes that safe is `inject` resolving to the *nearest*
- * provider, so the same `<Popup>` tag means different things in different
- * places — and means the innermost one when they are nested.
- */
+// One `<Popup>` for every surface is safe because `inject` resolves to the nearest provider.
 describe('shared surface parts', () => {
   it('renders whichever surface encloses it', async () => {
     mount(
@@ -51,7 +46,6 @@ describe('shared surface parts', () => {
           h(DialogRoot as any, { defaultOpen: true }, () => [
             h(Portal as any, null, () => [
               h(Popup as any, null, () => [
-                // Same tag, one level down, and it has to mean the menu.
                 h(MenuRoot as any, null, () => [
                   h(MenuTrigger as any, null, () => 'Open'),
                   h(Portal as any, null, () => [
@@ -78,9 +72,7 @@ describe('shared surface parts', () => {
   });
 
   it('says so when asked to position a surface with no anchor', async () => {
-    // A dialog is centered in the viewport and points at nothing, so it
-    // publishes no positioner. A silent no-op box would leave the popup with no
-    // positioned ancestor and no clue why.
+    // A dialog publishes no positioner, and a silent no-op box would leave the popup unpositioned with no clue why.
     expect(() =>
       mount(
         defineComponent({
@@ -101,8 +93,6 @@ describe('shared surface parts', () => {
   });
 
   it('keeps the popup mounted through an exit animation', async () => {
-    // `present` is what the parts read, not `open`. The distinction is the
-    // whole reason the surface publishes presence rather than openness.
     const Host = defineComponent({
       setup: () => () =>
         h(DialogRoot as any, null, () => [
@@ -149,7 +139,6 @@ describe('shared surface parts', () => {
 
     it('leaves nothing in the target while closed', async () => {
       const before = document.body.childNodes.length;
-      // A table row's worth of closed surfaces.
       const w = mount(
         defineComponent({
           setup: () => () =>

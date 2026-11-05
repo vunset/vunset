@@ -10,18 +10,13 @@ export interface RovingItem<Value> {
 }
 
 export interface UseRovingItemsOptions<Value> {
-  /**
-   * Which item should hold the tab stop before focus has moved into the set —
-   * usually the selected one. A set with no selection leaves it undefined and
-   * the first enabled item takes it.
-   */
+  /** Which item holds the tab stop before focus enters the set, usually the selected one; the first enabled otherwise. */
   preferred?: () => Value | undefined;
 }
 
 export interface UseRovingItemsReturn<Value> {
   /** Registration order. Shallow, so elements come back unproxied. */
   items: Ref<RovingItem<Value>[]>;
-  /** The same items in document order. */
   ordered: ComputedRef<RovingItem<Value>[]>;
   register: (item: RovingItem<Value>) => void;
   unregister: (id: string) => void;
@@ -29,33 +24,14 @@ export interface UseRovingItemsReturn<Value> {
   /** The item focus last landed on, which is not always the preferred one. */
   highlighted: Ref<Value | undefined>;
   highlight: (value: Value | undefined) => void;
-  /** The single item the Tab key reaches. */
   tabbableValue: ComputedRef<Value | undefined>;
 }
 
-/**
- * The set of items behind a roving tab stop: who is in it, in what order, and
- * which one the Tab key reaches.
- *
- * The companion to {@link useRovingFocus}, which moves focus *between* items by
- * querying the DOM at interaction time. That covers the keys, but not the
- * `tabindex` each item has to render with — a value known before any key is
- * pressed, and reactive — so anything with a roving tab stop keeps this
- * alongside it.
- *
- * The tab stop follows focus rather than selection, so leaving a set and
- * returning to it lands on the item last looked at. It falls back to the first
- * enabled item when the preferred one is disabled or absent, because otherwise
- * every item renders `-1` and the whole set drops out of the tab order.
- */
+// The tab stop follows focus, falling back to the first enabled item so the set never drops out of the tab order.
 export function useRovingItems<Value>(
   options: UseRovingItemsOptions<Value> = {},
 ): UseRovingItemsReturn<Value> {
-  /**
-   * Shallow on purpose: a deep ref would hand back proxied DOM elements, and an
-   * element compared against `document.activeElement` — or measured — has to be
-   * the element itself. Every change replaces the array instead.
-   */
+  // Shallow so elements come back unproxied, for `document.activeElement` checks and measuring.
   const items = shallowRef<RovingItem<Value>[]>([]);
 
   /** Registration order is mount order; items are read in document order. */

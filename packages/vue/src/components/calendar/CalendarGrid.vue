@@ -16,10 +16,7 @@ const props = withDefaults(
 );
 
 defineSlots<{
-  /**
-   * The calendar's state, for the slot only: the element carries none of it.
-   * @slotOnly
-   */
+  /** The calendar's state, for the slot only: the element carries none of it. @slotOnly */
   default(
     props: CalendarState & {
       /** The month's days, a row of seven per week. */

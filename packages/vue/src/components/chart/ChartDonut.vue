@@ -123,15 +123,13 @@ const sliceOf = (point: ChartPoint<any>) => ({
 });
 
 const definition = computed(() => {
-  // Read here: the chart only redraws for a new definition, not when a value
-  // its callbacks read later changes.
+  // Read here: the chart only redraws for a new definition, not when its callbacks' values change.
   const width = props.arcWidth;
   const cornerRadius = props.cornerRadius;
   const gap = props.gap;
 
   return defineChart({
-    // No redraw tween: it blends each arc's path text, and an arc's large-arc flag can't be blended,
-    // so a slice would swing the long way round. The donut redraws at once.
+    // A tween can't blend an arc's large-arc flag, so a slice would swing the long way round.
     svgAnimation: false,
     marks: [
       polar({
@@ -142,8 +140,7 @@ const definition = computed(() => {
             // A ring of no thickness is a pie.
             innerRadius: ({ radius }: { radius: number }) => (width > 0 ? Math.max(radius - width, 0) : 0),
             cornerRadius,
-            // An even gap: the slices touch, and a line the gap's width in the background's color parts them.
-            // An angle's gap would narrow to nothing at a pie's center.
+            // A stroke in the background's color: an angle's gap would narrow to nothing at a pie's center.
             ...(gap !== undefined && gap > 0 && { stroke: 'var(--chart-gap-color, Canvas)', strokeWidth: gap })
           })
         ],

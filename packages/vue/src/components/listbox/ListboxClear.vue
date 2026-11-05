@@ -18,8 +18,7 @@ const merged = usePartProps(clearProps);
 </script>
 
 <template>
-  <!-- Absent rather than disabled when there is nothing to clear: a control
-       that cannot do anything is better not offered to the keyboard at all. -->
+  <!-- Absent, not disabled, so the keyboard isn't offered a dead control. -->
   <Part :as="props.as" v-if="showClear" v-bind="merged">
     <slot v-bind="state" />
   </Part>

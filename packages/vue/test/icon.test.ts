@@ -9,7 +9,7 @@ function mountIcon(props: Record<string, any>, attrs: Record<string, any> = {}) 
   return mount(Icon as any, { props, attrs, attachTo: document.body });
 }
 
-/** Configuration is module-level, so each test states the whole of it. */
+// Configuration is module-level, so each test states the whole of it.
 beforeEach(() => {
   configureIcons({
     sprite: '/sprite.svg',
@@ -48,7 +48,6 @@ describe('Icon', () => {
 
   describe('from the folder', () => {
     it('is the svg itself, with no wrapper around it', async () => {
-      // The same element the sprite branch renders, so one rule sizes both.
       const w = mountIcon({ name: 'star', inline: true });
       await nextTick();
       await nextTick();
@@ -78,7 +77,6 @@ describe('Icon', () => {
     });
 
     it('leaves an explicit none alone', async () => {
-      // `fill="none"` is a shape saying it is not filled, not a color.
       const w = mountIcon({ name: 'bolt', inline: true });
       await nextTick();
       await nextTick();
@@ -87,8 +85,6 @@ describe('Icon', () => {
     });
 
     it('lets the caller overrule what the file says', async () => {
-      // The file's root attributes are a starting point, not the last word:
-      // hooks beat them, and the caller beats everything.
       const w = mountIcon({ name: 'star', inline: true }, { viewBox: '0 0 32 32' });
       await nextTick();
       await nextTick();
@@ -124,7 +120,6 @@ describe('Icon', () => {
       mountIcon({ name: 'star', inline: true });
       await flushPromises();
 
-      // A table row mounting later: no empty svg first, no second render.
       const w = mountIcon({ name: 'star', inline: true });
       expect(w.find('path').exists()).toBe(true);
     });
@@ -157,8 +152,6 @@ describe('Icon', () => {
     });
 
     it('lets only the newest load land', async () => {
-      // A slow first icon must not arrive after a fast second one and replace
-      // it, which is what a name changed mid-flight would otherwise do.
       let releaseSlow: (value: string) => void = () => {};
       configureIcons({
         inline: {
@@ -182,8 +175,6 @@ describe('Icon', () => {
     });
 
     it('matches the whole filename, not a piece of the path', async () => {
-      // `star` must not pick up `starburst`, and a folder in between must not
-      // stop it finding `star` either.
       configureIcons({
         inline: {
           './icons/starburst.svg': async () => '<svg><path d="burst"/></svg>',
@@ -204,8 +195,6 @@ describe('Icon', () => {
       await nextTick();
 
       expect(warn).toHaveBeenCalledWith(expect.stringContaining("'nope'"));
-      // An empty svg rather than nothing: it holds the space the icon would
-      // have taken, so a name that resolves later does not shift the layout.
       expect(w.element.tagName).toBe('svg');
       expect(w.element.children.length).toBe(0);
       warn.mockRestore();

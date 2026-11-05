@@ -140,8 +140,7 @@ const dev = import.meta.env.DEV;
 const defaults = props.light ? { ...DEFAULTS, ...LIGHT_DEFAULTS } : DEFAULTS;
 const settings = useShaderSettings(defaults, props.light ? 'prism-rays-light' : 'prism-rays');
 
-// Soft rays fanning out from a point below the screen, each split into its
-// red, green and blue a little apart, which is what gives the edges their rainbow.
+// Each ray's red, green and blue sit a little apart, which gives the edges their rainbow.
 const FRAGMENT = `
 precision highp float;
 uniform vec2 resolution;
@@ -202,7 +201,6 @@ void main() {
     // How far it reaches before fading: some stop short, some reach the top.
     float reach = reachMin + reachRange * hash(vec2(f, 9.4));
 
-    // Rays bend a little as they leave the origin.
     float curve = bend * (hash(vec2(f, 1.3)) - 0.5) * r * r;
     float a = angle - spread - swing - curve;
     float split = width * dispersion;
@@ -231,7 +229,6 @@ void main() {
   // Faded in just above where they come from; each ray fades out by its own reach.
   light *= smoothstep(0.0, 0.3, r) * brightness;
 
-  // The gray haze.
   vec2 haze = vec2(uv.x * aspect, uv.y) - vec2(hazeX * aspect, hazeY);
   float hazeAmount = exp(-dot(haze, haze) * 3.5) * hazeStrength;
 

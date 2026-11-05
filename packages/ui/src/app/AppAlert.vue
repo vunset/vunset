@@ -30,7 +30,6 @@ const emit = defineEmits<{
   close: [event: MouseEvent];
 }>();
 
-// One icon per tone, drawn in the tone's color.
 const ICONS: Record<string, string> = {
   neutral: 'alert-info',
   accent: 'alert-info',

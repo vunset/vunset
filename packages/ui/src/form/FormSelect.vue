@@ -119,8 +119,7 @@ const emit = defineEmits<{
   'update:open': [open: boolean];
 }>();
 
-// Everything the select itself takes; the field-wide state goes to `FormField`,
-// which the select inherits it from.
+// Field-wide state goes to `FormField`, which the select inherits it from.
 const selectProps = computed(() => {
   const {
     label,

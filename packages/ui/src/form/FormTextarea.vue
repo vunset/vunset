@@ -5,8 +5,7 @@ import { FieldGroup, Textarea, Addon, type FieldFilter, isPropBound, type InputM
 import FormField, { type FormSize } from './FormField.vue';
 import type { HTMLAttributes } from 'vue';
 
-// `class` and `style` dress the field; every other attribute — `placeholder`,
-// `rows`, `wrap`, `aria-*` — belongs on the `<textarea>`.
+// `class` and `style` dress the field; every other attribute belongs on the `<textarea>`.
 defineOptions({ name: 'FormTextarea', inheritAttrs: false });
 
 // Forwarded only when bound, so a field without `v-model` keeps its own value.

@@ -13,9 +13,7 @@ export interface UseTypeaheadOptions<T = HTMLElement> {
   onMatch?: (item: T) => void;
 }
 
-/**
- * Type-to-focus over a list of items, the way a native `<select>` behaves.
- */
+/** Type-to-focus over a list of items, as a native `<select>` does. */
 export function useTypeahead<T = HTMLElement>(options: UseTypeaheadOptions<T>) {
   let buffer = '';
   let timer: ReturnType<typeof setTimeout> | undefined;

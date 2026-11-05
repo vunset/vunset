@@ -59,11 +59,7 @@ function fadeGradient(direction: 'to right' | 'to left' | 'to bottom', startVar:
   );
 }
 
-/**
- * How far one axis's content runs past its start and end edges, in px. A
- * fractional position left by zoom or smooth scrolling that lands within
- * {@link EDGE_TOLERANCE} of an edge counts as sitting on it.
- */
+// Within EDGE_TOLERANCE of an edge counts as on it, for fractions left by zoom or smooth scrolling.
 function overflowPast(position: number, content: number, box: number): [start: number, end: number] {
   const hidden = Math.max(0, content - box);
   let start = Math.min(Math.max(position, 0), hidden);

@@ -3,8 +3,7 @@ import { mount, type VueWrapper } from '@vue/test-utils';
 import { h } from 'vue';
 import { AppButton } from '../src';
 
-// Vue drops an event no later than the millisecond its listener was attached in;
-// a click straight after mounting can land in that millisecond. A user's can't.
+// Vue drops an event in the millisecond its listener was attached, which a click right after mount can hit.
 const later = () => new Promise((resolve) => setTimeout(resolve, 2));
 
 let wrapper: VueWrapper | undefined;
@@ -82,7 +81,6 @@ describe('AppButton', () => {
     expect(button().getAttribute('aria-disabled')).toBe('true');
     expect((button() as HTMLButtonElement).disabled).toBe(false);
     expect(button().hasAttribute('data-loading')).toBe(true);
-    // No spinner of its own: the stripes are CSS, and what it holds stays.
     expect(button().querySelector('svg')).toBeNull();
     expect(button().querySelector('.start')).not.toBeNull();
   });

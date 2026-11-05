@@ -191,31 +191,20 @@ export type ListboxMode = 'select' | 'combobox';
 export type ListboxOrder = 'selected-first';
 
 export interface UseListboxOptions extends UsePositioningOptions {
-  /**
-   * `select` keeps the value in the trigger and any search box inside the
-   * popup. `combobox` makes the trigger a text input, which is what lets a
-   * typed value be committed. Implies `searchable`.
-   */
+  /** `combobox` makes the trigger a text input, which lets a typed value be committed. Implies `searchable`. */
   mode?: MaybeRefOrGetter<ListboxMode>;
-  /** The selection. An array when `multiple`. Supplying it makes the value controlled. */
   value?: MaybeRefOrGetter<ListboxOptionValue | ListboxOptionValue[] | null | undefined>;
-  /** The initial selection while uncontrolled. */
   defaultValue?: MaybeRefOrGetter<ListboxOptionValue | ListboxOptionValue[] | null | undefined>;
-  /** The options, flat or grouped. */
   options?: MaybeRefOrGetter<ListboxItem[]>;
-  /** Whether more than one option can be chosen. */
   multiple?: MaybeRefOrGetter<boolean>;
-  /** Whether the popup carries a search box. */
   searchable?: MaybeRefOrGetter<boolean>;
   /** Whether the whole selection can be dropped at once. Defaults to on when anything is selected. */
   clearable?: MaybeRefOrGetter<boolean>;
   /** How many of the chosen options the trigger names before the rest collapse */
   flatten?: MaybeRefOrGetter<number | undefined>;
-  /** Whether text that matches no option can become a value */
   creatable?: MaybeRefOrGetter<boolean | ((query: string) => boolean)>;
   /** Whether choosing an option closes the popup. Defaults to on for a single select. */
   closeOnSelect?: MaybeRefOrGetter<boolean | undefined>;
-  /** Whether arrow keys wrap at the ends. */
   loop?: MaybeRefOrGetter<boolean>;
   /** Place the popup so the chosen option sits on top of the trigger */
   alignWithTrigger?: MaybeRefOrGetter<boolean>;
@@ -229,31 +218,19 @@ export interface UseListboxOptions extends UsePositioningOptions {
   presets?: MaybeRefOrGetter<ListboxPresetItem[] | undefined>;
   /** Names the presets outside a group, gathered into one section that folds like a group, where the first sits. */
   presetsLabel?: MaybeRefOrGetter<string | undefined>;
-  /** Which key on an option holds its value. */
   valueKey?: MaybeRefOrGetter<string | undefined>;
-  /** Which key on an option holds its text. */
   labelKey?: MaybeRefOrGetter<string | undefined>;
-  /** Replaces the built-in substring search. */
   filter?: (option: ListboxOption, query: string) => boolean;
-  /** Whether the control ignores interaction. Inherited from a surrounding field. */
   disabled?: MaybeRefOrGetter<boolean>;
-  /** Whether the selection can be read but not changed. Inherited from a surrounding field. */
   readOnly?: MaybeRefOrGetter<boolean>;
   /** Whether a selection is required: announced and marked, not enforced. Inherited from a surrounding field. */
   required?: MaybeRefOrGetter<boolean>;
-  /** Whether the control is marked invalid. Inherited from a surrounding field. */
   invalid?: MaybeRefOrGetter<boolean>;
-  /** Name submitted with the form. */
   name?: MaybeRefOrGetter<string | undefined>;
-  /** The trigger's id. Taken from a surrounding field when there is one. */
   id?: MaybeRefOrGetter<string | undefined>;
-  /** Whether the popup is open. Supplying it makes openness controlled. */
   open?: MaybeRefOrGetter<boolean | undefined>;
-  /** Called whenever the selection changes. */
   onChange?: (value: ListboxOptionValue | ListboxOptionValue[] | null) => void;
-  /** Called with the coined text just before it is selected */
   onCreate?: (value: string) => void;
-  /** Called whenever the popup opens or closes. */
   onOpenChange?: (open: boolean) => void;
 }
 
@@ -267,7 +244,6 @@ export interface UseListboxReturn {
   state: ComputedRef<ListboxState>;
   /** Whether the popup is in the DOM. Outlives `open` for the exit animation. */
   present: Ref<boolean>;
-  /** The options to render, filtered and grouped. */
   sections: ComputedRef<RenderedSection[]>;
   /** The same options in one list, in order: what `activeIndex` counts. */
   flatOptions: ComputedRef<RenderedOption[]>;
@@ -275,17 +251,11 @@ export interface UseListboxReturn {
   activeIndex: Ref<number>;
   /** The options to render and the space around them while virtual; `null` otherwise. */
   virtualRows: ComputedRef<{ options: RenderedOption[]; before: number; after: number } | null>;
-  /** Every option currently chosen, in selection order, resolved against `options`. */
   selectedOptions: ComputedRef<RenderedOption[]>;
-  /** The chosen options the trigger names in full. */
   visibleOptions: ComputedRef<RenderedOption[]>;
-  /** How many chosen options `visibleOptions` left out. */
   hiddenCount: ComputedRef<number>;
-  /** The whole selection as one line: "Vue and 3 more". */
   summary: ComputedRef<string>;
-  /** Whether anything was left out of `visibleOptions`. */
   collapsed: ComputedRef<boolean>;
-  /** Whether the clear-all control has anything to do. */
   showClear: ComputedRef<boolean>;
   /** Whether the list has content beyond what is showing, that way. */
   canScroll: (direction: ListboxScrollDirection) => boolean;
@@ -297,30 +267,21 @@ export interface UseListboxReturn {
   searchProps: ComputedRef<Record<string, unknown>>;
   /** Bind to the combobox's text input. The trigger and the search box in one. */
   inputProps: ComputedRef<Record<string, unknown>>;
-  /** Bind to the box holding the chips. */
   chipsProps: ComputedRef<Record<string, unknown>>;
-  /** The presets that match the search, grouped. Empty unless `multiple`. */
   presetSections: ComputedRef<RenderedPresetSection[]>;
   presetsProps: ComputedRef<Record<string, unknown>>;
-  /** Bind to the row holding a preset's buttons. */
   getPresetItemProps: (preset: RenderedPreset) => Record<string, unknown>;
-  /** Bind to a preset's button: toggles its values. */
   getPresetProps: (preset: RenderedPreset) => Record<string, unknown>;
-  /** Bind to a button that replaces the selection with the preset's values. */
   getPresetReplaceProps: (preset: RenderedPreset) => Record<string, unknown>;
   getPresetGroupProps: (section: RenderedPresetSection) => Record<string, unknown>;
   getPresetGroupLabelProps: (section: RenderedPresetSection) => Record<string, unknown>;
-  /** Bind to a labeled section's heading: folds its presets away and back. */
   getPresetGroupTriggerProps: (section: RenderedPresetSection) => Record<string, unknown>;
   /** Bind to what holds a section's presets: a labeled one's stays rendered, `inert` while folded, so it can animate. */
   getPresetGroupPanelProps: (section: RenderedPresetSection) => Record<string, unknown>;
-  /** Bind to the hover-to-scroll affordance at that end of the list. */
   getScrollProps: (direction: ListboxScrollDirection) => Record<string, unknown>;
   /** Bind to the part of the trigger showing the value. Used to line the popup up with it. */
   valueProps: ComputedRef<Record<string, unknown>>;
-  /** Bind to the open/closed indicator. */
   indicatorProps: ComputedRef<Record<string, unknown>>;
-  /** Bind to the "nothing matched" message. */
   emptyProps: ComputedRef<Record<string, unknown>>;
   stateAttrs: ComputedRef<Record<string, string>>;
   listboxProps: ComputedRef<Record<string, unknown>>;
@@ -329,13 +290,9 @@ export interface UseListboxReturn {
   getGroupLabelProps: (section: RenderedSection) => Record<string, unknown>;
   getChipProps: (option: RenderedOption) => Record<string, unknown>;
   getChipRemoveProps: (option: RenderedOption) => Record<string, unknown>;
-  /** One entry per value to submit. Render each as a hidden input. */
   hiddenInputs: ComputedRef<Array<{ name: string; value: ListboxOptionValue }>>;
-  /** Removes one value from the selection. */
   deselect: (value: ListboxOptionValue) => void;
-  /** Drops the whole selection. */
   clear: () => void;
-  /** Chooses an option, or unchooses it when `multiple`. */
   toggle: (value: ListboxOptionValue) => void;
   close: () => void;
 }
@@ -439,8 +396,6 @@ export function useListbox(options: UseListboxOptions = {}): UseListboxReturn {
     elements: () => [positioning.popupRef.value, triggerEl.value],
     onDismiss: close
   });
-
-  // ---------------------------------------------------------------- options
 
   const valueOf = (option: ListboxOption) => option[valueKey()] as ListboxOptionValue;
   const labelOf = (option: ListboxOption) => {
@@ -690,8 +645,6 @@ export function useListbox(options: UseListboxOptions = {}): UseListboxReturn {
     { flush: 'post' }
   );
 
-  // ------------------------------------------------------------- navigation
-
   // The highlight is an index into every option, rendered or not: an app's own
   // virtualizer, or ours, leaves most of them out of the page.
   const activeId = ref<string | undefined>(undefined);
@@ -700,12 +653,7 @@ export function useListbox(options: UseListboxOptions = {}): UseListboxReturn {
     flatOptions.value.filter((option) => !option.disabled).map((option) => option.index)
   );
 
-  /**
-   * `center` is for opening on the selection; the keyboard scrolls only as far as it must.
-   * Our windowing's rows share one height, so it scrolls by the row's place; otherwise to the
-   * option as it is rendered. One an app's virtualizer left out is the app's to reach, from
-   * `activeIndex`.
-   */
+  // `center` is for opening on the selection; the keyboard scrolls only as far as it must.
   function activateAt(index: number, scroll: boolean | 'center' = true) {
     activeIndex.value = index;
     activeId.value = flatOptions.value[index]?.id;
@@ -821,8 +769,6 @@ export function useListbox(options: UseListboxOptions = {}): UseListboxReturn {
     value.value = multiple() ? [] : null;
     resetInput();
   }
-
-  // ---------------------------------------------------------------- presets
 
   // Folded or opened by its heading, by label; unset follows the group's `collapsed`.
   const presetsOpen = reactive(new Map<string, boolean>());
@@ -1028,8 +974,6 @@ export function useListbox(options: UseListboxOptions = {}): UseListboxReturn {
     onOpenKeydown(event);
   }
 
-  // ----------------------------------------------------------------- effects
-
   function placeOverTrigger() {
     const trigger = triggerEl.value;
     const positioner = positionerEl.value;
@@ -1168,8 +1112,6 @@ export function useListbox(options: UseListboxOptions = {}): UseListboxReturn {
     { immediate: true }
   );
 
-  // ---------------------------------------------------------- scroll edges
-
   const canScrollUp = ref(false);
   const canScrollDown = ref(false);
   const SCROLL_EDGE_TOLERANCE = 1;
@@ -1242,8 +1184,6 @@ export function useListbox(options: UseListboxOptions = {}): UseListboxReturn {
   );
 
   onScopeDispose(stopArrowScroll);
-
-  // ------------------------------------------------------------------ props
 
   const state = computed<ListboxState>(() => ({
     mode: mode(),

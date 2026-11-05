@@ -5,7 +5,7 @@ import { useVirtualList } from '../src';
 
 const HEIGHT = 20;
 
-/** jsdom has no layout; a scroller gets a viewport, a scroll position and a top. */
+// jsdom has no layout; a scroller gets a viewport, a scroll position and a top.
 function sized(element: HTMLElement, box: { height?: number; top?: number }) {
   if (box.height !== undefined) Object.defineProperty(element, 'clientHeight', { configurable: true, value: box.height });
   if (box.top !== undefined) {
@@ -82,8 +82,7 @@ describe('useVirtualList', () => {
   it('draws the top of the list from the first render, before anything is measured', () => {
     const context = mountList();
 
-    // Read during setup, before mount has measured anything: twice the
-    // overscan, rather than an empty list for a frame.
+    // Read during setup, before mount measures: twice the overscan, not an empty list for a frame.
     expect(context.first()).toEqual([0, 40]);
   });
 
@@ -134,7 +133,6 @@ describe('useVirtualList', () => {
 
   it('counts from where the list starts inside the scroller', async () => {
     const context = mountList();
-    // A 40px sticky header sits above the first item.
     await place(context, { offset: 40 });
     await scrollTo(context, 40 + 100 * HEIGHT);
 
@@ -184,7 +182,7 @@ describe('useVirtualList', () => {
   });
 
   describe('in a scroller with no height of its own', () => {
-    // The scroller holds all 1000 items; an ancestor 200px tall is what scrolls, 50px down the page.
+    // The scroller holds all 1000 items; an ancestor 200px tall, 50px down the page, scrolls.
     async function placeInOuter(context: ReturnType<typeof mountList>) {
       const outer = document.createElement('div');
       outer.style.overflowY = 'auto';
@@ -203,7 +201,6 @@ describe('useVirtualList', () => {
 
       const scroller = context.scroller.value;
       Object.defineProperty(scroller, 'clientHeight', { configurable: true, value: 1000 * HEIGHT });
-      // It can't scroll: its content fits.
       Object.defineProperty(scroller, 'scrollTop', { configurable: true, get: () => 0, set: () => {} });
       Object.defineProperty(scroller, 'getBoundingClientRect', {
         configurable: true,

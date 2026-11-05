@@ -71,7 +71,6 @@ describe('useClipboard', () => {
     expect(writeText).toHaveBeenLastCalledWith('b');
     expect(api.copiedId.value).toBe(2);
 
-    // The timer restarted: 1000ms after the second copy it is still showing.
     vi.advanceTimersByTime(1000);
     expect(api.copied.value).toBe(true);
     vi.advanceTimersByTime(500);
@@ -120,7 +119,6 @@ describe('useClipboard', () => {
     scope.stop();
     vi.advanceTimersByTime(1500);
 
-    // Had the timer survived, it would have reset the state.
     expect(api.status.value).toBe('copied');
   });
 
@@ -240,7 +238,6 @@ describe('Copy', () => {
 
     const wrapper = mountCopy({ icon: 'clipboard' });
 
-    // Inline, so no sprite reference for it; the copied icon is still the built-in one.
     expect(wrapper.findAll('use')).toHaveLength(0);
     expect(icons(wrapper)[0]!.attributes('data-name')).toBe('clipboard');
   });

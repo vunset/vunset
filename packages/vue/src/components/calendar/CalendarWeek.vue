@@ -5,7 +5,6 @@ import { createContext } from '../../shared/context';
 export const { provideContext: provideCalendarWeek, useOptionalContext: useCalendarWeek } =
   createContext<() => Date[]>('CalendarWeek');
 
-/** Hands one week's days to the `CalendarDay` in its row. */
 const WeekScope = defineComponent({
   props: { days: { type: Array as PropType<Date[]>, required: true } },
   setup(props, { slots }) {
@@ -49,7 +48,6 @@ const merged = usePartProps(calendar.rowProps);
 </script>
 
 <template>
-  <!-- A row per week of the month on screen, in the day view only. -->
   <template v-if="calendar.state.value.view === 'day'">
     <WeekScope v-for="(days, index) in calendar.weeks.value" :key="index" :days="days">
       <Part :as="props.as" v-bind="merged">

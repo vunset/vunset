@@ -52,7 +52,6 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-/** `root` with a `v-model` (or `v-model:<prop>`) on `model`, which starts out as `initial`. */
 function mountModel<T>(
   root: Component,
   initial: T,
@@ -119,7 +118,6 @@ describe('v-model on a ref that starts out undefined', () => {
   // A menu's items, inside an open menu: the attrs are the item's own, so its model stays bound.
   const inMenu = (item: Component): Component => (_, { attrs, slots }) =>
     h(MenuRoot as any, { open: true }, () => h(item as any, attrs, slots));
-  // Roots whose trigger shows nothing of it hand `open` to their slot.
   const slotOpen = (state: { open: boolean }) => h('output', String(state.open));
   const readSlot = () => document.querySelector('output')?.textContent ?? null;
 

@@ -276,7 +276,6 @@ describe('as links', () => {
 
     expect(prev.attributes('href')).toBeUndefined();
     expect(prev.attributes('aria-disabled')).toBe('true');
-    // An anchor has no `disabled`, so the guard is what stops it.
     expect(prev.attributes('disabled')).toBeUndefined();
 
     await prev.trigger('click');
@@ -289,14 +288,12 @@ describe('as links', () => {
     expect(item(wrapper, 3).attributes('href')).toBeUndefined();
     expect(item(wrapper, 3).attributes('aria-disabled')).toBe('true');
 
-    // An anchor cannot be `disabled`, and `trigger` would skip a button that is,
-    // so this is the only place the click guard is actually observable.
+    // The only place the click guard is observable: an anchor can't be `disabled`, and `trigger` skips a disabled button.
     await item(wrapper, 3).trigger('click');
     expect(emitted(wrapper)).toHaveLength(0);
   });
 
   it('renders a spent arrow, or a disabled page, as a plain anchor rather than the link component', () => {
-    // A router link can't render without its `to`, which an inert one hasn't got.
     const Link = defineComponent({
       props: { to: { type: [String, Object], required: true } },
       setup: (props, { slots }) => () => h('a', { 'data-to': String(props.to) }, slots.default?.()),
@@ -359,7 +356,6 @@ describe('what it announces', () => {
 });
 
 describe('the page in the URL', () => {
-  // The app's route, as the Nuxt module provides it: a write navigates, and the query follows.
   function mountWithRoute(props: Record<string, any> = {}, initial: Record<string, string> = {}, many = true) {
     const query = reactive<Record<string, string | undefined>>({ ...initial });
     const set = vi.fn((key: string, value: string | undefined) => (query[key] = value));

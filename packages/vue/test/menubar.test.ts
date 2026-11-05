@@ -47,8 +47,7 @@ function mountMenubar(onSelect = vi.fn()) {
 const triggers = () =>
   Array.from(document.querySelectorAll<HTMLElement>('[data-menubar-trigger]'));
 const openMenu = () => document.querySelector<HTMLElement>('[role="menu"]');
-// Menubar triggers also carry role="menuitem", so this must be scoped to the
-// open menu rather than searching the whole document.
+// Menubar triggers also carry role="menuitem", so this is scoped to the open menu.
 const items = () =>
   Array.from(openMenu()?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? []);
 
@@ -59,8 +58,7 @@ async function settle() {
   }
 }
 
-// A key in the millisecond of the mount can be dropped: Vue skips a listener
-// attached no earlier than the event that reaches it.
+// Vue skips a listener attached no earlier than the event, so a key in the mount's millisecond can be dropped.
 const later = () => new Promise((resolve) => setTimeout(resolve, 2));
 
 function key(el: Element, k: string) {
@@ -125,7 +123,6 @@ describe('Menubar', () => {
 
     it('switches menus on hover once the bar is active', async () => {
       mountMenubar();
-      // Hover alone does nothing while closed.
       triggers()[1].dispatchEvent(new PointerEvent('pointerenter', { bubbles: true }));
       await settle();
       expect(openMenu()).toBeNull();
@@ -266,7 +263,6 @@ describe('Menubar handoff animation', () => {
     triggers()[1].click();
     await nextTick();
     await nextTick();
-    // The bar should read as one continuous surface, not four separate popups.
     expect(enterFrom()).toBe(false);
     expect(openMenu()).not.toBeNull();
   });
@@ -294,7 +290,6 @@ describe('Menubar handoff exit', () => {
     triggers()[1].click();
     await nextTick();
     await nextTick();
-    // Exactly one menu on screen through the switch.
     expect(document.querySelectorAll('[role="menu"]')).toHaveLength(1);
   });
 
@@ -312,7 +307,6 @@ describe('Menubar handoff exit', () => {
   });
 
   describe('openOnHover', () => {
-    /** The bar, with hover opening switched on for all of its menus. */
     function mountHoverBar(props: Record<string, any> = { openOnHover: true }) {
       const Host = defineComponent({
         setup() {
@@ -382,8 +376,6 @@ describe('Menubar handoff exit', () => {
       vi.advanceTimersByTime(200);
       await settle();
 
-      // Already open: arriving at the next trigger must switch immediately, or
-      // the bar feels stuck halfway across.
       leave(triggers()[0]);
       enter(triggers()[1]);
       await settle();
@@ -393,9 +385,7 @@ describe('Menubar handoff exit', () => {
     });
 
     it('does not let the menu left behind close the one that replaced it', async () => {
-      // Leaving a trigger schedules a close. Sliding to a sibling opens that
-      // one straight away, leaving the first timer still pending against the
-      // open state they share.
+      // Leaving schedules a close, and sliding to a sibling leaves that timer pending against the shared open state.
       vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
       mountHoverBar();
       await settle();
@@ -408,7 +398,6 @@ describe('Menubar handoff exit', () => {
       enter(triggers()[1]);
       await settle();
 
-      // Long past the first trigger's close delay.
       vi.advanceTimersByTime(1000);
       await settle();
 
@@ -437,7 +426,6 @@ describe('Menubar handoff exit', () => {
 });
 
 describe('MenubarLink', () => {
-  // File, a link, then Edit, whose first item is a link of its own.
   function mountWithLink(linkProps: Record<string, unknown> = {}, onItemClick = vi.fn()) {
     const menu = (label: string, items: unknown[]) =>
       h(MenuRoot as any, null, {

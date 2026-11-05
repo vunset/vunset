@@ -36,8 +36,6 @@ describe('Group', () => {
     });
 
     it('claims no orientation as a plain group', () => {
-      // ARIA gives `group` no orientation, so asserting one would be a lie to
-      // the accessibility tree rather than a hint to it.
       mountGroup({ orientation: 'vertical' });
       expect(root().getAttribute('aria-orientation')).toBeNull();
       expect(root().getAttribute('data-orientation')).toBe('vertical');
@@ -56,8 +54,6 @@ describe('Group', () => {
 
   describe('separators inside it', () => {
     it('runs a rule across the row rather than along it', () => {
-      // A divider divides: in a row of controls that means a vertical rule,
-      // which is the opposite of what a separator defaults to on its own.
       mountGroup({}, [h(Separator as any)]);
       expect(separator().getAttribute('data-orientation')).toBe('vertical');
       expect(separator().getAttribute('aria-orientation')).toBe('vertical');
@@ -91,7 +87,6 @@ describe('Group', () => {
     it('lets a class and a role of the caller’s own through', () => {
       mountGroup({ class: 'Group', role: 'radiogroup' });
       expect(root().classList.contains('Group')).toBe(true);
-      // The caller wins conflicts, as everywhere else.
       expect(root().getAttribute('role')).toBe('radiogroup');
     });
   });
@@ -187,17 +182,14 @@ describe('Group', () => {
         h('button', { class: 'c' }, 'c'),
       ]);
       await nextTick();
-      // The group keeps its own roving tab stop; the toolbar sets nothing in it.
       expect(tabIndexes('x', 'y')).toEqual(['0', '-1']);
 
       el('a').focus();
       press(el('a'), 'ArrowRight');
       expect(document.activeElement).toBe(el('x'));
       await nextTick();
-      // Focus in the set takes the toolbar's own stop away.
       expect(tabIndexes('a', 'c')).toEqual(['-1', '-1']);
 
-      // Inside the set, its arrows move between its toggles, not out of it.
       press(el('x'), 'ArrowRight');
       expect(document.activeElement).toBe(el('y'));
     });
@@ -213,7 +205,7 @@ describe('Group', () => {
           h('button', { class: 'c' }, 'c'),
         ]);
 
-      // A toggle takes its group's tab stop once focused, a render later.
+      // A toggle takes its group's tab stop a render after focus.
       const wrapper = toolbarWith();
       await nextTick();
       el('y').focus();
@@ -227,7 +219,6 @@ describe('Group', () => {
       expect(document.activeElement).toBe(el('a'));
       wrapper.unmount();
 
-      // Told to loop, it keeps its arrows and wraps.
       toolbarWith(true);
       await nextTick();
       el('y').focus();

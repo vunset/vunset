@@ -157,7 +157,6 @@ describe('AppMenubar', () => {
       await settle();
       expect(item('Reports').dataset.route).toBe('/reports');
       expect(item('Reports').getAttribute('role')).toBe('menuitem');
-      // A plain item stays one.
       expect(item('New').tagName).toBe('DIV');
       expect(reactiveWarnings()).toBe(0);
     });

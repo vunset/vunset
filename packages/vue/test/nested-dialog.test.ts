@@ -5,10 +5,7 @@ import {
   DialogRoot, DialogTrigger, Portal, DialogBackdrop, Popup, DialogTitle, DialogClose,
 } from '../src';
 
-/**
- * The confirm-on-cancel pattern: an outer dialog whose Cancel opens a second
- * dialog, rendered inside the first.
- */
+// Confirm-on-cancel: the outer dialog's Cancel opens a second one inside it.
 function mountNested() {
   const Host = defineComponent({
     setup() {
@@ -100,7 +97,6 @@ describe('Nested dialogs', () => {
 
     escape();
     await settle();
-    // The inner one closing must not release a lock the outer still holds.
     expect(document.body.style.overflow).toBe('clip');
 
     escape();
@@ -110,14 +106,12 @@ describe('Nested dialogs', () => {
 
   it('inerts the outer dialog while the inner is open, then restores it', async () => {
     await openBoth();
-    // Teleported content lands as a direct child of <body>, so the popup itself
-    // is what gets inerted — there is no wrapper element around it.
+    // Teleported content is a direct child of <body>, so the popup itself is inerted.
     expect(outer()!.hasAttribute('inert')).toBe(true);
     expect(inner()!.hasAttribute('inert')).toBe(false);
 
     escape();
     await settle();
-    // Restored, or the outer dialog would be left unusable behind nothing.
     expect(outer()!.hasAttribute('inert')).toBe(false);
   });
 
@@ -139,7 +133,6 @@ describe('Nested dialogs', () => {
     await openBoth();
     escape();
     await settle();
-    // The outer dialog must still dismiss on its own backdrop afterwards.
     q('.outer-backdrop').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
     await settle();
     expect(outer()).toBeNull();
@@ -149,7 +142,6 @@ describe('Nested dialogs', () => {
 describe('Nested dialog stacking state', () => {
   it('marks the outer dialog while a nested one is open', async () => {
     await openBoth();
-    // The signal a stylesheet needs to push the outer dialog back.
     expect(outer()!.hasAttribute('data-nested')).toBe(true);
     expect(inner()!.hasAttribute('data-nested')).toBe(false);
   });
@@ -163,17 +155,14 @@ describe('Nested dialog stacking state', () => {
 
   it('counts how many dialogs are stacked on top of each one', async () => {
     await openBoth();
-    // Not each dialog's own place in the markup, which never moves, but how
-    // far back the stack has pushed it — which is what a stylesheet has to
-    // scale against. The one in front is `0`, and 0 is left out as noise.
+    // How far back the stack pushed it, not its markup place; the front one is `0`, left out as noise.
     expect(inner()!.hasAttribute('data-level')).toBe(false);
     expect(outer()!.getAttribute('data-level')).toBe('1');
   });
 
   it('publishes the level as a number a stylesheet can compute with', async () => {
     await openBoth();
-    // `data-level` cannot be read by `calc()`; stepping a dialog back per
-    // level is arithmetic, so the same value goes out as a custom property.
+    // `data-level` can't be read by `calc()`, so the same value goes out as a custom property.
     expect(outer()!.getAttribute('style')).toContain('--dialog-level: 1');
     expect(inner()!.getAttribute('style')).toContain('--dialog-level: 0');
   });
@@ -192,8 +181,7 @@ describe('Nested dialog stacking state', () => {
     escape();
     await nextTick();
     await nextTick();
-    // The inner is still animating out, so releasing the outer now would make it
-    // jump forward from underneath it.
+    // The inner is still animating out, so releasing the outer now would jump it forward underneath.
     expect(inner()).not.toBeNull();
     expect(outer()!.hasAttribute('data-nested')).toBe(true);
   });
@@ -208,8 +196,7 @@ describe('Nested dialog dismissal', () => {
     pressOutside('.inner-backdrop');
     await settle();
 
-    // The inner dialog's backdrop physically covers the outer one, so the press
-    // never reached it and must not be treated as outside the outer dialog too.
+    // The inner backdrop covers the outer, so the press never reached it.
     expect(inner()).toBeNull();
     expect(outer()).not.toBeNull();
   });
@@ -228,8 +215,6 @@ describe('Nested dialog dismissal', () => {
     q('.discard').click();
     await settle();
 
-    // Choosing "discard" answers the question and abandons the task behind it,
-    // so leaving the form open would be wrong.
     expect(inner()).toBeNull();
     expect(outer()).toBeNull();
   });
@@ -244,7 +229,6 @@ describe('Nested dialog dismissal', () => {
 });
 
 describe('a stack more than two deep', () => {
-  /** Three dialogs, each opened from inside the one before it. */
   function mountTriple() {
     const leaf = () =>
       h(DialogRoot as any, { defaultOpen: true }, {
@@ -277,8 +261,7 @@ describe('a stack more than two deep', () => {
   const at = (cls: string) => document.querySelector<HTMLElement>(`.${cls}`);
 
   it('steps every dialog back by how far it actually is from the front', async () => {
-    // The old flag was a boolean, so a third dialog could not push the first
-    // any further back than the second already had.
+    // Regression: a boolean flag couldn't push the first back further than the second did.
     mountTriple();
     await settle();
 

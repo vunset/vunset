@@ -130,8 +130,6 @@ describe('Dialog', () => {
     });
 
     it('keeps the backdrop inert by default', async () => {
-      // A dialog interrupts to ask something, so waving it away is opt-in:
-      // `outsidePress` is the only thing that makes the backdrop dismiss it.
       mountDialog({ defaultOpen: true });
       await settle();
       press(backdrop()!);
@@ -273,7 +271,6 @@ describe('Dialog', () => {
     });
 
     it('locks the root element too, and restores what it had', async () => {
-      // An app that sets an overflow on `<html>` scrolls by it, not by the body.
       document.documentElement.style.overflow = 'auto';
       mountDialog();
       trigger().click();
@@ -301,8 +298,7 @@ describe('Dialog', () => {
       mountDialog();
       trigger().click();
       await settle();
-      // aria-modal alone is not reliably honored; inert is what makes the page
-      // behind unreachable.
+      // aria-modal alone isn't reliably honored; inert is what makes the page behind unreachable.
       expect(sibling.hasAttribute('inert')).toBe(true);
       expect(sibling.getAttribute('aria-hidden')).toBe('true');
 

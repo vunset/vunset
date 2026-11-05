@@ -17,10 +17,6 @@ import {
   RadioRoot,
 } from '../src';
 
-/**
- * What the field itself owns, now that it holds no value. Anything else in a
- * test's props configures the control inside it.
- */
 const FIELD_PROPS = new Set([
   'disabled',
   'readOnly',
@@ -33,7 +29,6 @@ const FIELD_PROPS = new Set([
   'class',
 ]);
 
-/** Mounts a field containing a labeled input, or whatever `render` produces. */
 function mountField(props: Record<string, any> = {}, render?: () => any) {
   const fieldProps: Record<string, any> = {};
   const inputProps: Record<string, any> = {};
@@ -63,7 +58,6 @@ async function settle() {
   }
 }
 
-/** Types `text` the way a browser would: DOM value first, then the event. */
 async function type(text: string) {
   const el = input();
   el.value = text;
@@ -71,7 +65,6 @@ async function type(text: string) {
   await nextTick();
 }
 
-/** Fires the event a browser fires before it changes the value. */
 function beforeInput(data: string, inputType = 'insertText') {
   const el = input();
   try {
@@ -89,7 +82,6 @@ function beforeInput(data: string, inputType = 'insertText') {
   return event;
 }
 
-/** Types one character at a time the way a browser does: gate first, then commit. */
 async function typeChars(text: string) {
   for (const character of text) {
     if (beforeInput(character).defaultPrevented) {
@@ -105,7 +97,6 @@ async function typeChars(text: string) {
   return input().value;
 }
 
-/** Fires the event a browser fires after it has already changed the value. */
 async function inputEvent(value: string, inputType = 'insertText') {
   const el = input();
   el.value = value;
@@ -199,8 +190,7 @@ describe('Field', () => {
     it('starts filled when a default value is supplied', async () => {
       mountField({ defaultValue: 'start' });
       expect(input().value).toBe('start');
-      // The control reports emptiness upward as it mounts, so the field learns
-      // of it a tick after its own first render.
+      // The control reports emptiness as it mounts, so the field learns of it a tick after its first render.
       await nextTick();
       expect(root().hasAttribute('data-filled')).toBe(true);
     });
@@ -208,7 +198,6 @@ describe('Field', () => {
     it('snaps a controlled value back when the owner does not accept the change', async () => {
       mountField({ modelValue: 'fixed' });
       await type('typed');
-      // The owner never wrote the value back, so the control must not keep it.
       expect(input().value).toBe('fixed');
     });
 
@@ -294,7 +283,6 @@ describe('Field', () => {
       expect(root().hasAttribute('data-touched')).toBe(true);
       expect(root().hasAttribute('data-dirty')).toBe(true);
 
-      // The field must not overwrite what the owner supplied.
       input().focus();
       input().blur();
       await nextTick();
@@ -370,11 +358,6 @@ describe('Field', () => {
   });
 
   describe('group', () => {
-    /**
-     * An `<input>` is a void element, so anything beside it is a sibling inside
-     * the group. `<Addon>` is that sibling — the same part a select or
-     * combobox trigger takes directly.
-     */
     const mountGroup = (props: Record<string, any> = {}, end?: () => any) =>
       mountField(props, () => [
         h(FieldGroup as any, null, () => [
@@ -506,8 +489,7 @@ describe('Field', () => {
       });
 
       it('renders a filtered text input, not a native number one', () => {
-        // A native number input reports "10." and "-" as "" and exposes no
-        // selection, so nothing typed on the way to a number survives it.
+        // A native number input reports "10." and "-" as "" with no selection, so nothing typed on the way survives.
         mountField({ type: 'number' });
         expect(input().getAttribute('type')).toBe('text');
         expect(input().getAttribute('inputmode')).toBe('decimal');
@@ -681,8 +663,7 @@ describe('Field', () => {
 
     describe('pattern', () => {
       it('does not restrict typing, so a half-typed value can still be reached', () => {
-        // The finished value needs three digits, a dash and four more. Blocking
-        // on the pattern would refuse the first digit and jam the control.
+        // Blocking on the pattern would refuse the first digit and jam the control.
         mountField({ pattern: '\\d{3}-\\d{4}' });
         expect(beforeInput('5').defaultPrevented).toBe(false);
       });
@@ -723,8 +704,6 @@ describe('Field', () => {
   describe('headless use', () => {
     it('works without any of the components', async () => {
       const onChange = vi.fn();
-      // Two composables now, because the split is the point: the field
-      // coordinates, the input holds the value.
       const Control = defineComponent({
         setup() {
           const input = useInput({ name: 'email', onChange });

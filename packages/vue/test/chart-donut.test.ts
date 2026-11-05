@@ -20,7 +20,6 @@ async function mountDonut(props: Record<string, any> = {}, options: Record<strin
     attachTo: document.body,
     ...options
   });
-  // The middle is placed over the plot once the chart has measured it.
   await wait();
   return wrapper;
 }
@@ -31,7 +30,6 @@ const middle = (wrapper: VueWrapper<any>) => ({
   sub: wrapper.find('[data-part="chart-center-sub-label"]')
 });
 
-/** Keyboard focus, which needs no pointer geometry. It lands on Social, the second slice. */
 async function focusFirst(wrapper: VueWrapper<any>) {
   const svg = wrapper.find('svg');
   (svg.element as SVGElement).focus();
@@ -60,7 +58,6 @@ describe('the donut', () => {
   });
 
   it('sizes the slices by the value key', async () => {
-    // A slice's arc length grows with its share; the path's extent is a fair proxy.
     const extent = (d: string) => {
       const numbers = [...d.matchAll(/-?[\d.]+/g)].map((match) => Number(match[0]));
       return Math.max(...numbers) - Math.min(...numbers);
@@ -102,8 +99,6 @@ describe('the donut', () => {
   });
 
   it('cuts the middle out of a ring, and fills it in for a pie', async () => {
-    // A ring's slice is drawn out and back, so its path has two arcs; a pie's
-    // runs to the center and has one.
     const arcCommands = (wrapper: VueWrapper<any>) => (arcs(wrapper)[0]!.attributes('d')!.match(/A/g) ?? []).length;
 
     expect(arcCommands(await mountDonut({ cornerRadius: 0 }))).toBe(2);

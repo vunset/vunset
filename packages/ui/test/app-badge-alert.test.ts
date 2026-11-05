@@ -3,8 +3,7 @@ import { mount, type VueWrapper } from '@vue/test-utils';
 import { h, nextTick } from 'vue';
 import { AppBadge, AppAlert } from '../src';
 
-// Vue drops an event no later than the millisecond its listener was attached in;
-// a click straight after mounting can land in that millisecond. A user's can't.
+// Vue drops an event in the millisecond its listener was attached, which a click right after mount can hit.
 const later = () => new Promise((resolve) => setTimeout(resolve, 2));
 
 let wrapper: VueWrapper | undefined;
@@ -79,7 +78,6 @@ describe('AppAlert', () => {
     const close = alert().querySelector<HTMLElement>('.app-alert-close')!;
 
     expect(close.getAttribute('aria-label')).toBe('Hide');
-    // A real button, so the keyboard reaches it.
     expect(close.tagName).toBe('BUTTON');
     expect(close.getAttribute('type')).toBe('button');
     await later();

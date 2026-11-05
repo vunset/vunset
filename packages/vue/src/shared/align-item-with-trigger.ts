@@ -1,12 +1,4 @@
-/**
- * Placing a dropdown so the chosen option sits on top of the trigger, the way a
- * native macOS `<select>` does. The list scrolls itself into the right place,
- * so the option you are looking at does not move when the popup opens.
- *
- * The geometry is a pure function of a handful of measurements, kept separate
- * from the DOM so it can be reasoned about — and tested — without a layout
- * engine.
- */
+// Places the popup so the chosen option sits over the trigger, like a native macOS `<select>`.
 
 export interface AlignGeometry {
   /** Usable viewport height. */
@@ -24,10 +16,7 @@ export interface AlignGeometry {
   itemCenterFromContentTop: number;
   /** The option's own height. The whole of it has to stay inside the list. */
   itemHeight: number;
-  /**
-   * The tallest the list may be by the stylesheet's reckoning, or `Infinity`.
-   * An aligned popup shrinks to fit this rather than overriding it.
-   */
+  /** The list's stylesheet max-height, or `Infinity`. An aligned popup shrinks to fit it. */
   listMaxHeightLimit: number;
   /** Space kept between the popup and the viewport edges. */
   margin: number;
@@ -53,15 +42,7 @@ export interface AlignResult {
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), Math.max(min, max));
 
-/**
- * Works out where the popup goes, or returns `null` to say it should not be
- * tried at all.
- *
- * Two situations make it worse than an ordinary dropdown, and both bail out
- * rather than producing something cramped: a trigger already hard against the
- * top or bottom of the viewport, which leaves the list nowhere to extend, and
- * too little height to show a useful number of options.
- */
+/** Where the popup goes, or `null` when the trigger hugs a viewport edge or too little height is left. */
 export function computeItemAlignment(geometry: AlignGeometry): AlignResult | null {
   const {
     viewportHeight,
@@ -93,15 +74,7 @@ export function computeItemAlignment(geometry: AlignGeometry): AlignResult | nul
   const itemTop = itemCenterFromContentTop - itemHeight / 2;
   const itemBottom = itemCenterFromContentTop + itemHeight / 2;
 
-  /**
-   * How far the list may scroll, given a popup of `height`.
-   *
-   * The lower bound is the part that matters and the part that is easy to miss:
-   * the option has to end up **inside** the list's visible window. The last
-   * option of a long list can only be shown by scrolling to the end, so the
-   * scroll is forced, and the popup has to be placed around that rather than
-   * the other way about.
-   */
+  // The option must end up inside the list's visible window, which can force the scroll.
   const scrollFloor = (listMaxHeight: number) =>
     Math.max(
       0,
@@ -113,9 +86,7 @@ export function computeItemAlignment(geometry: AlignGeometry): AlignResult | nul
 
   let height = Math.min(fullHeight, listMaxHeightLimit + chrome, available);
 
-  // Shrinking frees up scroll, and more scroll may allow more shrinking, so the
-  // two settle against each other. Two passes is enough to reach the fixed
-  // point for any real list; the bounds below are checked regardless.
+  // Shrinking frees scroll and more scroll allows more shrinking; two passes reach the fixed point.
   for (let pass = 0; pass < 2; pass += 1) {
     const floor = scrollFloor(Math.max(0, height - chrome));
     height = Math.min(
@@ -127,9 +98,7 @@ export function computeItemAlignment(geometry: AlignGeometry): AlignResult | nul
     );
   }
 
-  // A popup showing less than a useful slice of a long list is worse than an
-  // ordinary dropdown. A short list that fits entirely is exempt: it is already
-  // showing everything there is.
+  // Too small a slice of a long list is worse than an ordinary dropdown; a list that fits is exempt.
   if (height < Math.min(fullHeight, minHeight)) {
     return null;
   }
@@ -150,10 +119,7 @@ export function computeItemAlignment(geometry: AlignGeometry): AlignResult | nul
     return null;
   }
 
-  // Within what is allowed, the option sits in the middle of the list window,
-  // so the popup opens with as much context above it as below — which is what
-  // puts the first option near the top of its popup and the last near the
-  // bottom, without either being a special case.
+  // Centered in the list window, so the first and last options land near the popup's edges with no special case.
   const preferred = itemCenterFromContentTop - listMaxHeight / 2;
   const scrollTop = clamp(preferred, scrollLo, scrollHi);
 
@@ -185,21 +151,13 @@ export const ALIGN_MARGIN = 8;
 export const ALIGN_MIN_HEIGHT = 100;
 export const ALIGN_EDGE_THRESHOLD = 20;
 
-/**
- * Measures the live elements and returns where the popup should go.
- *
- * The list's `max-height` is lifted while measuring, because the popup's
- * natural height is the thing being measured and a stylesheet cap would hide
- * it. The caller sets the final value from the result.
- */
+/** Measures the live elements. Lifts the list's max-height meanwhile; the caller sets the final one. */
 export function measureItemAlignment(elements: AlignElements): AlignPlacement | null {
   const { trigger, positioner, popup, list, item, value, maxHeight } = elements;
 
   const previousMaxHeight = list.style.maxHeight;
 
-  // Read the stylesheet's cap before overriding it — and clear our own previous
-  // override first, or a re-measure would read back what we last wrote instead
-  // of what the author asked for.
+  // Clear our previous override first, or a re-measure reads back what we wrote.
   list.style.removeProperty('max-height');
   if (maxHeight) list.style.maxHeight = maxHeight;
   const authoredMaxHeight = parseFloat(getComputedStyle(list).maxHeight);
@@ -235,8 +193,7 @@ export function measureItemAlignment(elements: AlignElements): AlignPlacement | 
       return null;
     }
 
-    // Horizontally, the option's text lines up with the trigger's, so the label
-    // being read does not slide sideways as the popup opens.
+    // Lines the option's text up with the trigger's, so the label doesn't slide as it opens.
     const positionerRect = positioner.getBoundingClientRect();
     let left = triggerRect.left;
 

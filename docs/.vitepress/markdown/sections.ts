@@ -1,11 +1,8 @@
 export interface Section {
-  /** Index of the `## <title>` line. */
   start: number;
   /** Index of the next `#` or `##` heading, or the page's length. */
   end: number;
-  /** Lines between the `##` and the first `###`. */
   lead: string[];
-  /** One per `###`, its heading line first. */
   items: { label: string; lines: string[] }[];
 }
 

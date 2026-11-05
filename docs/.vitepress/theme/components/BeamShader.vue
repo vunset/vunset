@@ -108,8 +108,6 @@ const GROUPS: ShaderGroup[] = [
   }
 ];
 
-// A few soft beams falling from the top, drifting right to left and swelling
-// as they cross the middle. Same palette as PrismRays.
 const FRAGMENT = `
 precision highp float;
 uniform vec2 resolution;
@@ -160,10 +158,8 @@ void main() {
     float f = float(i);
     if (f >= beams) break;
 
-    // One after another around the loop; at one speed the gaps hold.
     along += mix(minGap, 1.0, pow(hash(vec2(f, 8.9)), crowd));
     float speed = speedMin + speedRange * (hash(vec2(f, 1.1)) - 0.5);
-    // Wraps just off-screen: from past the right edge to past the left one.
     float pos = mix(1.25, -0.25, fract(along / total + time * speed));
     float middle = exp(-pow((pos - 0.5) / middleSize, 2.0));
 
@@ -172,7 +168,6 @@ void main() {
     float strength = (0.45 + 0.55 * hash(vec2(f, 5.3))) * mix(edgeDim, 1.0, middle);
     strength *= 1.0 - smoothstep(0.6, 0.75, abs(pos - 0.5));
 
-    // Leaning a little, and fading as they fall.
     float x = uv.x - pos + depth * (tiltMin + tiltRange * hash(vec2(f, 4.1)));
     float fall = exp(-depth * (fallMin + fallRange * hash(vec2(f, 6.7))));
     float split = width * dispersion;
@@ -192,7 +187,6 @@ void main() {
     light += lit * (1.0 - light);
   }
 
-  // Gone by the screen's left and right edges.
   light *= smoothstep(0.0, max(sideFade, 0.001), uv.x) * smoothstep(0.0, max(sideFade, 0.001), 1.0 - uv.x);
   float noise = (hash(gl_FragCoord.xy + fract(time) * 91.0) - 0.5) * grain;
 

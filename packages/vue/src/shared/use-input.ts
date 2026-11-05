@@ -42,16 +42,12 @@ export interface InputState {
 }
 
 export interface UseInputOptions {
-  /** The value. Supplying it makes the input controlled. */
   value?: MaybeRefOrGetter<string | number | null | undefined>;
-  /** The initial value while uncontrolled. */
   defaultValue?: MaybeRefOrGetter<string | number | undefined>;
   disabled?: MaybeRefOrGetter<boolean>;
   readOnly?: MaybeRefOrGetter<boolean>;
   required?: MaybeRefOrGetter<boolean>;
-  /** Whether the value is invalid. Also read from a surrounding field. */
   invalid?: MaybeRefOrGetter<boolean>;
-  /** The element id. Falls back to the surrounding field's, then a generated one. */
   id?: MaybeRefOrGetter<string | undefined>;
   name?: MaybeRefOrGetter<string | undefined>;
   type?: MaybeRefOrGetter<string | undefined>;
@@ -63,28 +59,22 @@ export interface UseInputOptions {
   min?: MaybeRefOrGetter<number | string | undefined>;
   /** Largest acceptable number. Marks validity; typing has to pass through smaller numbers to reach it. */
   max?: MaybeRefOrGetter<number | string | undefined>;
-  /** Granularity of an acceptable number. Marks validity. */
   step?: MaybeRefOrGetter<number | string | undefined>;
   pattern?: MaybeRefOrGetter<string | undefined>;
   /** What may be typed, tested against every **intermediate** value. `type="number"` supplies one automatically. */
   filter?: MaybeRefOrGetter<FieldFilter | undefined>;
   /** Rewrites the typed text once it's committed, on `change`: blur, or Enter in an input. */
   transform?: MaybeRefOrGetter<((value: string) => string) | undefined>;
-  /** Called on every write, including programmatic ones. */
   onChange?: (value: string) => void;
 }
 
 export interface UseInputReturn {
-  /** The value. Writable — assign to it to set the input programmatically. */
   value: WritableComputedRef<string>;
   state: ComputedRef<InputState>;
-  /** Bind to the `<input>` or `<textarea>`. */
   controlProps: ComputedRef<Record<string, unknown>>;
-  /** The element, once mounted. */
   controlRef: Ref<HTMLElement | null>;
   /** Whether `next` is a value the control may hold while being typed. */
   accepts: (next: string) => boolean;
-  /** Moves focus to the control. */
   focus: () => void;
 }
 

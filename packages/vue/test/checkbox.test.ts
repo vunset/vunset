@@ -20,7 +20,6 @@ const mountCheckbox = (props: Record<string, any> = {}, slot?: any) =>
     attachTo: document.body,
   });
 
-/** Long enough for an exit animation to finish and the indicator to unmount. */
 async function settle() {
   for (let i = 0; i < 4; i += 1) {
     await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
@@ -69,7 +68,6 @@ describe('Checkbox', () => {
 
   describe('the hidden input', () => {
     it('is left out without a name or a label, and a press still toggles', async () => {
-      // A table of unnamed row checkboxes would otherwise carry an input per row.
       const w = mountCheckbox();
       expect(input(w).exists()).toBe(false);
       await box(w).trigger('click');
@@ -98,10 +96,7 @@ describe('Checkbox', () => {
     });
 
     it('is never displaced from the control', () => {
-      // `position: absolute` with a `left`/`top` resolves against the nearest
-      // positioned ancestor — usually the page. The input would then sit at the
-      // center of the document, and anything that focuses it (a wrapping
-      // `<label>`, most obviously) would scroll the page there.
+      // Positioned against the page, a focused input (via a wrapping `<label>`) would scroll the page to its center.
       const w = mountCheckbox({ name: 'terms' });
       const style = input(w).attributes('style') ?? '';
 
@@ -130,7 +125,6 @@ describe('Checkbox', () => {
       expect(box(w).attributes('aria-checked')).toBe('false');
     });
 
-    // A button gets these keys from the browser; anything else from the checkbox.
     it.each(['Enter', ' '])('activates with the %s key when not a button', async (key) => {
       const w = mountCheckbox({ as: 'span' });
       await box(w).trigger('keydown', { key });
@@ -196,15 +190,13 @@ describe('Checkbox', () => {
     });
 
     it('stays uncontrolled while the model is undefined', async () => {
-      // The comparison against `trueValue` must not turn "no value yet" into a
-      // controlled `false`, or the box would never move on its own.
+      // Comparing to `trueValue` must not turn "no value yet" into a controlled `false`.
       const w = mountCheckbox({ trueValue: 'yes', falseValue: 'no' });
       await box(w).trigger('click');
       expect(box(w).attributes('aria-checked')).toBe('true');
     });
 
     it('leaves the submitted form value alone', () => {
-      // `value` is what a form sends; `trueValue` never leaves the model.
       const w = mountCheckbox({
         name: 'terms',
         value: 'accepted',
@@ -270,12 +262,10 @@ describe('Checkbox', () => {
       const w = mountCheckbox({ name: 'all', indeterminate: true });
       expect(box(w).attributes('aria-checked')).toBe('mixed');
       expect(box(w).attributes()).toHaveProperty('data-indeterminate');
-      // A DOM property, not an attribute — there is no HTML to write it as.
       expect((input(w).element as HTMLInputElement).indeterminate).toBe(true);
     });
 
     it('resolves to checked when pressed', async () => {
-      // It is a presentation state, not a value to cycle back through.
       const w = mountCheckbox({ indeterminate: true });
       await box(w).trigger('click');
       expect(w.emitted('update:modelValue')?.[0]).toEqual([true]);
@@ -335,7 +325,6 @@ describe('Checkbox', () => {
       });
 
       expect(w.find('[role="checkbox"]').attributes('aria-required')).toBe('true');
-      // Announced only: the app validates, not the browser.
       expect((w.find('input').element as HTMLInputElement).required).toBe(false);
       w.unmount();
     });
@@ -537,7 +526,6 @@ describe('RadioGroup', () => {
       press(radios()[0], 'ArrowDown');
       await w.vm.$nextTick();
 
-      // Moving *is* choosing in a radio group.
       expect(checkedValues()).toEqual(['b']);
       expect(document.activeElement).toBe(radios()[1]);
     });

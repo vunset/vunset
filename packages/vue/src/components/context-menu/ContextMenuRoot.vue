@@ -35,9 +35,7 @@ const props = withDefaults(
     disabled: false,
     closeOnSelect: true,
     loop: undefined,
-    // A context menu opens *at* the pointer, so its corner sits on the point:
-    // below and to the inline-start of it, touching. The offsets a dropdown
-    // wants would push it off the very place the user aimed at.
+    // Opens at the pointer, its corner on the point, so no dropdown offsets.
     side: 'bottom',
     align: 'start',
     sideOffset: 0,
@@ -61,15 +59,7 @@ defineSlots<{
   default(props: MenuState): unknown;
 }>();
 
-/*
-  The same `useMenu` a dropdown runs on, and the same context — so `MenuItem`,
-  `MenuCheckboxItem`, `MenuRadioGroup`, `Separator` and submenus all work in
-  here unchanged. What differs is only what the popup is anchored to, which
-  `ContextMenuTrigger` sets to the point the pointer was at.
-
-  `openOnHover` is absent on purpose: a region that opened a menu when the
-  pointer crossed it would be unusable.
-*/
+// The dropdown's `useMenu` and context, anchored to the pointer; no `openOnHover`, on purpose.
 const api = useMenu({
   open: toRef(() => props.open),
   defaultOpen: toRef(() => props.defaultOpen),
@@ -87,8 +77,7 @@ const api = useMenu({
   }
 });
 
-// Pinned to a point, not to an element: a page scrolling under it would leave
-// it over the wrong row. A dropdown follows its trigger, so it needs no lock.
+// Pinned to a point, so a page scrolling under it would leave it over the wrong row.
 useScrollLock(() => api.present.value);
 
 provideMenuContext(api);

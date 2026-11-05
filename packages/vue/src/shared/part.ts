@@ -27,14 +27,8 @@ export function singleChild(nodes: VNode[] | undefined): VNode | undefined {
 }
 
 /**
- * Renders a part's `as` with `h()`. `<component :is="'button'">` first looks for
- * a registered component of that name, case-insensitively, so an app's global
- * `Button` would stand in for every native button the library renders.
- *
- * `as="child"` renders no element of its own: the one element or component in
- * the slot becomes the part. Its props merge with the part's as a caller's do:
- * its own win, and its handlers run first. A ref on a functional component is
- * the element it renders, so the part still gets its element.
+ * Renders `as` with `h()`: `<component :is>` would resolve `'button'` to an app's global `Button` first.
+ * `as="child"` makes the slot's single element the part, its own props winning and its handlers running first.
  */
 export const Part: FunctionalComponent<{ as: string | Component }> = (props, { attrs, slots }) => {
   if (props.as === 'child') {

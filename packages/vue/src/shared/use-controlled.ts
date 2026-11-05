@@ -13,7 +13,6 @@ import { onRecycle } from './recycle';
 export interface UseControlledOptions<T> {
   /** The controlled value. Anything but `undefined` makes the value controlled. */
   value: MaybeRefOrGetter<T | undefined>;
-  /** The initial value used while uncontrolled. */
   defaultValue: MaybeRefOrGetter<T>;
   /**
    * The component prop holding the value. Bound at all, it makes the value controlled too, even to
@@ -24,9 +23,7 @@ export interface UseControlledOptions<T> {
   empty?: MaybeRefOrGetter<T>;
   /** Notified on every write. Wire this to `update:<name>` to support `v-model`. */
   onChange?: (value: T) => void;
-  /** Component name, used in the development warning. */
   name?: string;
-  /** Value name, used in the development warning. */
   label?: string;
 }
 

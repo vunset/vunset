@@ -168,7 +168,6 @@ describe('useTheme', () => {
     });
     document.startViewTransition = transition as unknown as typeof document.startViewTransition;
 
-    // Like the Nuxt plugin's settings: a write is echoed back as a new choice.
     let echo: ((value: 'light' | 'dark' | 'system') => void) | undefined;
     const theme = useTheme({ viewTransition: true, storage: { get: () => null, set: (value) => echo?.(value) } });
     echo = theme.setTheme;

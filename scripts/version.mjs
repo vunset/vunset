@@ -1,4 +1,3 @@
-// Sets one version on every package and pins their cross-dependencies to it.
 // Usage: npm run bump -- 1.0.0
 import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';

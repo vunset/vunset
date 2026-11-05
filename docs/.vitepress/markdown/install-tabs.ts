@@ -9,10 +9,8 @@ const MANAGERS = [
 
 const INSTALL = /^npm install /;
 
-// Every code block sits in a <Frame>: a window of its own on the page, a bare
-// card inside one. A `sh` block of nothing but `npm install` lines →
-// <InstallTabs>, the same lines once per package manager. Every line loses the
-// same width, so trailing comments stay aligned.
+// A `sh` block of only `npm install` lines → <InstallTabs>, one per package manager.
+// Every line loses the same width, so trailing comments stay aligned.
 export function installTabs(md: MarkdownRenderer) {
   const fence = md.renderer.rules.fence!;
 

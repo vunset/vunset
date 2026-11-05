@@ -218,7 +218,6 @@ describe('the cartesian charts', () => {
     expect(marks(chart, 'bar')).toHaveLength(3);
 
     await legendItems(chart)[1]!.trigger('click');
-    // Controlled: the click asks, and the parent has not answered.
     expect(marks(chart, 'bar')).toHaveLength(3);
 
     await chart.setProps({ hidden: [] });

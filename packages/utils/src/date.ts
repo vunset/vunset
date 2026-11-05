@@ -9,16 +9,10 @@ export const MONTHS_IN_YEAR = 12;
 /** `0` is Sunday, matching `Date.prototype.getDay`. */
 export type WeekDay = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
-/**
- * A bare `YYYY-MM-DD` is parsed by the platform as UTC midnight, so west of
- * Greenwich `new Date('2026-09-23')` is the 22nd all evening. Matched here and
- * read as a local day instead, which is what a date without a time means.
- */
+// The platform parses a bare `YYYY-MM-DD` as UTC midnight, the day before west of Greenwich; read it as a local day.
 const DATE_ONLY = /^(\d{4})-(\d{2})-(\d{2})$/;
 
-/**
- * Normalizes any input into a `Date`, or `null` when there is nothing usable.
- */
+/** Normalizes any input into a `Date`, or `null` when there is nothing usable. */
 export function toDate(input: DateInput): Date | null {
   if (input === null || input === undefined || input === '') {
     return null;
@@ -39,7 +33,6 @@ export function toDate(input: DateInput): Date | null {
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
-/** A copy of `date`; an Invalid Date when it can't be read, as `new Date('junk')` is. */
 function read(date: DateLike): Date {
   return toDate(date) ?? new Date(Number.NaN);
 }
@@ -159,7 +152,6 @@ export function monthNames(locale?: Intl.LocalesArgument, format: 'long' | 'shor
   return Array.from({ length: MONTHS_IN_YEAR }, (_, month) => formatter.format(new Date(2021, month, 1)));
 }
 
-/** A Sunday, used as the origin when walking a week out of `Intl`. */
 const REFERENCE_SUNDAY = new Date(2021, 7, 1);
 
 export interface WeekDayName {
@@ -180,7 +172,7 @@ export function firstDayOfWeek(locale?: Intl.LocalesArgument): WeekDay {
     const info = resolved.getWeekInfo?.() ?? resolved.weekInfo;
     if (info) return (info.firstDay % DAYS_IN_WEEK) as WeekDay;
   } catch {
-    // an unknown locale tag: fall through
+    // an unknown locale tag
   }
   return 1;
 }
@@ -282,10 +274,7 @@ export function formatISO(date: DateInput): string {
   return `${year}-${month}-${day}`;
 }
 
-/**
- * Today, stepped back while UTC is still on yesterday: east of Greenwich just
- * after midnight. West of it, UTC runs ahead, and today is left alone.
- */
+// Stepped back a day while UTC is still on yesterday, east of Greenwich just after midnight.
 function toSafeDate(date: DateInput): Date {
   const now = new Date();
   const parsed = toDate(date) ?? now;

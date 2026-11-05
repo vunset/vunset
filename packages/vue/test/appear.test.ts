@@ -14,7 +14,6 @@ function mountAppear(props: Record<string, any> = {}) {
 
 const el = () => document.querySelector<HTMLElement>('[data-part="appear"]');
 
-/** Long enough for the enter phase to settle and for an exit to finish. */
 async function settle() {
   for (let i = 0; i < 4; i += 1) {
     await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
@@ -45,7 +44,6 @@ describe('Appear', () => {
 
       await w.setProps({ open: true });
       await nextTick();
-      // The first frame is the "from" state a transition needs to start at.
       expect(el()!.hasAttribute('data-enter-from')).toBe(true);
 
       await settle();
@@ -68,8 +66,6 @@ describe('Appear', () => {
 
   describe('hiding', () => {
     it('stays in the DOM while it leaves, then goes', async () => {
-      // The whole point: `v-if` alone would remove it before a frame of the
-      // exit animation had run.
       const w = mountAppear();
       await settle();
 

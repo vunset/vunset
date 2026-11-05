@@ -56,7 +56,6 @@ describe('Progress and Meter', () => {
       expect(gauge().getAttribute('data-status')).toBe('complete');
 
       document.body.innerHTML = '';
-      // A full meter is still just a reading at the top of its range.
       mountGauge(MeterRoot, { value: 100 });
       expect(gauge().getAttribute('data-status')).toBe('progressing');
     });
@@ -64,8 +63,7 @@ describe('Progress and Meter', () => {
 
   describe('indeterminate', () => {
     it('reports no number at all, rather than zero', async () => {
-      // Zero would have a screen reader announce a value that is not true;
-      // the missing `aria-valuenow` is what says "working, no number yet".
+      // A missing `aria-valuenow` says "working, no number yet"; zero would announce a false value.
       const w = mountGauge(ProgressRoot, { value: null });
 
       expect(gauge().getAttribute('data-status')).toBe('indeterminate');
@@ -78,13 +76,12 @@ describe('Progress and Meter', () => {
 
     it('draws nothing, so a stylesheet animates instead of filling', () => {
       mountGauge(ProgressRoot, { value: null });
-      // The variable is absent rather than 0%, so `var(…, …)` fallbacks apply.
+      // Absent rather than 0%, so `var(…, …)` fallbacks apply.
       expect(cssVar('--gauge-percentage')).toBe('');
       expect(indicator().getAttribute('data-status')).toBe('indeterminate');
     });
 
     it('is not a state a meter can be in', () => {
-      // A meter always has a reading; a missing one reads at the bottom.
       mountGauge(MeterRoot, { value: Number.NaN, min: 10, max: 20 });
       expect(gauge().getAttribute('data-status')).toBe('progressing');
       expect(gauge().getAttribute('aria-valuenow')).toBe('10');
@@ -106,8 +103,6 @@ describe('Progress and Meter', () => {
     });
 
     it('sets no width of its own', () => {
-      // Left to the stylesheet, which is what lets the same reading be a bar,
-      // a ring or a column.
       mountGauge(ProgressRoot, { value: 40 });
       expect(indicator().style.width).toBe('');
     });
@@ -134,7 +129,6 @@ describe('Progress and Meter', () => {
       const value = document.querySelector<HTMLElement>('[data-part="value"]')!;
 
       expect(value.textContent).toBe('40');
-      // Said once: the root already carries it in `aria-valuetext`.
       expect(value.getAttribute('aria-hidden')).toBe('true');
     });
 
@@ -186,8 +180,6 @@ describe('Progress and Meter', () => {
 
   describe('the parts', () => {
     it('are the same components under either root', () => {
-      // A track is a track. Only the roots differ, because only the roots make
-      // a claim about what the number means.
       mountGauge(MeterRoot, { value: 40 }, [
         h(MeterTrack as any, null, { default: () => h(MeterIndicator as any) }),
       ]);

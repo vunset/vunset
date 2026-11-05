@@ -17,8 +17,6 @@ const props = defineProps<{ light?: boolean }>();
 const canvas = ref<HTMLCanvasElement | null>(null);
 const running = ref(false);
 
-// Curtains of light hanging from wavy crests, the waves rolling right to left.
-// Same palette as PrismRays: cool gray light with a rainbow on its streaks.
 const FRAGMENT = `
 precision highp float;
 uniform vec2 resolution;
@@ -57,7 +55,6 @@ float curtain(float x, float y, float t, float crest, float seed) {
   float streaks = 0.2
     + 0.5 * pow(0.5 + 0.5 * sin(sx * 41.0), 6.0)
     + 0.35 * pow(0.5 + 0.5 * sin(sx * 97.0 + 1.3), 10.0);
-  // a thin bright line along the crest itself
   glow = glow * streaks + exp(-abs(d) * 60.0) * 0.35;
   float swell = 0.55 + 0.45 * sin(x * 1.1 + t * 0.3 + seed * 1.7);
   return glow * swell;
@@ -86,7 +83,6 @@ void main() {
     light = mix(vec3(band.g), band, 0.8);
   }
 
-  // Fullest in the middle, dimmer toward the sides.
   light *= mix(0.35, 1.0, exp(-pow((uv.x - 0.5) * 2.2, 2.0))) * 0.5;
   float noise = (hash(gl_FragCoord.xy + fract(time) * 91.0) - 0.5) * 0.03;
 

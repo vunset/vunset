@@ -34,7 +34,6 @@ describe('resolveAsyncView', () => {
   });
 
   it('shows the full loading view on a first load, soft or not', () => {
-    // Soft loading keeps content that is there; with none, there is nothing to keep.
     expect(resolveAsyncView('pending', false, true)).toEqual({ view: 'pending', refreshing: false });
   });
 
@@ -64,7 +63,6 @@ describe('AsyncState', () => {
     expect(empty([0])).toBe('content');
     expect(empty({ total: 0 })).toBe('content');
     expect(empty(0)).toBe('content');
-    // No keys, still data.
     expect(empty(new Date())).toBe('content');
   });
 
@@ -108,7 +106,6 @@ describe('AsyncState', () => {
       { default: '<template #default="{ status, view }"><p class="content">{{ status }}/{{ view }}</p></template>' },
     );
 
-    // Stale content after a failed reload: the default slot can show a banner.
     expect(wrapper.find('.content').text()).toBe('error/content');
   });
 

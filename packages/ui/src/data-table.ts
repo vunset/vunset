@@ -1,6 +1,4 @@
-// AppDataTable, apart from the main entry so that `@tanstack/vue-table`, an
-// optional peer, is never resolved by an app that renders none. The column
-// types and helpers come along, so an app imports the table from one place.
+// Its own entry, so an app rendering no table never resolves the optional `@tanstack/vue-table`.
 export { default as AppDataTable } from './app/AppDataTable.vue';
 export {
   dataTableFeatures,

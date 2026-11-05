@@ -38,8 +38,7 @@ const props = defineProps<{
 }>();
 
 const validation = useValidate();
-// Only a message gets an error element: `invalid` alone marks the control, and
-// an empty element would still be announced as its description.
+// Only a message gets an error element: an empty one would still be announced as the description.
 const message = computed(() => props.error ?? (props.name ? validation.errors.value[props.name] : undefined));
 </script>
 

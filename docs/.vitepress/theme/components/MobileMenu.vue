@@ -64,6 +64,5 @@ const path = usePagePath();
 
 const open = ref(false);
 
-// A link was followed: the page behind is the one asked for.
 watch(() => route.path, () => (open.value = false));
 </script>

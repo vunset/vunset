@@ -27,7 +27,6 @@ export function useSidebar() {
     return list.find(([prefix]) => path.value.startsWith(prefix))![1];
   });
 
-  // Previous and next in the sidebar's order, across its groups.
   const neighbors = computed(() => {
     const links = groups.value.flatMap((group) => group.items);
     const index = links.findIndex((item) => item.link === path.value);

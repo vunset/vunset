@@ -17,15 +17,10 @@ export type Side = 'top' | 'right' | 'bottom' | 'left';
 export type Align = 'start' | 'center' | 'end';
 
 export interface UsePositioningOptions {
-  /** Which side of the anchor to place the popup on. */
   side?: MaybeRefOrGetter<Side | undefined>;
-  /** How the popup aligns along that side. */
   align?: MaybeRefOrGetter<Align | undefined>;
-  /** Distance from the anchor, in pixels. */
   sideOffset?: MaybeRefOrGetter<number | undefined>;
-  /** Shift along the alignment axis, in pixels. */
   alignOffset?: MaybeRefOrGetter<number | undefined>;
-  /** Minimum distance from the viewport edge. */
   collisionPadding?: MaybeRefOrGetter<number | undefined>;
   /** Keep the popup anchored even when it would overflow, rather than flipping. */
   sticky?: MaybeRefOrGetter<boolean | undefined>;

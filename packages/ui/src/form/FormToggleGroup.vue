@@ -75,7 +75,6 @@ const emit = defineEmits<{
   'update:modelValue': [value: ToggleGroupValue | undefined];
 }>();
 
-/** An option as the slot gets it: its own fields, with `value` and `label` read through the keys. */
 type Item = TOption & { value: ToggleValue; label: string };
 
 defineSlots<{

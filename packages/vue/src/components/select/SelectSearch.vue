@@ -18,13 +18,6 @@ const merged = usePartProps(searchProps);
 </script>
 
 <template>
-  <!--
-    Keeps DOM focus for as long as the popup is open — typing has to keep
-    working — so the highlight travels by `aria-activedescendant` rather than by
-    moving focus onto the options.
-
-    Set `searchable` on the root as well: it is what sends focus here on
-    opening.
-  -->
+  <!-- Keeps focus while open; the highlight moves by `aria-activedescendant`. -->
   <Part :as="props.as" v-bind="merged" />
 </template>

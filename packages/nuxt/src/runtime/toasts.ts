@@ -1,10 +1,7 @@
 import { defineNuxtPlugin, useState } from '#app';
 import { createToastStore, defaultToastStore, provideToastStore, type Toast, type ToastOptions } from '@vunset/vue';
 
-// A server render gets a store of its own, so a toast set while rendering one
-// request reaches no other. What it holds is handed to the page in the payload,
-// and put in the shared store there: the one `useToast()` reaches from anywhere,
-// a plain module included.
+// A store per server request, handed to the page's shared store through the payload.
 export default defineNuxtPlugin({
   name: 'vunset:toasts',
   setup(nuxtApp) {
@@ -24,7 +21,7 @@ export default defineNuxtPlugin({
   }
 });
 
-/** What survives the payload: functions don't, so `onClose`, `slot` and a `data` holding one stay behind. */
+// Functions don't survive the payload: `onClose`, `slot` and a `data` holding one stay behind.
 function plain({ id, title, text, type, manualClose, timeout, data, onClose, slot }: Toast<any>): ToastOptions {
   const toast: ToastOptions = { id, title, text, type, manualClose, timeout };
   let dropped = Boolean(onClose || slot);

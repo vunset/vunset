@@ -13,10 +13,8 @@ provide(FRAMED, true);
 const opened = ref<number[]>([0]);
 const root = ref<HTMLElement>();
 
-// a link to a heading inside a part (the outline, `#menuroot` from another page)
-// opens that part and scrolls to the heading itself: VitePress scrolls a frame
-// after the hash changes, while the panel is still hidden, and until it has
-// grown to full height the page may be too short to reach the heading
+// A hash pointing inside a part opens it and scrolls there ourselves: VitePress scrolls while the
+// panel is still hidden, when the page may be too short to reach the heading.
 function open() {
   const id = decodeURIComponent(location.hash.slice(1));
   const panel = id && document.getElementById(id)?.closest<HTMLElement>('[data-api-part]');

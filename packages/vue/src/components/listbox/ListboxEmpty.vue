@@ -18,8 +18,7 @@ const merged = usePartProps(emptyProps);
 </script>
 
 <template>
-  <!-- A sibling of the list, not a child: a `role="listbox"` owns options and
-       groups, and a message among them is neither. -->
+  <!-- Beside the list: a `role="listbox"` may own only options and groups. -->
   <Part :as="props.as" v-if="state.empty" v-bind="merged">
     <slot v-bind="state" />
   </Part>

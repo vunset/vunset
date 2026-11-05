@@ -16,7 +16,6 @@ const props = withDefaults(
 
 const { clearProps, state } = useDatepickerContext();
 const merged = usePartProps(clearProps);
-// Only while there is something to clear, and it may be cleared.
 const shown = computed(() => !state.value.empty && !state.value.disabled && !state.value.readOnly);
 </script>
 

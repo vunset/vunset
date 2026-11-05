@@ -1,24 +1,14 @@
 export interface TooltipGroupOptions {
-  /** How long the pointer must rest before the first tooltip opens. */
   delay: number;
-  /** How long after the pointer leaves before a tooltip hides. */
   closeDelay: number;
-  /**
-   * How long after the last tooltip closes that the group keeps skipping the
-   * open delay.
-   */
   timeout: number;
 }
 
 export interface TooltipGroup {
   options: () => TooltipGroupOptions;
-  /** Whether the next tooltip should skip its open delay. */
   isInstant: () => boolean;
-  /** How many members are currently open. */
   openCount: () => number;
-  /** Called when a member opens, with how to close it when a neighbor takes over. */
   onOpen: (close: () => void) => void;
-  /** Called when a member closes. */
   onClose: (close: () => void) => void;
 }
 
@@ -28,18 +18,7 @@ export const DEFAULT_GROUP_OPTIONS: TooltipGroupOptions = {
   timeout: 400,
 };
 
-/**
- * Shared timing for a set of tooltips.
- *
- * A lone tooltip should wait before appearing, or pointers merely crossing the
- * screen would flash tooltips everywhere. But once one is showing, the user has
- * clearly asked for them, and making each neighbor re-serve the full delay
- * feels broken — so while any member is open, and briefly after the last one
- * closes, the rest open instantly.
- *
- * That "briefly after" window is why this cannot live in a single tooltip: the
- * state has to outlive the component that created it.
- */
+// While one is open, and briefly after, the rest open instantly; that window outlives any one tooltip.
 export function createTooltipGroup(getOptions: () => TooltipGroupOptions): TooltipGroup {
   const open = new Set<() => void>();
   let instant = false;
@@ -73,8 +52,5 @@ export function createTooltipGroup(getOptions: () => TooltipGroupOptions): Toolt
   };
 }
 
-/**
- * The group used by tooltips with no `TooltipGroup` above them. Shared across the app
- * so that unrelated tooltips still cooperate, which is what users expect.
- */
+// For tooltips with no `TooltipGroup` above them.
 export const defaultTooltipGroup = createTooltipGroup(() => DEFAULT_GROUP_OPTIONS);

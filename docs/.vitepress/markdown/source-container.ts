@@ -1,9 +1,7 @@
 import type { MarkdownRenderer } from 'vitepress';
 
 export interface SourceContainer {
-  /** The rest of the opening line, after the container name. */
   arg: string;
-  /** The lines between the markers. */
   body: string[];
   /** Level of the last heading above the container, 0 when there is none. */
   heading: number;
@@ -14,8 +12,7 @@ export interface SourceContainer {
 const FENCE = /^(`{3,}|~{3,})/;
 const HEADING = /^(#{1,6})\s/;
 
-// `::: <name> <arg>` ... `:::`, rewritten to markdown before parsing, so what it
-// expands to (`<<<`, tables, headings) is handled by VitePress like hand-written text.
+// Rewritten before parsing, so what it expands to (`<<<`, tables, headings) is handled like hand-written text.
 export function sourceContainer(md: MarkdownRenderer, name: string, expand: (container: SourceContainer) => string[]) {
   const open = new RegExp(`^::: ${name}\\s+(.+?)\\s*$`);
 

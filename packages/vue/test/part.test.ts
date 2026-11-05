@@ -72,7 +72,6 @@ describe('a part’s element', () => {
 });
 
 describe('as="child"', () => {
-  /** A dialog whose trigger is `child`, rendered in place of a trigger element of its own. */
   function mountDialog(child: () => any) {
     return mount(
       defineComponent(() => () =>

@@ -8,7 +8,6 @@ import { scan } from './markdown/source-container.ts';
 import { describe, readPage } from './seo.ts';
 
 export interface LlmsOptions {
-  /** Where `::: preview` demos live. */
   demos: string;
   api: ApiOptions;
   /** `https://vunset.com/`: the origin with the base. */
@@ -37,8 +36,7 @@ const SIDEBARS: [key: string, label: string][] = [
   ['/nuxt/', '@vunset/nuxt']
 ];
 
-// A page as an assistant reads it: each demo's source and each part's API table
-// written out, where the site renders them from files.
+// A page with each demo's source and API table written out, where the site renders them from files.
 export function pageMarkdown(options: LlmsOptions, srcDir: string, relativePath: string): string {
   const env = { relativePath };
   let src = readPage(srcDir, relativePath);

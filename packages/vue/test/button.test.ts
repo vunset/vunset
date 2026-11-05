@@ -12,7 +12,7 @@ function mountButton(props: Record<string, any> = {}, attrs: Record<string, any>
   });
 }
 
-/** Stands in for RouterLink: a component that renders an anchor from `to`. */
+// Stands in for RouterLink.
 const RouterLinkStub = defineComponent({
   name: 'RouterLinkStub',
   props: { to: { type: String, required: true } },
@@ -21,22 +21,11 @@ const RouterLinkStub = defineComponent({
   },
 });
 
-/**
- * Through the wrapper rather than `dispatchEvent`. Vue ignores an event older
- * than the listener it would run, and a hand-built event dispatched right after
- * a mount trips that guard often enough to make a suite flaky — which reads as
- * a handler that was never wired rather than as a timing artifact.
- */
+// Through the wrapper: Vue ignores an event older than its listener, which a hand-built event right after mount trips.
 const click = (wrapper: { trigger: (event: string, options?: object) => Promise<void> }) =>
   wrapper.trigger('click');
 
-/**
- * Counts clicks with a listener of the test's own rather than through Vue's.
- * Keyboard activation dispatches a click the component builds itself, and Vue
- * skips an invoker whose attachment looks newer than the event — true of a
- * synthesized event under jsdom's coarser clock often enough to make the suite
- * flaky. A plain DOM listener has no such guard, and it is the same click.
- */
+// A plain DOM listener: Vue skips an invoker that looks newer than a synthesized click under jsdom's coarse clock.
 function countClicks(element: Element) {
   let clicks = 0;
   element.addEventListener('click', () => {
@@ -58,7 +47,6 @@ describe('Button', () => {
       expect(w.element.tagName).toBe('BUTTON');
       expect(w.attributes('type')).toBe('button');
       expect(w.attributes('data-part')).toBe('button');
-      // No look decided for the caller.
       expect(w.attributes('data-size')).toBeUndefined();
       expect(w.attributes('data-variant')).toBeUndefined();
     });
@@ -69,8 +57,6 @@ describe('Button', () => {
     });
 
     it('adds no role, tabindex or aria-disabled it does not need', async () => {
-      // A native button arrives with all three; restating them would only be
-      // more to keep in sync.
       const w = mountButton();
       expect(w.attributes('role')).toBeUndefined();
       expect(w.attributes('tabindex')).toBeUndefined();
@@ -84,8 +70,6 @@ describe('Button', () => {
     });
 
     it('keeps a disabled button focusable when asked, announced as disabled', async () => {
-      // What a toolbar wants: arrowing across it should not skip the controls
-      // that happen to be off.
       const w = mountButton({ disabled: true, focusableWhenDisabled: true });
       expect(w.attributes('disabled')).toBeUndefined();
       expect(w.attributes('aria-disabled')).toBe('true');
@@ -98,7 +82,6 @@ describe('Button', () => {
       expect(w.element.tagName).toBe('DIV');
       expect(w.attributes('role')).toBe('button');
       expect(w.attributes('tabindex')).toBe('0');
-      // `type` is a button attribute; on anything else it means something else.
       expect(w.attributes('type')).toBeUndefined();
     });
 
@@ -124,8 +107,7 @@ describe('Button', () => {
     it('holds the page still while Space is down', async () => {
       const w = mountButton({ as: 'div' });
 
-      // Read from a listener of our own, which runs after the component's:
-      // the wrapper does not hand the event back.
+      // A listener of our own, which runs after the component's: the wrapper doesn't hand the event back.
       let prevented: boolean | null = null;
       w.element.addEventListener('keydown', (event: Event) => {
         prevented = event.defaultPrevented;
@@ -157,7 +139,6 @@ describe('Button', () => {
       const w = mountButton({ as: 'a' }, { href: '/pricing' });
       expect(w.element.tagName).toBe('A');
       expect(w.attributes('href')).toBe('/pricing');
-      // It goes somewhere, which is worth announcing, and Enter already works.
       expect(w.attributes('role')).toBeUndefined();
       expect(w.attributes('type')).toBeUndefined();
       expect(w.attributes('tabindex')).toBeUndefined();
@@ -174,15 +155,12 @@ describe('Button', () => {
       expect(w.element.tagName).toBe('A');
       expect(w.attributes('href')).toBe('/settings');
       expect(w.attributes('data-router-link')).toBeDefined();
-      // Still a button as far as the stylesheet is concerned.
       expect(w.attributes('data-variant')).toBe('ghost');
       expect(w.attributes('role')).toBeUndefined();
     });
 
     it('stops being a link when disabled', async () => {
-      // A routing component binds its own click handler inside itself, where
-      // preventing the event is not guaranteed to get there first. The only
-      // version of disabled that cannot be clicked through is not rendering it.
+      // A routing component handles its own click first, so not rendering it is the only disabled that can't be clicked through.
       const w = mount(Button as any, {
         props: { as: RouterLinkStub, disabled: true },
         attrs: { to: '/settings' },
@@ -205,8 +183,7 @@ describe('Button', () => {
 
   describe('disabled', () => {
     it('swallows the click before the caller’s own handler runs', async () => {
-      // `mergeProps` runs the caller's handler first everywhere else, which
-      // would let a disabled control still do its job.
+      // `mergeProps` runs the caller's handler first elsewhere, which would let a disabled control still act.
       const onClick = vi.fn();
       const w = mountButton({ as: 'div', disabled: true }, { onClick });
 

@@ -14,18 +14,12 @@ export interface ChartSeries {
 export interface ChartContext {
   categories: ComputedRef<string[]>;
   colors: ComputedRef<string[]>;
-  /** What each category is called, where the chart names them. */
   labels?: ComputedRef<string[]>;
-  /** The categories currently not drawn. */
   hidden: ComputedRef<string[]>;
   setHidden: (hidden: string[]) => void;
 }
 
-/**
- * Lets a `ChartLegend` nested in a chart drive it without being handed the
- * categories twice. Optional at the reader: a legend placed beside a chart
- * rather than inside one takes its own props instead.
- */
+// Optional at the reader: a legend beside a chart rather than inside one takes its own props.
 export const {
   provideContext: provideChartContext,
   useContext: useChartContext,
@@ -35,12 +29,10 @@ export const {
 export interface UseChartSeriesOptions {
   categories: () => string[];
   colors: () => string[] | undefined;
-  /** How many palette colors the default cycles through. */
   paletteSize?: () => number | undefined;
   labels?: () => string[];
-  /** Supplying this makes the hidden list controlled. */
   hidden: () => string[] | undefined;
-  /** The prop `hidden` comes from, controlled while bound even if `undefined`. */
+  /** Controlled while bound, even if `undefined`. */
   prop?: string;
   onHiddenChange: (hidden: string[]) => void;
 }
@@ -48,19 +40,11 @@ export interface UseChartSeriesOptions {
 export interface UseChartSeriesReturn {
   colors: ComputedRef<string[]>;
   hidden: ComputedRef<string[]>;
-  /** What to draw, in order, each keeping its original color. */
   visible: ComputedRef<ChartSeries[]>;
   toggle: (category: string) => void;
 }
 
-/**
- * The categories a chart draws, and which of them are switched off.
- *
- * Hiding removes a series rather than zeroing it, so a hidden band leaves no
- * flat line along the axis and the remaining ones keep the colors they had —
- * the color is keyed on a category's position in the full list, not in what
- * happens to be showing.
- */
+// Hiding removes a series rather than zeroing it, and colors stay keyed on the full list.
 export function useChartSeries(options: UseChartSeriesOptions): UseChartSeriesReturn {
   const colors = computed(
     () => options.colors() ?? chartColors(options.categories().length, undefined, undefined, options.paletteSize?.())

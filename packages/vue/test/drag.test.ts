@@ -7,14 +7,10 @@ const ITEM = 40;
 const GAP = 8;
 const COLUMNS = 3;
 
-/**
- * jsdom has no layout, and `test/setup.ts` gives every element the same box.
- * Each item gets one of its own here: a vertical stack, 40px tall, 8px apart.
- */
+// `test/setup.ts` gives every element one box; here each item gets its own: 40px tall, 8px apart.
 function lay(wrapper: VueWrapper<any>, orientation = 'vertical') {
   wrapper.findAll('[data-part="drag-item"]').forEach((node, index) => {
     const offset = index * (ITEM + GAP);
-    // A grid: three to a row, the rows wrapping.
     const column = (index % COLUMNS) * (ITEM + GAP);
     const row = Math.floor(index / COLUMNS) * (ITEM + GAP);
     const rect =
@@ -126,7 +122,6 @@ describe('DragRoot with a pointer', () => {
     await drag(item(wrapper, 'a').element, 60, { release: false });
 
     expect(item(wrapper, 'a').attributes('style')).toContain('translate3d(0, 60px, 0)');
-    // b slides up into a's slot: a's height plus the gap.
     expect(item(wrapper, 'b').attributes('style')).toContain(`translate3d(0, -${ITEM + GAP}px, 0)`);
     expect(item(wrapper, 'c').attributes('style') ?? '').not.toContain('translate3d');
     expect(item(wrapper, 'a').attributes('data-dragging')).toBe('');
@@ -183,7 +178,6 @@ describe('DragRoot with a pointer', () => {
     item(wrapper, 'a').element.addEventListener('click', () => (clicks += 1));
 
     await drag(item(wrapper, 'a').element, 60);
-    // The click lands on the element the drag was released over.
     item(wrapper, 'a').element.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 
     expect(clicks).toBe(0);
@@ -308,12 +302,7 @@ describe('DragRoot with the keyboard', () => {
     a.focus();
     await key(item(wrapper, 'a'), ' ');
 
-    /*
-      A browser can drop focus from a node the DOM moves; jsdom does not. So the
-      blur is made by hand, at the moment the move happens — inside Vue's patch,
-      when the item's listeners already know its new position. Earlier than that
-      it would test nothing.
-    */
+    // jsdom keeps focus on a moved node, so the blur is made by hand inside Vue's patch, where it tests something.
     const observer = new MutationObserver(() => {
       observer.disconnect();
       a.blur();
@@ -429,7 +418,6 @@ describe('DragRoot as a grid', () => {
   it('drops an item in the slot nearest its center, across and down at once', async () => {
     const { wrapper, list } = mountGrid();
 
-    // a, one column right and one row down, lands on e's slot.
     await dragTo(item(wrapper, 'a').element, STEP, STEP);
 
     expect(list.value).toEqual(['b', 'c', 'd', 'e', 'a', 'f', 'g']);
@@ -438,7 +426,6 @@ describe('DragRoot as a grid', () => {
   it('moves an item back up the grid', async () => {
     const { wrapper, list } = mountGrid();
 
-    // g, two rows up, lands on a's slot.
     await dragTo(item(wrapper, 'g').element, 0, -2 * STEP);
 
     expect(list.value).toEqual(['g', 'a', 'b', 'c', 'd', 'e', 'f']);
@@ -457,12 +444,9 @@ describe('DragRoot as a grid', () => {
 
     await dragTo(item(wrapper, 'a').element, STEP, STEP, false);
 
-    // b and c step one place back along their row…
     expect(item(wrapper, 'b').attributes('style')).toContain(`translate3d(-${STEP}px, 0px, 0)`);
-    // …d, first on its row, goes up to the end of the row above…
     expect(item(wrapper, 'd').attributes('style')).toContain(`translate3d(${2 * STEP}px, -${STEP}px, 0)`);
     expect(item(wrapper, 'e').attributes('style')).toContain(`translate3d(-${STEP}px, 0px, 0)`);
-    // …and past the landing slot nothing moves.
     expect(item(wrapper, 'f').attributes('style') ?? '').not.toContain('translate3d');
   });
 
@@ -514,7 +498,6 @@ describe('DragRoot as a grid', () => {
       await key(item(wrapper, 'f'), 'ArrowDown');
       expect(list.value.at(-1)).toBe('f');
 
-      // Already on the last row: down does nothing.
       lay(wrapper, 'grid');
       await key(item(wrapper, 'f'), 'ArrowDown');
       expect(list.value.at(-1)).toBe('f');

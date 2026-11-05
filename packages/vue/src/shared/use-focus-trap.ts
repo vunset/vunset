@@ -2,9 +2,7 @@ import { toValue, watch, onScopeDispose, nextTick, type MaybeRefOrGetter, type R
 import { getTabbableElements, focusFirst } from './focus';
 
 export interface UseFocusTrapOptions {
-  /** Whether the trap is active. */
   enabled: MaybeRefOrGetter<boolean>;
-  /** The element to keep focus within. */
   container: Ref<HTMLElement | null>;
   /** Cycle Tab within the container rather than letting it escape. */
   modal?: MaybeRefOrGetter<boolean>;

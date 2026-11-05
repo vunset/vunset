@@ -13,8 +13,6 @@ import {
 } from '@vunset/vue/chart';
 import { APP_CHART_DEFAULTS, type AppChartProps } from './app-chart';
 
-// What the three cartesian charts share: the root, the legend, axes, grid and
-// tooltip around the series each one draws in its slot.
 defineOptions({ name: 'AppChartFrame' });
 
 const hiddenBound = isPropBound('hidden');

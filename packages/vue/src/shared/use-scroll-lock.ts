@@ -1,9 +1,6 @@
 import { toValue, watch, onScopeDispose, type MaybeRefOrGetter } from 'vue';
 
-/**
- * Locks are counted rather than boolean. A dialog opening a second dialog must
- * not have the inner one's close restore scrolling while the outer is still up.
- */
+// Counted, so an inner dialog closing does not unlock while the outer one is up.
 let lockCount = 0;
 let restore: (() => void) | null = null;
 
@@ -39,9 +36,7 @@ function applyLock(): () => void {
   // `<html>` (even `overflow-x: clip`) makes the body's own setting moot.
   documentElement.style.overflow = 'clip';
 
-  // iOS Safari ignores `overflow: hidden` on the body, so the page scrolls
-  // behind the dialog anyway. Pinning the body in place is the only thing that
-  // holds, at the cost of having to restore the scroll position by hand.
+  // iOS Safari ignores `overflow: hidden` on the body, so the body is pinned and the scroll restored by hand.
   const scrollY = window.scrollY;
 
   if (isIos()) {

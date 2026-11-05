@@ -1,7 +1,5 @@
 <script lang="ts">
-// Each pattern: which keyframes its dots run, for how long, and when each of
-// the 25 starts, row by row; `null` sits a dot out, dimmer, so a shape reads.
-// The delays sit on the dots themselves, so the stylesheet holds only the keyframes.
+// Delays for the 25 dots, row by row; `null` sits a dot out, dimmer, so a shape reads.
 interface Pattern {
   keyframes: 'pulse' | 'blink' | 'wave' | 'dna' | 'beat';
   duration: number;
@@ -70,8 +68,7 @@ const PATTERNS = {
       1.4, 1.68, 0.98, 0.91, 1.33, 0
     ]
   },
-  // Each row a beat behind the one above; which column lights follows the
-  // animated `--app-dot-matrix-t`, in the stylesheet.
+  // Each row a beat behind the one above; the lit column follows `--app-dot-matrix-t` in the stylesheet.
   dna: {
     keyframes: 'dna',
     duration: 1,

@@ -26,20 +26,11 @@ import { watch } from 'vue';
 import { elementOf } from '../../shared/element-of';
 
 export interface PopoverState {
-  /**
-   * Whether the popover is open.
-   * @attribute `data-open` while open, `data-closed` otherwise
-   */
+  /** Whether the popover is open. @attribute `data-open` while open, `data-closed` otherwise */
   open: boolean;
-  /**
-   * The side of the trigger the popover ended up on.
-   * @attribute `data-side="…"`
-   */
+  /** The side of the trigger the popover ended up on. @attribute `data-side="…"` */
   side: Side;
-  /**
-   * How the popover lines up along that side.
-   * @attribute `data-align="…"`
-   */
+  /** How the popover lines up along that side. @attribute `data-align="…"` */
   align: Align;
   /**
    * Where the popover is in its enter or exit animation.
@@ -51,19 +42,14 @@ export interface PopoverState {
 export interface UsePopoverOptions extends UsePositioningOptions {
   open?: MaybeRefOrGetter<boolean | undefined>;
   defaultOpen?: MaybeRefOrGetter<boolean | undefined>;
-  /** `true` also locks scroll and makes the page inert; `'trap-focus'` only traps focus. */
   modal?: MaybeRefOrGetter<boolean | 'trap-focus' | undefined>;
-  /** Close when Escape is pressed. */
   escapeKey?: MaybeRefOrGetter<boolean | undefined>;
-  /** Close on a press outside the popup. */
   outsidePress?: MaybeRefOrGetter<boolean | undefined>;
-  /** Move focus into the popup when it opens. */
   autoFocus?: MaybeRefOrGetter<boolean | undefined>;
-  /** Also open while a mouse rests on the trigger, staying open while it is on the popup. A tap still opens it. */
   openOnHover?: MaybeRefOrGetter<boolean | undefined>;
-  /** With `openOnHover`: how long the mouse rests on the trigger before it opens, in milliseconds. @default 200 */
+  /** In milliseconds. @default 200 */
   delay?: MaybeRefOrGetter<number | undefined>;
-  /** With `openOnHover`: how long after the mouse leaves before it closes, time to cross to the popup. @default 150 */
+  /** In milliseconds. @default 150 */
   closeDelay?: MaybeRefOrGetter<number | undefined>;
   onChange?: (open: boolean) => void;
 }

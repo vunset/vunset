@@ -285,8 +285,6 @@ function reorder(f: number, t: number): void {
   emit('change', { value: value as T, from: f, to: t });
 }
 
-// --- keyboard --------------------------------------------------------------
-
 const grabbed = ref<number | null>(null);
 let original: T[] = [];
 let moving = false;

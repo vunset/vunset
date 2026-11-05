@@ -6,7 +6,7 @@ import {
   DrawerRoot, DrawerTrigger, Portal, DrawerBackdrop, Popup, DrawerHandle, DrawerTitle,
 } from '../src';
 
-/** Drawer size along its axis, via the stubbed layout. 0.4 threshold -> 80px. */
+// 0.4 threshold of the stubbed size -> 80px.
 const SIZE = 200;
 
 function mountDrawer(props: Record<string, any> = {}) {
@@ -40,7 +40,6 @@ function mountDrawer(props: Record<string, any> = {}) {
 
 const popup = () => document.querySelector<HTMLElement>('[role="dialog"]');
 
-/** Signed pixels from the drawer's inline transform, whichever axis it uses. */
 function translate(el: HTMLElement): number {
   const match = /translate[XY]\((-?[\d.]+)px\)/.exec(el.style.transform);
   return match ? Number.parseFloat(match[1]) : 0;
@@ -71,15 +70,10 @@ function pointer(
 interface SwipeOptions {
   axis?: 'x' | 'y';
   release?: boolean;
-  /**
-   * How long the drag takes. Drives the velocity, and so whether a release
-   * counts as a flick. Deliberate by default: dispatching events back-to-back
-   * would otherwise imply a speed no hand could produce.
-   */
+  /** Spread out by default: back-to-back events would read as a flick. */
   durationMs?: number;
 }
 
-/** Drags the handle, or another element, by `distance` along the drawer's axis and releases. */
 async function swipe(distance: number, options: SwipeOptions & { from?: HTMLElement } = {}) {
   const { axis = 'y', release = true, durationMs = 400, from = handle() } = options;
   const at = (d: number) => (axis === 'y' ? { y: d } : { x: d });
@@ -136,7 +130,6 @@ describe('Drawer', () => {
       await settle();
       await swipe(SIZE * 0.1);
       expect(popup()).not.toBeNull();
-      // Offset cleared, so the drawer sits flush again.
       expect(popup()!.style.transform).toBe('');
     });
 
@@ -161,7 +154,6 @@ describe('Drawer', () => {
       await swipe(-100, { release: false });
 
       const pulled = Math.abs(translate(popup()!));
-      // It moves, so the gesture is acknowledged, but nowhere near one-to-one.
       expect(pulled).toBeGreaterThan(0);
       expect(pulled).toBeLessThan(100);
     });
@@ -172,8 +164,6 @@ describe('Drawer', () => {
       await swipe(-4000, { release: false });
 
       const pulled = Math.abs(translate(popup()!));
-      // Bounded, yet still close to the limit rather than collapsing to nothing,
-      // so a long drag stays responsive right up to the stop.
       expect(pulled).toBeLessThanOrEqual(48);
       expect(pulled).toBeGreaterThan(40);
     });
@@ -183,8 +173,6 @@ describe('Drawer', () => {
       await settle();
       await swipe(-4, { release: false });
 
-      // Near one-to-one at the start: resistance that bites immediately reads as
-      // a stuck surface rather than an elastic one.
       expect(Math.abs(translate(popup()!))).toBeGreaterThan(3);
     });
 
@@ -205,7 +193,6 @@ describe('Drawer', () => {
     it('dismisses a short but fast flick', async () => {
       mountDrawer({ defaultOpen: true });
       await settle();
-      // Well short of the 80px threshold, but thrown at 1.2 px/ms.
       await swipe(60, { durationMs: 50 });
       expect(popup()).toBeNull();
     });
@@ -213,7 +200,6 @@ describe('Drawer', () => {
     it('ignores a fast twitch that barely moves', async () => {
       mountDrawer({ defaultOpen: true });
       await settle();
-      // Same speed, but only a few pixels — a finger resting unsteadily.
       await swipe(6, { durationMs: 5 });
       expect(popup()).not.toBeNull();
     });
@@ -221,7 +207,6 @@ describe('Drawer', () => {
     it('respects a custom threshold', async () => {
       mountDrawer({ defaultOpen: true, dismissThreshold: 0.9 });
       await settle();
-      // Past the default 0.4 but short of 0.9.
       await swipe(SIZE * 0.5);
       expect(popup()).not.toBeNull();
     });
@@ -251,7 +236,6 @@ describe('Drawer', () => {
       button.dispatchEvent(pointer('pointerdown'));
       button.dispatchEvent(pointer('pointermove', { y: 2 }));
       await nextTick();
-      // Under the slop: no drag yet, so nothing has taken the pointer.
       expect(popup()!.hasAttribute('data-dragging')).toBe(false);
       button.dispatchEvent(pointer('pointerup', { y: 2 }));
       await settle();

@@ -15,8 +15,7 @@ export function readPage(srcDir: string, relativePath: string): string {
 
 const LIMIT = 160;
 
-// The paragraph under the `# Title`, as plain text, cut at a sentence to fit a
-// search snippet. Empty when the page opens with anything but prose.
+// The paragraph under `# Title`, cut at a sentence to fit a search snippet; empty unless the page opens with prose.
 export function describe(src: string): string {
   const lines = src.split('\n');
   const fenced = fences(lines);

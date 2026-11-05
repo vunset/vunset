@@ -16,10 +16,7 @@ const props = withDefaults(
 );
 
 defineSlots<{
-  /**
-   * The panel's state.
-   * @slotOnly The element carries its own edge or corner as `data-handle="…"`.
-   */
+  /** The panel's state. @slotOnly The element carries its own edge or corner as `data-handle="…"`. */
   default(props: FloatingState): unknown;
 }>();
 

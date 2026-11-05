@@ -14,10 +14,7 @@ const props = withDefaults(
 );
 
 defineSlots<{
-  /**
-   * The panel's state.
-   * @slotOnly
-   */
+  /** The panel's state. @slotOnly */
   default(props: FloatingState): unknown;
 }>();
 

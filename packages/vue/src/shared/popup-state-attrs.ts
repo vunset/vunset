@@ -1,13 +1,7 @@
 import type { DataAttrsMapping } from './data-attrs';
 import type { TransitionStatus } from './use-transition-status';
 
-/**
- * The `data-*` mapping every dismissable surface shares.
- *
- * `open` is emitted in both positions so CSS needs no `:not()` selector, and the
- * transition phases become the "from" hooks an enter or exit animation needs.
- * `idle` deliberately emits nothing — it is the resting state, not a phase.
- */
+// `open` emits both ways so CSS needs no `:not()`; `idle` emits nothing, being the resting state.
 export const popupStateAttrs = {
   open: (value: boolean) => (value ? { 'data-open': '' } : { 'data-closed': '' }),
   transitionStatus: (value: TransitionStatus) => {

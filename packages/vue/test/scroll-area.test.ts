@@ -3,11 +3,7 @@ import { mount } from '@vue/test-utils';
 import { h, nextTick } from 'vue';
 import { ScrollArea } from '../src';
 
-/**
- * jsdom performs no layout: every element reports a zero box and never scrolls.
- * Overriding the geometry on the one element under test gives the composable
- * plausible numbers to read, and a handle for the test to scroll it by.
- */
+// jsdom has no layout: this gives the one element under test plausible geometry and a way to scroll it.
 interface Geometry {
   clientWidth: number;
   clientHeight: number;
@@ -41,11 +37,7 @@ function fakeGeometry(element: HTMLElement, initial: Partial<Geometry> = {}): Ge
   return geometry;
 }
 
-/**
- * The stub in `test/setup.ts` never calls back, which would leave every resize
- * path untested. This one records its instances so a test can deliver the
- * notification itself.
- */
+// The `test/setup.ts` stub never calls back; this one records instances so a test can deliver resizes.
 class FakeResizeObserver {
   static instances: FakeResizeObserver[] = [];
 
@@ -84,7 +76,6 @@ afterEach(() => {
   globalThis.ResizeObserver = originalResizeObserver;
 });
 
-/** Delivers a resize to every live observer, as a browser would. */
 async function resize() {
   for (const observer of FakeResizeObserver.instances) {
     observer.fire();
@@ -102,11 +93,10 @@ function mountScrollArea(props: Record<string, any> = {}, slots?: any) {
 
 const viewport = (w: any) => w.element as HTMLElement;
 const attrs = (w: any) => w.attributes();
-/** Everything `defineExpose` hands back, untyped through the `any` mount. */
 const api = (w: any) => w.vm as any;
 const cssVar = (w: any, name: string) => viewport(w).style.getPropertyValue(name);
 
-/** A 200×100 viewport holding 200×400 of content: vertical overflow only. */
+// A 200×100 viewport holding 200×400 of content: vertical overflow only.
 function tallContent(w: any) {
   return fakeGeometry(viewport(w), {
     clientWidth: 200,
@@ -133,8 +123,7 @@ describe('ScrollArea', () => {
     });
 
     it('clips the axis it was told not to scroll', () => {
-      // The overflow it writes is an inline style, which a stylesheet cannot
-      // outrank — so a one-way strip needs the prop rather than a class.
+      // The overflow is an inline style a stylesheet can't outrank, so a one-way strip needs the prop.
       const w = mountScrollArea({ axis: 'x' });
       expect(viewport(w).style.overflowX).toBe('auto');
       expect(viewport(w).style.overflowY).toBe('hidden');
@@ -176,7 +165,6 @@ describe('ScrollArea', () => {
       const geometry = tallContent(w);
       await resize();
 
-      // Pinned to the top: everything is below, nothing above.
       expect(attrs(w)).toHaveProperty('data-overflow-y-end');
       expect(attrs(w)).not.toHaveProperty('data-overflow-y-start');
 
@@ -190,8 +178,7 @@ describe('ScrollArea', () => {
     });
 
     it('treats a sub-pixel gap as having reached the edge', async () => {
-      // Fractional layout and browser zoom leave the last fraction of a pixel
-      // unscrolled; without the tolerance the end fade would never go away.
+      // Zoom leaves a fraction of a pixel unscrolled; without the tolerance the end fade never goes away.
       const w = mountScrollArea();
       const geometry = tallContent(w);
       await resize();
@@ -234,7 +221,6 @@ describe('ScrollArea', () => {
       await scrollTo(w, geometry, { scrollTop: 12 });
       expect(attrs(w)).not.toHaveProperty('data-overflow-y-start');
 
-      // Exactly at the threshold still counts as sitting at the edge.
       await scrollTo(w, geometry, { scrollTop: 20 });
       expect(attrs(w)).not.toHaveProperty('data-overflow-y-start');
 
@@ -270,8 +256,7 @@ describe('ScrollArea', () => {
     });
 
     it('publishes zeroes on an axis with nothing to scroll', async () => {
-      // The fade formula reads all four unconditionally; a missing variable
-      // would invalidate the whole `min()` and drop the mask entirely.
+      // A missing variable would invalidate the whole `min()` and drop the mask.
       const w = mountScrollArea();
       tallContent(w);
       await resize();
@@ -300,7 +285,6 @@ describe('ScrollArea', () => {
       const w = mountScrollArea({ fade: true });
       expect(mask(w)).toContain('to right');
       expect(mask(w)).toContain('to bottom');
-      // Added together, the two layers would keep everything and fade nothing.
       expect(api(w).rootProps.style.maskComposite).toBe('intersect');
     });
 
@@ -312,8 +296,6 @@ describe('ScrollArea', () => {
     });
 
     it('aims the horizontal fade at the start edge, wherever that is', async () => {
-      // The variables are logical: `x-start` is the right-hand side in RTL, so
-      // a gradient fixed to `to right` would fade the wrong end of the row.
       const w = mount(ScrollArea as any, {
         props: { fade: 'x' },
         attrs: { style: 'direction: rtl' },
@@ -356,8 +338,7 @@ describe('ScrollArea', () => {
 
   describe('measuring', () => {
     it('watches the content, not just the viewport', async () => {
-      // The viewport's own box never changes when what is inside it grows, so
-      // observing only the viewport would miss every content change.
+      // The viewport's box doesn't change when its content grows, so observing only it misses content changes.
       const w = mountScrollArea();
       const observer = FakeResizeObserver.instances.at(-1)!;
 
@@ -393,8 +374,6 @@ describe('ScrollArea', () => {
       await resize();
       expect(attrs(w)).not.toHaveProperty('data-has-overflow-y');
 
-      // A web font landing changes the scrollable height without resizing
-      // anything the observer holds.
       Object.assign(geometry, { scrollHeight: 400 });
       api(w).measure();
       await nextTick();

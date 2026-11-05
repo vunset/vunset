@@ -4,14 +4,12 @@ import * as index from '../src';
 import * as chart from '../src/chart';
 import * as dataTable from '../src/data-table';
 
-// The styling contract: every element a part renders carries `data-part`.
 // Every docs demo, and the open states in `ssr/`, is the fixture.
 const demos = {
   ...import.meta.glob<{ default: Component }>('../../../docs/.vitepress/demos/**/*.vue'),
   ...import.meta.glob<{ default: Component }>('./ssr/*.vue')
 };
 
-// Renders nothing of its own, or only what the app hands it.
 const EXEMPT = new Set<string>([
   'Portal', // a teleport
   'TooltipGroup', // renders only its slot

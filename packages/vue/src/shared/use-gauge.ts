@@ -45,30 +45,21 @@ export interface UseGaugeOptions {
   role: GaugeRole;
   /** `null` is indeterminate, which only a progress bar can be. */
   value?: MaybeRefOrGetter<number | null | undefined>;
-  /** @default 0 */
   min?: MaybeRefOrGetter<number | undefined>;
-  /** @default 100 */
   max?: MaybeRefOrGetter<number | undefined>;
   /** Passed to `Intl.NumberFormat`. Omit it and the number is used as-is. */
   format?: MaybeRefOrGetter<Intl.NumberFormatOptions | undefined>;
-  /** Defaults to the runtime's locale. */
   locale?: MaybeRefOrGetter<Intl.LocalesArgument | undefined>;
-  /**
-   * Replaces the text read out for the value. Receives the formatted value and
-   * the raw one — "3 of 7 steps" rather than "3".
-   */
+  /** Replaces the read-out text, e.g. "3 of 7 steps" rather than "3". */
   getValueText?: (formattedValue: string, value: number | null) => string;
 }
 
 export interface UseGaugeReturn {
   state: ComputedRef<GaugeState>;
-  /** Bind to the element that carries the role. */
   rootProps: ComputedRef<Record<string, unknown>>;
-  /** Bind to the groove the fill runs along. */
   trackProps: ComputedRef<Record<string, unknown>>;
   /** Bind to the fill itself. Draws from the variables, never from a width set here. */
   indicatorProps: ComputedRef<Record<string, unknown>>;
-  /** Bind to the visible readout. */
   valueProps: ComputedRef<Record<string, unknown>>;
   registerLabel: (id: string) => () => void;
 }

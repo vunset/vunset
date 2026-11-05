@@ -11,10 +11,7 @@ export interface PaginationState {
   page: number;
   /** How many pages there are. */
   totalPages: number;
-  /**
-   * Items per page.
-   * @attribute none
-   */
+  /** Items per page. @attribute none */
   perPage: number;
   /** Whether every page and arrow ignores interaction. */
   disabled: boolean;
@@ -159,10 +156,7 @@ const emit = defineEmits<{
 }>();
 
 defineSlots<{
-  /**
-   * The pagination's state, and the entries to render.
-   * @slotOnly The element carries only `data-disabled`.
-   */
+  /** The pagination's state, and the entries to render. @slotOnly The element carries only `data-disabled`. */
   default(
     props: PaginationState & {
       /** Pages and ellipses in order: `{ type: 'page', page }` or `{ type: 'ellipsis', side }`. */
@@ -173,7 +167,6 @@ defineSlots<{
   ): unknown;
 }>();
 
-// The URL, through the app's router, unless the caller binds the value itself.
 const routeQuery = inject(routeQueryKey, null);
 const writeQuery = routeQuery && batchRouteQuery(routeQuery);
 const queryKey = (name: 'page' | 'perPage') =>
@@ -270,8 +263,7 @@ const items = computed(() =>
 
 const linkTag = computed(() => props.link ?? (linked() ? defaultLink() : 'button'));
 
-// A link with nowhere to go is an `<a>` without `href`: an app's link component,
-// like `RouterLink`, can't render without its `to`.
+// A disabled link is a bare `<a>`: a link component like `RouterLink` can't render without `to`.
 const tagFor = (off: boolean) => (off && typeof linkTag.value !== 'string' ? 'a' : linkTag.value);
 const itemTag = computed(() => tagFor(disabled()));
 const prevTag = computed(() => tagFor(disabled() || state.value.first));

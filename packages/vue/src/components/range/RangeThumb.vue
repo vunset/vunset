@@ -29,15 +29,9 @@ const props = withDefaults(
 defineSlots<{
   default(
     props: RangeState & {
-      /**
-       * Which value this thumb controls.
-       * @attribute `data-index="…"`
-       */
+      /** Which value this thumb controls. @attribute `data-index="…"` */
       index: number;
-      /**
-       * The value it is at.
-       * @attribute none
-       */
+      /** The value it is at. @attribute none */
       value: number;
     }
   ): unknown;

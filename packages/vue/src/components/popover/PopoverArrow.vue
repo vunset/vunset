@@ -14,10 +14,7 @@ const props = withDefaults(
 );
 
 defineSlots<{
-  /**
-   * The popover's state.
-   * @slotOnly The element carries only `data-part="arrow"` and `data-side`.
-   */
+  /** The popover's state. @slotOnly The element carries only `data-part="arrow"` and `data-side`. */
   default(props: PopoverState): unknown;
 }>();
 

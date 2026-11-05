@@ -15,10 +15,7 @@ const props = withDefaults(
 );
 
 defineSlots<{
-  /**
-   * The popover's state.
-   * @slotOnly The element carries only `data-part="title"` and the id the popup is labeled by.
-   */
+  /** The popover's state. @slotOnly The element carries only `data-part="title"` and the id the popup is labeled by. */
   default(props: PopoverState): unknown;
 }>();
 

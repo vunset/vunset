@@ -6,9 +6,7 @@ import { sourceContainer, type SourceContainer } from './source-container.ts';
 import { section } from './sections.ts';
 
 export interface ApiOptions {
-  /** Where components live: `button/Button` is `<root>/button/Button.vue`. */
   root: string;
-  /** The same for pages under `ui/`: `form/FormInput` is `<uiRoot>/form/FormInput.vue`. */
   uiRoot: string;
   tsconfig: string;
 }
@@ -20,25 +18,18 @@ interface Row {
   type?: string;
   default?: string;
   required?: boolean;
-  /** Rendered HTML, under the type. */
   note?: string;
-  /** Markdown. */
   description?: string;
-  /** A slot's props, listed under it. */
   fields?: Row[];
 }
 
 interface Section {
   title: string;
-  /** Markdown, above the rows. */
   intro?: string;
   rows: Row[];
 }
 
-// `::: api button/Button` → the component's props (JSDoc, `withDefaults`), its
-// state as `data-*` attributes and slot props, its slots and events, read by
-// the same checker as vue-tsc. Each `###` part under `## API Reference` then
-// becomes an item of <ApiAccordion>.
+// `::: api button/Button` → props, state attributes, slots and events, read by vue-tsc's checker.
 export function apiContainer(md: MarkdownRenderer, options: ApiOptions) {
   sourceContainer(md, 'api', ({ arg, env }) => {
     const file = apiFile(options, arg, env.relativePath);
@@ -56,15 +47,12 @@ export function apiFile({ root, uiRoot }: ApiOptions, arg: string, relativePath 
   return join(relativePath.startsWith('ui/') ? uiRoot : root, `${arg}.vue`);
 }
 
-// one checker for the pages and their markdown copies (`llms.ts`). A build reads a
-// component once; dev reads it every time, as a type it imports may have changed.
-// Only the rows are kept: a component's full meta holds every type's schema.
+// Dev rereads a component every time, as a type it imports may have changed; only the rows are kept.
 let checker: ReturnType<typeof createChecker> | null = null;
 const read = new Map<string, { source: string; api: Api }>();
 
 export interface Api {
   sections: Section[];
-  /** The tag the part renders by default, when `as` defaults to one. */
   renders?: string;
 }
 
@@ -137,10 +125,8 @@ function sections(meta: ComponentMeta): Section[] {
   ].filter((section) => section.rows.length);
 }
 
-// A root renders `<slot v-bind="state" />` and `dataAttrs(state)` on its element,
-// so one list covers both. A state field whose attribute is mapped differently
-// says so with `@attribute` in its JSDoc (`@attribute none` when there is none);
-// `@slotOnly` says the part carries none of it, and its text what it carries instead.
+// State is both slot props and `data-*`: `@attribute` overrides a field's attribute (`none` for none),
+// `@slotOnly` says the part carries none of it.
 function state(slot: Slot | undefined): Section {
   if (!slot || isTemplate(slot)) return { title: 'State', rows: [] };
 
@@ -208,9 +194,7 @@ function render(md: MarkdownRenderer, { sections: all, renders }: Api, name: str
   const inline = (value: string | undefined) => md.renderInline(flatten(value));
   const esc = md.utils.escapeHtml;
 
-  // <ApiRow>: the name and the type always show, a click opens the rest. Text
-  // goes in `v-pre` elements, so a `{{` in a type isn't read as Vue; the head
-  // sits in a <button>, so it holds only spans.
+  // `v-pre`, so a `{{` in a type isn't read as Vue; the head sits in a <button>, so only spans.
   function renderRow(row: Row, nested = false): string[] {
     const badge = 'rounded px-1.5 py-0.5 font-mono text-xs/none';
     const meta =
@@ -261,9 +245,7 @@ function render(md: MarkdownRenderer, { sections: all, renders }: Api, name: str
   ].filter((line, index, lines) => line || index === 0 || index === lines.length - 1);
 }
 
-// `## API Reference` → <ApiAccordion>, an item per `###` part. Text before the
-// first `###` stays above it, unless it holds a part of its own (a page for a
-// single component), which then gets an item named after it.
+// `## API Reference` → <ApiAccordion>; text before the first `###` holding a part gets an item of its own.
 function parts(src: string): string {
   const lines = src.split('\n');
   const found = section(lines, 'API Reference');
@@ -327,8 +309,7 @@ function slotProps(slot: Slot | undefined): PropertyMeta[] {
   return typeof schema === 'object' && schema.kind === 'object' ? Object.values(schema.schema ?? {}) : [];
 }
 
-// `Size | undefined` → `'md' | 'sm' | 'lg' | string`: aliases expanded,
-// `undefined` dropped (optional already says it), `string & {}` read as `string`.
+// Aliases expanded, `undefined` dropped (optional says it), `string & {}` read as `string`.
 function type(schema: PropertyMetaSchema): string {
   if (typeof schema === 'string') return clean(schema);
   if (schema.kind !== 'enum') return clean(schema.type);
@@ -355,9 +336,7 @@ function clean(type: string): string {
 function defaultOf(prop: ComponentMeta['props'][number]): string {
   const tagged = prop.tags.find((tag) => tag.name === 'default')?.text;
   const value = prop.default ?? tagged;
-  // `withDefaults({ open: undefined })` keeps a prop unset on purpose (controlled-only,
-  // or a default that depends on others), so it has no default to show, not even
-  // `false`, unless a `@default` tag says what the code falls back to
+  // `withDefaults({ open: undefined })` leaves a prop unset on purpose: no default shown unless a `@default` tag says
   if (prop.default === 'undefined') return tagged !== undefined ? clean(tagged) : '';
   if (value !== undefined) return clean(value);
   // Vue casts an absent boolean prop to false

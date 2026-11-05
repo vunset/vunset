@@ -12,12 +12,7 @@ import {
 } from '../src';
 import { setLayout } from './layout';
 
-/**
- * jsdom performs no layout, and `test/setup.ts` reports one box for every
- * element. Placing that box where the panel's own default anchor puts it keeps
- * the measured rect and the applied transform telling the same story, which is
- * what a real browser would do anyway.
- */
+// `test/setup.ts` reports one box for every element; placing it at the default anchor keeps rect and transform consistent.
 beforeEach(() => {
   setLayout({ x: 100, y: 100, width: 120, height: 32 });
 });
@@ -36,8 +31,7 @@ function mountFloating(props: Record<string, any> = {}, slots: { title?: boolean
     setup() {
       return () =>
         h(FloatingRoot as any, { defaultOpen: true, ...props }, {
-          // `disabled` keeps it in place rather than teleporting it out of the
-          // wrapper; the presence gate is what matters here, and that is Portal's.
+          // `disabled` keeps it in the wrapper; the presence gate under test is Portal's.
           default: ({ handles }: any) =>
             h(Portal as any, { disabled: true }, () =>
             h(Popup as any, { class: 'panel' }, {
@@ -80,10 +74,7 @@ function style(wrapper: VueWrapper<any>) {
   };
 }
 
-/**
- * Dispatched rather than triggered: `@vue/test-utils` assigns unknown options
- * onto the event after constructing it, and `button` is read-only.
- */
+// Dispatched, not triggered: test-utils assigns options after construction, and `button` is read-only.
 function pointer(type: string, x = 0, y = 0, button = 0) {
   return new PointerEvent(type, {
     bubbles: true,
@@ -94,7 +85,6 @@ function pointer(type: string, x = 0, y = 0, button = 0) {
   } as PointerEventInit);
 }
 
-/** A whole press, from the pointer going down to it coming back up. */
 async function pull(target: DOMWrapper<Element>, dx: number, dy: number) {
   target.element.dispatchEvent(pointer('pointerdown'));
   await nextTick();
@@ -106,7 +96,7 @@ async function pull(target: DOMWrapper<Element>, dx: number, dy: number) {
   await nextTick();
 }
 
-/** The exit waits a frame before asking what is animating; this gets past it. */
+// The exit waits a frame before asking what is animating.
 async function settle() {
   for (let i = 0; i < 3; i += 1) {
     await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
@@ -259,7 +249,6 @@ describe('resizing', () => {
 
     await pull(grip(wrapper, 'w'), -40, 0);
 
-    // The right edge was at 220 and has to stay there.
     expect(style(wrapper).width).toBe('160px');
     expect(style(wrapper).left).toBe(60);
   });
@@ -332,14 +321,12 @@ describe('the viewport changing size', () => {
     const wrapper = mountFloating({ right: 20 });
     await nextTick();
 
-    // Dragging drops the anchors: the user has said where it goes.
     await pull(header(wrapper), 0, 0);
 
     setViewport(800, 768);
     window.dispatchEvent(new Event('resize'));
     await nextTick();
 
-    // The measured rect is still at 100, and 100 fits inside 800.
     expect(style(wrapper).left).toBe(100);
   });
 
@@ -390,8 +377,7 @@ describe('the title and the close button', () => {
 
     expect(id).toBeTruthy();
     expect(panel(wrapper).attributes('aria-labelledby')).toBe(id);
-    // A role that is allowed to carry a name: an element with none is `generic`,
-    // which ARIA forbids naming.
+    // An element with no role is `generic`, which ARIA forbids naming.
     expect(panel(wrapper).attributes('role')).toBe('dialog');
   });
 

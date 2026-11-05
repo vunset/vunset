@@ -33,7 +33,6 @@ describe('AppIcon', () => {
     expect(wrapper.find('path').exists()).toBe(false);
     wrapper.unmount();
 
-    // A component's own close button follows.
     wrapper = mount(AppDialog as any, { props: { open: true, title: 'T' }, attachTo: document.body });
     await flushPromises();
     expect(document.querySelector('.app-overlay-close svg rect')).not.toBeNull();

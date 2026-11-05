@@ -1,6 +1,4 @@
-// A table over a data model, drawn with the `Table*` parts. A subpath of its own
-// so that `@tanstack/vue-table`, an optional peer, is never resolved by an app
-// that renders none.
+// A subpath of its own, so an app without the optional `@tanstack/vue-table` peer never resolves it.
 export {
   default as DataTable,
   dataTableFeatures,

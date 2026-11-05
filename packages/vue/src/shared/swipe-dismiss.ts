@@ -1,12 +1,8 @@
-/** The release rules for everything dismissed with a swipe: drawer and toast. */
 
 /** How far, in pixels, a pull the wrong way can stretch at most. */
 const OVER_PULL_LIMIT = 48;
 
-/**
- * Rubber-banding for a pull the element cannot follow: it gives at first, then
- * stiffens towards {@link OVER_PULL_LIMIT}. Keeps the sign of `distance`.
- */
+/** Rubber-banding for a pull the element can't follow: gives, then stiffens towards {@link OVER_PULL_LIMIT}. */
 export function resist(distance: number): number {
   const pull = Math.abs(distance);
   return (Math.sign(distance) * pull * OVER_PULL_LIMIT) / (pull + OVER_PULL_LIMIT);

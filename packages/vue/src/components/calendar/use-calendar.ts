@@ -54,10 +54,7 @@ export type CalendarView = 'day' | 'month' | 'year';
 export type CalendarValue = Date | Date[] | null;
 export type CalendarValueInput = DateInput | DateInput[];
 
-/**
- * `v-model.iso` emits `YYYY-MM-DD` strings; `.safe` steps today back while UTC is still on yesterday;
- * `.optional` writes `undefined` once emptied.
- */
+/** `.iso` emits `YYYY-MM-DD`; `.safe` steps today back while UTC is on yesterday; `.optional` writes `undefined`. */
 export interface CalendarModelModifiers extends ModelModifiers {
   iso?: boolean;
   safe?: boolean;
@@ -73,30 +70,15 @@ export interface CalendarState {
   mode: CalendarSelectionMode;
   /** Which grid is showing: days, months or years. */
   view: CalendarView;
-  /**
-   * The month on screen, `0`–`11`.
-   * @attribute none
-   */
+  /** The month on screen, `0`–`11`. @attribute none */
   month: number;
-  /**
-   * The year on screen.
-   * @attribute none
-   */
+  /** The year on screen. @attribute none */
   year: number;
-  /**
-   * The month's name, in the calendar's locale.
-   * @attribute none
-   */
+  /** The month's name, in the calendar's locale. @attribute none */
   monthLabel: string;
-  /**
-   * The year, as written in the calendar's locale.
-   * @attribute none
-   */
+  /** The year, as written in the calendar's locale. @attribute none */
   yearLabel: string;
-  /**
-   * Every selected day, in order.
-   * @attribute none
-   */
+  /** Every selected day, in order. @attribute none */
   selected: Date[];
   /** Whether a range has its start picked and waits for its end. */
   selecting: boolean;
@@ -113,27 +95,15 @@ export interface CalendarState {
 }
 
 export interface CalendarDayState {
-  /**
-   * The day itself.
-   * @attribute none
-   */
+  /** The day itself. @attribute none */
   date: Date;
   /** Whether it is picked: a single day, either end of a range, or one of several. */
   selected: boolean;
-  /**
-   * Whether it starts the range.
-   * @attribute `data-range-start` while true
-   */
+  /** Whether it starts the range. @attribute `data-range-start` while true */
   rangeStart: boolean;
-  /**
-   * Whether it ends the range.
-   * @attribute `data-range-end` while true
-   */
+  /** Whether it ends the range. @attribute `data-range-end` while true */
   rangeEnd: boolean;
-  /**
-   * Whether it lies between the range's ends.
-   * @attribute `data-in-range` while true
-   */
+  /** Whether it lies between the range's ends. @attribute `data-in-range` while true */
   inRange: boolean;
   /** Whether it is in the range the pointer would make, while a range waits for its end. */
   preview: boolean;
@@ -150,15 +120,9 @@ export interface CalendarDayState {
 }
 
 export interface CalendarMonthState {
-  /**
-   * `0`–`11`.
-   * @attribute none
-   */
+  /** `0`–`11`. @attribute none */
   month: number;
-  /**
-   * Its name, in the calendar's locale.
-   * @attribute none
-   */
+  /** Its name, in the calendar's locale. @attribute none */
   label: string;
   /** Whether it is the month on screen. */
   selected: boolean;
@@ -171,10 +135,7 @@ export interface CalendarMonthState {
 }
 
 export interface CalendarYearState {
-  /**
-   * The year.
-   * @attribute none
-   */
+  /** The year. @attribute none */
   year: number;
   /** Whether it is the year on screen. */
   selected: boolean;
@@ -205,20 +166,11 @@ export type CalendarPresetGroup = 'base' | 'all';
 export type CalendarPresetsInput = (CalendarPresetInput | CalendarPresetGroup)[] | CalendarPresetGroup;
 
 export interface CalendarPresetItem {
-  /**
-   * Which preset it is.
-   * @attribute `data-value="…"`
-   */
+  /** Which preset it is. @attribute `data-value="…"` */
   key: string;
-  /**
-   * What it is called.
-   * @attribute none
-   */
+  /** What it is called. @attribute none */
   label: string;
-  /**
-   * The first and last day it selects.
-   * @attribute none
-   */
+  /** The first and last day it selects. @attribute none */
   range: [Date, Date];
   /** Whether it can't be applied: its days fall outside `min`/`max`, or it is a quarter yet to start. */
   disabled: boolean;
@@ -227,54 +179,32 @@ export interface CalendarPresetItem {
 export interface UseCalendarOptions {
   /** @default 'single' */
   mode?: MaybeRefOrGetter<CalendarSelectionMode | undefined>;
-  /** The selection. Supplying this makes the value controlled. */
   value?: MaybeRefOrGetter<CalendarValueInput | undefined>;
-  /** The selection while uncontrolled. */
   defaultValue?: MaybeRefOrGetter<CalendarValueInput | undefined>;
-  /** Which month opens, when nothing is selected to open on. */
   defaultMonth?: MaybeRefOrGetter<DateInput>;
-  /** Nothing before this day can be picked, and the arrows stop at it. */
   min?: MaybeRefOrGetter<DateInput>;
-  /** Nothing after this day can be picked. `new Date()` for "up to today". */
   max?: MaybeRefOrGetter<DateInput>;
-  /** Nothing after today can be picked; the earlier of the two with `max`. */
   maxToday?: MaybeRefOrGetter<boolean | undefined>;
-  /** Individual days to rule out. */
   disabledDates?: MaybeRefOrGetter<DateInput[] | undefined>;
-  /** Rules out days a list cannot express — every weekend, every holiday. */
   isDateDisabled?: (date: Date) => boolean;
-  /** `0` is Sunday. Defaults to the locale's. */
   firstDayOfWeek?: MaybeRefOrGetter<WeekDay | undefined>;
-  /**
-   * Always draw six rows, so the calendar does not change height between a
-   * 28-day February and a month that spills into a sixth week
-   *
-   * @default false
-   */
+  /** @default false */
   fixedWeeks?: MaybeRefOrGetter<boolean | undefined>;
-  /** Names the months and the weekdays. Defaults to the runtime's locale. */
   locale?: MaybeRefOrGetter<Intl.LocalesArgument>;
-  /** The presets offered: a list, or `base` / `all`. @default `base` */
+  /** @default `base` */
   presets?: MaybeRefOrGetter<CalendarPresetsInput | undefined>;
-  /** A preset key whose days are the starting value, used while the value is empty. */
   preset?: MaybeRefOrGetter<string | undefined>;
-  /** Whether the rolling presets — last 7 days, last 30 — end today or yesterday. @default false */
+  /** @default false */
   includeToday?: MaybeRefOrGetter<boolean | undefined>;
-  /** Everything is inert and announced as off. Also read from a surrounding field. */
+  /** These five also follow a surrounding field. */
   disabled?: MaybeRefOrGetter<boolean | undefined>;
-  /** Also read from a surrounding field. */
   readOnly?: MaybeRefOrGetter<boolean | undefined>;
-  /** Also read from a surrounding field. */
   required?: MaybeRefOrGetter<boolean | undefined>;
-  /** Also read from a surrounding field. */
   invalid?: MaybeRefOrGetter<boolean | undefined>;
-  /** The form field name the days are submitted under. Also read from a surrounding field. */
   name?: MaybeRefOrGetter<string | undefined>;
-  /** The id of a `<form>` to submit with. */
   form?: MaybeRefOrGetter<string | undefined>;
   /** Marks the day Tab reaches `autofocus`, so a popup that opens around it starts there. */
   autofocusDay?: MaybeRefOrGetter<boolean | undefined>;
-  /** Called whenever the selection changes. */
   onChange?: (value: CalendarValue) => void;
 }
 
@@ -311,9 +241,7 @@ export interface UseCalendarReturn {
 
   /** Picks a day, exactly as pressing it would. */
   select: (date: Date) => void;
-  /** Drops the selection. */
   clear: () => void;
-  /** Applies a preset by key. */
   applyPreset: (key: string) => void;
   /** Closes a range that has only one end onto that same day. */
   completeRange: () => void;
@@ -321,7 +249,7 @@ export interface UseCalendarReturn {
   /** Moves the month, year or year-page on screen, as the arrows do. */
   goto: (direction: 1 | -1) => void;
 
-  /** @internal Shared with the parts. */ isDayDisabled: (date: Date) => boolean;
+  /** @internal */ isDayDisabled: (date: Date) => boolean;
   /** @internal */ cursor: Ref<Date>;
 }
 
@@ -555,8 +483,7 @@ export function useCalendar(options: UseCalendarOptions = {}): UseCalendarReturn
 
   function focusCursor(): void {
     void nextTick(() => {
-      // Focus may have left by now (a pick that closed a datepicker); only follow it inside, or off the
-      // body where a re-rendered day dropped it.
+      // Focus may have left (a pick closed a datepicker): follow it only inside, or off a re-rendered day.
       const active = document.activeElement;
       if (!focusInsideGrid() && active !== document.body && active !== null) return;
 
@@ -1086,7 +1013,6 @@ function presetList(input: CalendarPresetsInput | undefined): CalendarPresetInpu
   });
 }
 
-/** The value as `v-model` writes it back, through its modifiers. */
 export function serializeCalendarValue(value: CalendarValue, modifiers: CalendarModelModifiers = {}): CalendarModelValue {
   const { iso, safe } = modifiers;
   if (!iso && !safe) return value;

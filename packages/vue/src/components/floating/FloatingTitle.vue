@@ -15,10 +15,7 @@ const props = withDefaults(
 );
 
 defineSlots<{
-  /**
-   * The panel's state.
-   * @slotOnly The element carries only the id the panel is labeled by.
-   */
+  /** The panel's state. @slotOnly The element carries only the id the panel is labeled by. */
   default(props: FloatingState): unknown;
 }>();
 

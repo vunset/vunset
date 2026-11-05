@@ -40,7 +40,7 @@ interface Chrome {
   createSlot?: (option: any) => any;
 }
 
-/** The parts, assembled the way a caller would. The Host re-emits. */
+// The Host re-emits so `wrapper.emitted()` reports what the root emitted.
 function mountCombobox(props: Record<string, any> = {}, chrome: Chrome = {}) {
   const Host = defineComponent({
     emits: ['update:modelValue', 'update:open', 'create'],
@@ -96,7 +96,6 @@ async function settle() {
   }
 }
 
-/** Typing, as the DOM reports it: the element's value first, then the event. */
 async function type(text: string) {
   const el = input();
   el.value = text;
@@ -119,7 +118,6 @@ describe('Combobox', () => {
       expect(input().getAttribute('role')).toBe('combobox');
       expect(input().getAttribute('aria-autocomplete')).toBe('list');
       expect(input().getAttribute('aria-expanded')).toBe('false');
-      // The wrapper is only an anchor and a box for the chips.
       expect(trigger().getAttribute('role')).toBeNull();
       expect(trigger().getAttribute('tabindex')).toBeNull();
     });
@@ -172,9 +170,7 @@ describe('Combobox', () => {
     });
 
     it('does not filter by the label it parks in the box', async () => {
-      // The single-value combobox shows the selection as text. Treating that
-      // text as a search would leave the list showing only what is already
-      // chosen, which is the classic combobox bug.
+      // The selection shows as text; treating it as a search would filter the list to what's already chosen.
       mountCombobox({ defaultValue: 'vue' });
       await nextTick();
       expect(input().value).toBe('Vue');
@@ -238,8 +234,6 @@ describe('Combobox', () => {
     });
 
     it('follows a value set from outside', async () => {
-      // Controlled from the page, with nothing touching the input: the text is
-      // a view of the value, not a second place the value lives.
       const value = ref<string | null>(null);
       const Host = defineComponent({
         setup: () => () =>
@@ -279,10 +273,7 @@ describe('Combobox', () => {
       await settle();
 
       expect(chips().map((el) => el.textContent!.replace(/[×\s]+/g, ''))).toEqual(['Svelte']);
-      // The label is its own element, so a stylesheet can truncate it without
-      // also truncating the remove button.
       expect(chips()[0].querySelector('[data-part="chip-label"]')!.textContent).toBe('Svelte');
-      // Emptied, not left holding "sve": the box is where the next one is typed.
       expect(input().value).toBe('');
       expect(w.emitted('update:modelValue')).toEqual([[['svelte']]]);
     });
@@ -317,7 +308,6 @@ describe('Combobox', () => {
       const { onUpdate, el } = mountChips({ remove: () => h(ComboboxChipRemove as any, { class: 'mine' }, () => 'x') });
       await nextTick();
       const remove = el.querySelector('[data-part="chip"] > .mine[data-part="chip-remove"]')!;
-      // The default chip around it is kept.
       expect(remove.previousElementSibling!.getAttribute('data-part')).toBe('chip-label');
       expect(remove.getAttribute('aria-label')).toBe('Remove Vue');
       expect(remove.textContent).toBe('x');
@@ -403,9 +393,6 @@ describe('Combobox', () => {
     });
 
     it('lets a press on the slot reach the input', async () => {
-      // The slot has no behavior of its own; the trigger focuses its input for
-      // any press that is not on something interactive, the way clicking the
-      // padding of a text field does.
       mountAdorned();
       document
         .querySelector('.flag')!
@@ -425,9 +412,7 @@ describe('Combobox', () => {
     it('offers the typed text as a last row', async () => {
       mountCombobox({ creatable: true });
       await type('Vu');
-      // "Vu" matches Vue and is not itself an option, so both rows are there —
-      // and the create row has to come after the match, or arrowing to the
-      // first result would land on the invented one.
+      // The create row comes after the match, or arrowing to the first result lands on the invented one.
       expect(optionEls().map((el) => el.textContent!.trim())).toEqual([
         'Vue',
         'Create \u201cVu\u201d',
@@ -447,15 +432,12 @@ describe('Combobox', () => {
     });
 
     it('renders a coined value with no option behind it', async () => {
-      // Nothing in `options` carries this value, so the trigger has only the
-      // raw value to go on. It has to be enough.
       mountCombobox({ creatable: true, multiple: true, defaultValue: ['Qwik'] });
       await nextTick();
       expect(chips().map((el) => el.textContent!.replace(/[×\s]+/g, ''))).toEqual(['Qwik']);
     });
 
     it('holds back when an option already has that label', async () => {
-      // Angular's value is "ng", so only the label can be what matches here.
       mountCombobox({ creatable: true });
       await type('Angular');
       expect(createRow()).toBeNull();
@@ -463,7 +445,6 @@ describe('Combobox', () => {
     });
 
     it('holds back when an option already has that value', async () => {
-      // "ng" matches no label at all, so only the value can be what matches.
       mountCombobox({ creatable: true });
       await type('ng');
       expect(createRow()).toBeNull();
@@ -565,7 +546,6 @@ describe('Combobox', () => {
 describe('Combobox, rows the app renders', () => {
   const MANY = Array.from({ length: 100 }, (_, i) => ({ value: `item-${i}`, label: `Item ${i}` }));
 
-  /** Renders only the first `window` rows, as a virtualizer would; records `activeIndex`. */
   function mountWindowed(window: number, seen: number[] = []) {
     const value = ref<string | null>(null);
     const Host = defineComponent({
@@ -607,7 +587,6 @@ describe('Combobox, rows the app renders', () => {
     expect(first.getAttribute('data-part')).toBe('option');
     expect(first.classList.contains('row')).toBe(true);
     expect(first.textContent).toBe('Item 0');
-    // Only some rows are in the page, so each says where it stands among all of them.
     expect(first.getAttribute('aria-setsize')).toBe('100');
     expect(first.getAttribute('aria-posinset')).toBe('1');
   });
@@ -620,7 +599,6 @@ describe('Combobox, rows the app renders', () => {
     for (let i = 0; i < 15; i += 1) key(input(), 'ArrowDown');
     await nextTick();
 
-    // The highlight reached an option the app hasn't rendered; the app learns which.
     expect(input().getAttribute('aria-activedescendant')).toMatch(/-o15$/);
     expect(seen.at(-1)).toBe(15);
   });

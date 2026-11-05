@@ -34,10 +34,7 @@ const TEXT_INPUTS = new Set(['text', 'search', 'email', 'url', 'tel', 'password'
 
 const disabled = (el: Element) => el.hasAttribute('disabled') || el.getAttribute('aria-disabled') === 'true';
 
-/**
- * Whether a key belongs to the field it lands in: arrows move the caret, except
- * past either end of a single-line field, where they carry on to the next item.
- */
+// Arrows move a field's caret, except past either end of a single-line field.
 function keepsKey(el: Element, key: string, next: string, previous: string): boolean {
   if (el instanceof HTMLTextAreaElement || (el as HTMLElement).isContentEditable) return true;
   if (!(el instanceof HTMLInputElement) || !TEXT_INPUTS.has(el.type)) return false;
@@ -49,11 +46,7 @@ function keepsKey(el: Element, key: string, next: string, previous: string): boo
   return true;
 }
 
-/**
- * The toolbar's items, per `specs/group.md`: its controls in document order, a
- * nested set counting once, as the member it leaves in the tab order. `ours`
- * holds the elements whose `tabindex` the toolbar set itself.
- */
+/** Per `specs/group.md`: a nested set counts once. `ours` holds the elements whose `tabindex` the toolbar set. */
 export function toolbarItems(root: HTMLElement, ours: ReadonlySet<Element>) {
   const plain: HTMLElement[] = [];
   const all: HTMLElement[] = [];

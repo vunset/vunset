@@ -1,12 +1,10 @@
 /** What a dragged thumb does on meeting another. */
 export type ThumbCollisionBehavior = 'push' | 'swap' | 'none';
 
-/** The numbers every value is measured against. */
 export interface Scale {
   min: number;
   max: number;
   step: number;
-  /** The smallest distance between neighboring thumbs. */
   gap: number;
 }
 
@@ -27,12 +25,10 @@ export function tidy(value: number, ...sources: number[]): number {
   return Number(value.toFixed(Math.max(0, ...sources.map(decimals))));
 }
 
-/** The grid value nearest `value`, counting from `min`. */
 export function snap(value: number, { min, step }: Scale): number {
   return tidy(min + Math.round((value - min) / step) * step, min, step);
 }
 
-/** How far thumb `index` may go without crowding a neighbor. */
 export function roomFor(values: readonly number[], index: number, scale: Scale): [low: number, high: number] {
   const below = values[index - 1];
   const above = values[index + 1];
@@ -47,12 +43,7 @@ export interface DragResult {
   index: number;
 }
 
-/**
- * Moves thumb `index` towards `target` during a drag.
- *
- * `origin` is the values as the drag began: a pushed thumb falls back towards
- * where it stood then, and never past it.
- */
+/** `origin` is the values as the drag began: a pushed thumb falls back towards them, never past. */
 export function dragTo(
   values: readonly number[],
   index: number,
@@ -92,11 +83,7 @@ function push(origin: readonly number[], index: number, target: number, gap: num
   return next;
 }
 
-/**
- * The drag moves into whichever slot `target` now falls in. The thumbs it
- * passed keep their values; only a thumb moved strictly past counts, so
- * meeting a neighbor exactly is not yet a swap.
- */
+/** Only a thumb moved strictly past counts, so meeting a neighbor exactly is not yet a swap. */
 function swap(values: readonly number[], index: number, target: number, scale: Scale): DragResult {
   const others = values.filter((_, i) => i !== index);
   const slot = others.filter((value, i) => value < target || (value === target && i < index)).length;

@@ -20,14 +20,7 @@ export interface UseTransitionStatusOptions {
   skipExit?: () => boolean;
 }
 
-/**
- * Tracks the enter/exit phase of an animating element.
- *
- * The lifecycle is: `closed → enter → idle → (open) → leave → closed`
- *
- * @param open Whether the element is open.
- * @param options See {@link UseTransitionStatusOptions}.
- */
+/** Tracks an animating element's phase: `closed → enter → idle → (open) → leave → closed`. */
 export function useTransitionStatus(
   open: () => boolean,
   options: UseTransitionStatusOptions = {}
@@ -46,11 +39,7 @@ export function useTransitionStatus(
     }
   };
 
-  /**
-   * Paints `enter` once before flipping to the resting state, so the browser
-   * has two distinct states to interpolate between. Two frames, not one: the
-   * first is the one `enter` is painted in.
-   */
+  // Paints `enter` for two frames, so the browser has two distinct states to interpolate between.
   function enter() {
     transitionStatus.value = 'enter';
     frame = requestAnimationFrame(() => {
@@ -60,11 +49,7 @@ export function useTransitionStatus(
     });
   }
 
-  // An element that mounts already open has no `open` change to react to, so
-  // the enter has to be started here or `animateInitialOpen` would do nothing
-  // but leave the status undefined — which is what it used to do. The frames
-  // wait for the mount: a server render has none, and renders `enter` as the
-  // client hydrates it.
+  // Mounting open has no `open` change to react to, so the enter starts here once mounted; a server render stays on `enter`.
   if (initiallyOpen && animateInitialOpen) {
     transitionStatus.value = 'enter';
     if (getCurrentInstance()) onMounted(enter);
