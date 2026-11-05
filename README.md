@@ -1,5 +1,11 @@
 # Vunset
 
+[![@vunset/vue](https://img.shields.io/npm/v/@vunset/vue/latest?label=%40vunset%2Fvue)](https://www.npmjs.com/package/@vunset/vue)
+[![@vunset/ui](https://img.shields.io/npm/v/@vunset/ui/latest?label=%40vunset%2Fui)](https://www.npmjs.com/package/@vunset/ui)
+[![@vunset/nuxt](https://img.shields.io/npm/v/@vunset/nuxt/latest?label=%40vunset%2Fnuxt)](https://www.npmjs.com/package/@vunset/nuxt)
+[![License: MIT](https://img.shields.io/npm/l/@vunset/vue)](LICENSE)
+[![Docs](https://img.shields.io/github/actions/workflow/status/vunset/vunset/docs.yml?branch=main&label=docs)](https://vunset.com/)
+
 A headless, unstyled Vue 3 component library, and a pre-styled UI built on it.
 
 The components already work: keyboard, focus, ARIA, open and close, the

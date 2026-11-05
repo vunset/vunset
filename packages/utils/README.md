@@ -1,5 +1,8 @@
 # @vunset/utils
 
+[![npm](https://img.shields.io/npm/v/@vunset/utils/latest)](https://www.npmjs.com/package/@vunset/utils)
+[![License: MIT](https://img.shields.io/npm/l/@vunset/utils)](https://github.com/vunset/vunset/blob/main/LICENSE)
+
 Plain helper functions: dates, numbers, strings, CSV, math, chart colors and
 SVG parsing. No dependencies, no Vue, and they run anywhere, the server
 included.

@@ -1,0 +1,33 @@
+name: Feature request
+description: A component, a prop, or behavior that's missing.
+labels: [enhancement]
+body:
+  - type: dropdown
+    id: package
+    attributes:
+      label: Package
+      options:
+        - '@vunset/vue'
+        - '@vunset/ui'
+        - '@vunset/nuxt'
+        - '@vunset/utils'
+        - Docs site
+    validations:
+      required: true
+  - type: textarea
+    id: need
+    attributes:
+      label: What you're trying to build
+      description: The UI or the case, rather than the API you have in mind.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: How it could work
+      description: The props, parts or keyboard behavior you'd expect, if you have an idea.
+  - type: textarea
+    id: today
+    attributes:
+      label: What you do today
+      description: The workaround you use now, if any.

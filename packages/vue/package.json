@@ -24,6 +24,7 @@
   "bugs": "https://github.com/vunset/vunset/issues",
   "type": "module",
   "sideEffects": false,
+  "web-types": "./dist/web-types.json",
   "files": [
     "dist"
   ],
@@ -42,7 +43,7 @@
     }
   },
   "scripts": {
-    "build": "vite build && vue-tsc -p tsconfig.build.json",
+    "build": "vite build && vue-tsc -p tsconfig.build.json && node ../../scripts/web-types.ts",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {

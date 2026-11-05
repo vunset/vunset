@@ -1,5 +1,8 @@
 # @vunset/ui
 
+[![npm](https://img.shields.io/npm/v/@vunset/ui/latest)](https://www.npmjs.com/package/@vunset/ui)
+[![License: MIT](https://img.shields.io/npm/l/@vunset/ui)](https://github.com/vunset/vunset/blob/main/LICENSE)
+
 Pre-styled Vue 3 components. A `FormInput` is the label, the input,
 the help text and the error, all in one. They're built from
 [`@vunset/vue`](https://www.npmjs.com/package/@vunset/vue)'s headless parts, so

@@ -1,5 +1,8 @@
 # @vunset/vue
 
+[![npm](https://img.shields.io/npm/v/@vunset/vue/latest)](https://www.npmjs.com/package/@vunset/vue)
+[![License: MIT](https://img.shields.io/npm/l/@vunset/vue)](https://github.com/vunset/vunset/blob/main/LICENSE)
+
 Headless, unstyled Vue 3 components. They already work: keyboard, focus,
 ARIA, open and close, the fiddly parts. What they look like is up to you.
 Nothing ships with styles, so there's nothing to override.

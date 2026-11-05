@@ -49,6 +49,10 @@ includes the base. A public file a script asks for starts from
   `::: api` as markdown tables, plus `llms.txt` (the sidebars as an index) and
   `llms-full.txt` (every page). The dev server serves the same files. A page no
   sidebar lists is left out of both indexes.
+- **`scripts/web-types.ts`** runs at the end of the vue and ui builds and
+  writes `dist/web-types.json` (the `web-types` field), from the same rows as
+  the API tables, each component linked to the page whose `::: api` shows it
+  (a part with none, to its folder's page), for JetBrains IDEs.
 - **The deploy checks out the full history** (`fetch-depth: 0`): `lastUpdated`
   reads each page's git date for the sitemap's `lastmod`.
 

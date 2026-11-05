@@ -26,6 +26,7 @@
   "sideEffects": [
     "*.css"
   ],
+  "web-types": "./dist/web-types.json",
   "files": [
     "dist"
   ],
@@ -48,7 +49,7 @@
     "./css/*": "./dist/css/*"
   },
   "scripts": {
-    "build": "vite build && vue-tsc -p tsconfig.build.json",
+    "build": "vite build && vue-tsc -p tsconfig.build.json && node ../../scripts/web-types.ts",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {

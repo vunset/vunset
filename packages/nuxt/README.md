@@ -1,5 +1,8 @@
 # @vunset/nuxt
 
+[![npm](https://img.shields.io/npm/v/@vunset/nuxt/latest)](https://www.npmjs.com/package/@vunset/nuxt)
+[![License: MIT](https://img.shields.io/npm/l/@vunset/nuxt)](https://github.com/vunset/vunset/blob/main/LICENSE)
+
 The Nuxt module for Vunset. Every component and composable is available in your
 pages without importing it, and the styles are already loaded.
 

@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentation
+    url: https://vunset.com/
+    about: Every component's examples, parts, keyboard support and API.
