@@ -49,7 +49,8 @@ const props = withDefaults(
     stickyFooter?: TableSticky;
     /**
      * Draw only the rows near the viewport, all one height: `true` measures the first row; a
-     * number is that height (bound: `:virtual="40"`); `{ rowHeight, overscan }` sets both.
+     * number is that height (bound: `:virtual="40"`), set on each row as `height`;
+     * `{ rowHeight, overscan }` sets both.
      * Follows the table's own scroll, or the page's.
      */
     virtual?: boolean | number | DataTableVirtual;

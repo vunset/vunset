@@ -89,7 +89,9 @@ spans its children, in an extra header row above theirs.
 With `virtual`, the table draws only the rows near the viewport, so ten
 thousand rows cost about as much as twenty. Every row has to be the same
 height: pass that height as a number (bound, `:virtual="40"`), or `true` to
-measure the first row. An object sets more: `{ rowHeight, overscan }`,
+measure the first row. A number is also set on each row as its `height`
+attribute, so a row with less in it is not shorter; CSS overrides it, and a
+row with more in it still grows. An object sets more: `{ rowHeight, overscan }`,
 each optional. `overscan` is the rows drawn past each edge of the view (8).
 A row scrolled in reuses the elements and components of one scrolled out,
 so a jump builds no new cells. State a part keeps for itself, an open

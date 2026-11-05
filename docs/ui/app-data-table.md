@@ -148,7 +148,8 @@ the scrollbar.
 ```
 
 Every field of the object is optional. `overscan` is how many rows are drawn
-past each edge of the view (8).
+past each edge of the view (8). A given height is also set on each row as its `height` attribute, so short
+rows are drawn to it; CSS overrides it, and a taller row still grows.
 
 As it scrolls, a row coming into view takes over the elements and
 components of one going out, its cells handed the new row's values, so even

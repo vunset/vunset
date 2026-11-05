@@ -111,7 +111,7 @@ export type DataTableSort = string | SortingState;
 
 /** `virtual` in full. Every field is optional. */
 export interface DataTableVirtual {
-  /** Every row's height, in pixels. Left out, it is measured from the first row. */
+  /** Every row's height, in pixels. Left out, it is measured from the first row. Given, rows get it as `height`, a floor CSS can override. */
   rowHeight?: number;
   /** Rows drawn past each edge of the viewport. Fewer mount less at once as it scrolls. @default 8 */
   overscan?: number;
@@ -220,8 +220,9 @@ const props = withDefaults(
     stickyFooter?: TableSticky;
     /**
      * Draw only the rows near the viewport. Every row must be one height: `true`
-     * measures the first row; a number is that height (bound: `:virtual="40"`); an
-     * object sets the rest too. It follows whatever scrolls: the table, given a
+     * measures the first row; a number is that height (bound: `:virtual="40"`), set
+     * on each row as its `height` attribute, a floor CSS can override; an object
+     * sets the rest too. It follows whatever scrolls: the table, given a
      * height, or else the page or a scrolling ancestor.
      */
     virtual?: boolean | number | DataTableVirtual;
@@ -712,6 +713,7 @@ defineExpose({ table });
           :aria-rowindex="isVirtual ? headerRows + virtual.start.value + offset + 1 : undefined"
           :expanded="row.getIsExpanded()"
           :data-depth="row.depth || undefined"
+          :height="fixedRowHeight"
           :style="row.depth ? { '--depth': row.depth } : undefined"
           :class="props.rowClass"
           v-bind="props.rowAttrs?.(row.original)"

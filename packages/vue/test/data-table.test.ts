@@ -794,6 +794,17 @@ describe('virtual rows', () => {
     expect(spacers(wrapper)).toEqual([`${(1000 - 19) * 20}px`]);
   });
 
+  it('gives each row a fixed height as its height attribute, not a measured one', async () => {
+    const fixed = await mountVirtual({ virtual: { rowHeight: 20 } });
+    expect(drawn(fixed.wrapper).every((tr) => tr.attributes('height') === '20')).toBe(true);
+    expect(
+      fixed.wrapper.findAll('tbody [data-part="table-spacer"]').every((tr) => tr.attributes('height') === undefined)
+    ).toBe(true);
+
+    const measured = await mountVirtual({ virtual: true });
+    expect(drawn(measured.wrapper).some((tr) => tr.attributes('height') !== undefined)).toBe(false);
+  });
+
   it('draws as many rows past the viewport as it is told', async () => {
     const { wrapper } = await mountVirtual({ virtual: { rowHeight: 20, overscan: 20 } });
 
