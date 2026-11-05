@@ -27,6 +27,7 @@ export default defineConfig({
   description,
   base,
   cleanUrls: true,
+  appearance: 'dark',
   sitemap: { hostname: origin + base },
   head: [
     [
