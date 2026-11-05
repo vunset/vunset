@@ -53,6 +53,10 @@ Every component, composable and helper is then available without importing it.
 Every component has a page with examples, the parts it's made of, its keyboard
 support and its full API: [vunset.com](https://vunset.com/).
 
+For AI assistants: [vunset.com/llms.txt](https://vunset.com/llms.txt) indexes
+every page, and [llms-full.txt](https://vunset.com/llms-full.txt) holds them all
+in one file. Each page is also served as markdown at its URL plus `.md`.
+
 ## License
 
 [MIT](LICENSE)

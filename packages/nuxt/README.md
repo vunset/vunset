@@ -79,6 +79,10 @@ export default defineNuxtConfig({
 
 [vunset.com/nuxt/get-started](https://vunset.com/nuxt/get-started)
 
+For AI assistants: [vunset.com/llms.txt](https://vunset.com/llms.txt) indexes
+every page, and each page is also served as markdown at its URL plus `.md`, with
+its examples' source and API tables written out.
+
 ## License
 
 MIT

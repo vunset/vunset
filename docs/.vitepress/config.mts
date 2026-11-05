@@ -8,11 +8,49 @@ import { framesContainer } from './markdown/frames.ts';
 import { scrollTable } from './markdown/scroll-table.ts';
 import { installTabs } from './markdown/install-tabs.ts';
 import { readFileSync } from 'node:fs';
+import { describe, pageHead, readPage, titleTemplate, type Site } from './seo.ts';
+import { llmsDev, writeLlms, type LlmsOptions } from './llms.ts';
 import vuePackage from '../../packages/vue/package.json' with { type: 'json' };
 
 const base = '/';
 const origin = 'https://vunset.com';
 const description = 'A headless, unstyled Vue 3 component library, and a pre-styled UI built on it.';
+
+const site: Site = {
+  url: origin + base,
+  description,
+  version: vuePackage.version,
+  repository: 'https://github.com/vunset/vunset'
+};
+
+const api = {
+  root: fileURLToPath(new URL('../../packages/vue/src/components', import.meta.url)),
+  uiRoot: fileURLToPath(new URL('../../packages/ui/src', import.meta.url)),
+  tsconfig: fileURLToPath(new URL('./tsconfig.api.json', import.meta.url))
+};
+const demos = fileURLToPath(new URL('./demos', import.meta.url));
+
+const llms: LlmsOptions = {
+  demos,
+  api,
+  url: site.url,
+  intro: [
+    'Packages: `@vunset/vue` (headless parts, no styles), `@vunset/ui` (pre-styled components built from',
+    'them, `import \'@vunset/ui/all.css\'`), `@vunset/nuxt` (a module registering both, no imports needed),',
+    '`@vunset/utils` (plain date, number and string helpers, re-exported by `@vunset/vue`).',
+    '',
+    'How `@vunset/vue` works: a component is a root plus parts (`DialogRoot` > `DialogTrigger`, `DialogPopup`).',
+    'The root holds the state (`v-model`, `v-model:open`) and hands it to its default slot. Every part renders',
+    'one element, takes `as` for a tag or a component of your own, and is styled through the attributes it sets:',
+    '`data-part` plus one `data-*` per state (`data-open`, `data-checked`, `data-disabled`), e.g.',
+    '`.trigger[data-open]` or Tailwind `data-open:bg-black`. There are no classes and no style props.',
+    '`@vunset/ui` components are named `App*` (anything) or `Form*` (holds a form value), styled by a `.app-*`',
+    'or `.form-*` class and themed with CSS variables.',
+    '',
+    'Each page below is also served as markdown at its URL plus `.md`, with every example\'s source and every',
+    'part\'s props, state, slots and events written out.'
+  ].join('\n')
+};
 
 function latestRelease() {
   const changelog = readFileSync(new URL('../../CHANGELOG.md', import.meta.url), 'utf8');
@@ -27,6 +65,7 @@ export default defineConfig({
   description,
   base,
   cleanUrls: true,
+  lastUpdated: true,
   appearance: 'dark',
   sitemap: { hostname: origin + base },
   head: [
@@ -43,20 +82,27 @@ export default defineConfig({
     ['link', { rel: 'apple-touch-icon', href: `${base}apple-touch-icon.png` }],
     ['link', { rel: 'icon', type: 'image/x-icon', href: `${base}favicon.ico`, sizes: '32x32' }],
     ['link', { rel: 'icon', type: 'image/svg+xml', href: `${base}favicon.svg` }],
-    ['meta', { property: 'og:image', content: `${origin + base}og-default.webp` }],
+    ['link', { rel: 'alternate', type: 'text/plain', title: 'llms.txt', href: `${base}llms.txt` }],
+    ['meta', { property: 'og:image', content: `${origin + base}og-default.png` }],
+    ['meta', { property: 'og:image:type', content: 'image/png' }],
     ['meta', { property: 'og:image:width', content: '1200' }],
     ['meta', { property: 'og:image:height', content: '630' }],
-    ['meta', { property: 'og:type', content: 'website' }],
+    ['meta', { property: 'og:image:alt', content: 'Vunset: headless Vue components' }],
     ['meta', { property: 'og:site_name', content: 'Vunset' }],
-    ['meta', { name: 'twitter:card', content: 'summary' }]
+    ['meta', { name: 'twitter:card', content: 'summary_large_image' }]
   ],
+  // a page's description is the paragraph under its title, unless its frontmatter sets one
+  transformPageData(pageData, { siteConfig }) {
+    if (pageData.isNotFound) return;
+    pageData.titleTemplate ??= titleTemplate(pageData.relativePath);
+    pageData.description ||= describe(readPage(siteConfig.srcDir, pageData.relativePath));
+  },
   transformHead({ pageData, title, description: pageDescription }) {
-    const path = pageData.relativePath.replace(/(^|\/)index\.md$/, '$1').replace(/\.md$/, '');
-    return [
-      ['meta', { property: 'og:title', content: title }],
-      ['meta', { property: 'og:description', content: pageDescription }],
-      ['meta', { property: 'og:url', content: origin + base + path }]
-    ];
+    if (pageData.isNotFound) return [['meta', { name: 'robots', content: 'noindex' }]];
+    return pageHead(site, pageData, title, pageDescription);
+  },
+  buildEnd(siteConfig) {
+    writeLlms(llms, siteConfig);
   },
   postRender(context) {
     const teleports = (context.teleports ??= {});
@@ -67,12 +113,8 @@ export default defineConfig({
     headers: true,
     lineNumbers: true,
     config: (md) => {
-      md.use(previewContainer, { root: fileURLToPath(new URL('./demos', import.meta.url)) });
-      md.use(apiContainer, {
-        root: fileURLToPath(new URL('../../packages/vue/src/components', import.meta.url)),
-        uiRoot: fileURLToPath(new URL('../../packages/ui/src', import.meta.url)),
-        tsconfig: fileURLToPath(new URL('./tsconfig.api.json', import.meta.url))
-      });
+      md.use(previewContainer, { root: demos });
+      md.use(apiContainer, api);
       md.use(framesContainer);
       md.use(scrollTable);
       md.use(installTabs);
@@ -353,7 +395,7 @@ export default defineConfig({
   },
   vite: {
     server: { port: 5179 },
-    plugins: [tailwindcss()],
+    plugins: [tailwindcss(), llmsDev(llms)],
     resolve: {
       alias: [{ find: '@', replacement: fileURLToPath(new URL('./theme', import.meta.url)) }, ...sourceAliases]
     }

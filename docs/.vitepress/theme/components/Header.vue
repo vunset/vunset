@@ -1,5 +1,5 @@
 <template>
-  <header class="z-5" :class="{ 'bg-docs-bg/90 backdrop-blur-xs': page.relativePath !== 'index.md' }">
+  <header class="z-5" :class="{ 'bg-docs-bg/90 backdrop-blur-xs': page.relativePath !== 'index.md' && !page.isNotFound }">
     <div
       class="flex justify-between md:grid md:grid-cols-[1fr_auto_1fr] gap-x-6 items-center max-w-7xl h-(--header-height) mx-auto px-4"
     >

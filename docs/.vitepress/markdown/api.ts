@@ -39,28 +39,73 @@ interface Section {
 // state as `data-*` attributes and slot props, its slots and events, read by
 // the same checker as vue-tsc. Each `###` part under `## API Reference` then
 // becomes an item of <ApiAccordion>.
-export function apiContainer(md: MarkdownRenderer, { root, uiRoot, tsconfig }: ApiOptions) {
-  let checker: ReturnType<typeof createChecker> | null = null;
-
-  function read(arg: string, env: SourceContainer['env']): ComponentMeta {
-    const file = join(env.relativePath?.startsWith('ui/') ? uiRoot : root, `${arg}.vue`);
+export function apiContainer(md: MarkdownRenderer, options: ApiOptions) {
+  sourceContainer(md, 'api', ({ arg, env }) => {
+    const file = apiFile(options, arg, env.relativePath);
     env.includes?.push(file);
-
-    const source = readFileSync(file, 'utf8');
-    checker ??= createChecker(tsconfig, { schema: true, forceUseTs: true });
-    checker.updateFile(file, source);
-
-    const meta = checker.getComponentMeta(file);
-    // the checker skips JSDoc on `defineEmits<{ name: [...] }>` entries
-    for (const event of meta.events) event.description ||= emitDoc(source, event.name);
-    return meta;
-  }
-
-  sourceContainer(md, 'api', ({ arg, env }) => render(md, read(arg, env), arg.split('/').pop()!));
+    return render(md, readApi(options, file), arg.split('/').pop()!);
+  });
 
   // after the containers above have expanded, so a part can count their rows
   md.core.ruler.before('normalize', 'api-parts', (state) => {
     state.src = parts(state.src);
+  });
+}
+
+export function apiFile({ root, uiRoot }: ApiOptions, arg: string, relativePath = ''): string {
+  return join(relativePath.startsWith('ui/') ? uiRoot : root, `${arg}.vue`);
+}
+
+// one checker for the pages and their markdown copies (`llms.ts`). A build reads a
+// component once; dev reads it every time, as a type it imports may have changed.
+// Only the rows are kept: a component's full meta holds every type's schema.
+let checker: ReturnType<typeof createChecker> | null = null;
+const read = new Map<string, { source: string; api: Api }>();
+
+export interface Api {
+  sections: Section[];
+  /** The tag the part renders by default, when `as` defaults to one. */
+  renders?: string;
+}
+
+export function readApi({ tsconfig }: ApiOptions, file: string): Api {
+  const source = readFileSync(file, 'utf8');
+  const cached = read.get(file);
+  if (process.env.NODE_ENV === 'production' && cached?.source === source) return cached.api;
+
+  checker ??= createChecker(tsconfig, { schema: true, forceUseTs: true });
+  checker.updateFile(file, source);
+
+  const meta = checker.getComponentMeta(file);
+  // the checker skips JSDoc on `defineEmits<{ name: [...] }>` entries
+  for (const event of meta.events) event.description ||= emitDoc(source, event.name);
+  const api = { sections: sections(meta), renders: unquote(meta.props.find((prop) => prop.name === 'as')?.default) };
+  read.set(file, { source, api });
+  return api;
+}
+
+// the same rows as markdown tables, for `llms.ts`
+export function apiMarkdown({ sections }: Api): string[] {
+  const cell = (value: string | undefined) => flatten(value).replace(/\|/g, '\\|');
+  const code = (value: string | undefined) => (value ? '`' + cell(value) + '`' : '');
+
+  return sections.flatMap((section) => {
+    const rows = section.rows.flatMap((row) => [
+      row,
+      ...(row.fields ?? []).map((field) => ({ ...field, name: `${row.name}.${field.name}` }))
+    ]);
+    return [
+      `**${section.title}**`,
+      '',
+      ...(section.intro ? [flatten(section.intro), ''] : []),
+      '| Name | Type | Default | Description |',
+      '| --- | --- | --- | --- |',
+      ...rows.map((row) => {
+        const description = [row.required ? 'Required.' : '', row.note ? `(${row.note})` : '', cell(row.description)];
+        return `| ${code(row.name)} | ${code(row.type)} | ${code(row.default)} | ${description.filter(Boolean).join(' ')} |`;
+      }),
+      ''
+    ];
   });
 }
 
@@ -157,10 +202,8 @@ function slots(all: Slot[], defaultSlot: Slot | undefined): Row[] {
   return rows;
 }
 
-function render(md: MarkdownRenderer, meta: ComponentMeta, name: string): string[] {
-  const all = sections(meta);
+function render(md: MarkdownRenderer, { sections: all, renders }: Api, name: string): string[] {
   const count = all.reduce((sum, section) => sum + section.rows.length, 0);
-  const renders = unquote(meta.props.find((prop) => prop.name === 'as')?.default);
 
   const inline = (value: string | undefined) => md.renderInline(flatten(value));
   const esc = md.utils.escapeHtml;

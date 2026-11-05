@@ -1,5 +1,12 @@
 <template>
-  <div class="min-h-dvh">
+  <!-- clipped: the beams are taller than this short page, and would scroll it -->
+  <div class="min-h-dvh relative isolate overflow-clip">
+    <BeamShader
+      :key="String(isDark)"
+      :light="!isDark"
+      class="absolute inset-x-0 top-0 -z-1 h-[min(68rem,130svh)] w-full mask-b-from-50%"
+    />
+
     <Header class="sticky top-0" />
 
     <main class="mx-auto flex max-w-5xl flex-col items-center px-6 pt-20 pb-30 text-center sm:pt-28">
@@ -10,7 +17,9 @@
           404
         </span>
 
-        <code class="max-w-full truncate rounded-full bg-docs-surface px-2.5 py-0.5 font-mono text-xs text-docs-text/85">
+        <code
+          class="max-w-full truncate rounded-full bg-docs-surface px-2.5 py-0.5 font-mono text-xs text-docs-text/85"
+        >
           &lt;Page data-part="page" <span class="text-docs-accent">data-missing</span> /&gt;
         </code>
       </div>
@@ -37,16 +46,16 @@
         </a>
       </div>
     </main>
-
-    <PrismRays />
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { withBase } from 'vitepress';
+import { useData, withBase } from 'vitepress';
 import Header from '../components/Header.vue';
-import PrismRays from '../components/PrismRays.vue';
+import BeamShader from '../components/BeamShader.vue';
+
+const { isDark } = useData();
 
 const path = ref('this address');
 onMounted(() => (path.value = location.pathname));

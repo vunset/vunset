@@ -1,0 +1,14 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "Vunset",
+  "description": "Headless, unstyled Vue 3 components (@vunset/vue), a pre-styled UI built on them (@vunset/ui), and a Nuxt module (@vunset/nuxt).",
+  "folders": ["docs", "packages/vue/README.md", "packages/ui/README.md", "packages/nuxt/README.md", "packages/utils/README.md"],
+  "excludeFolders": ["docs/.vitepress", "node_modules"],
+  "rules": [
+    "A @vunset/vue component is a root plus parts: DialogRoot holds the state and its parts (DialogTrigger, DialogPopup) render inside it.",
+    "Style parts through the attributes they set, data-part and one data-* per state (data-open, data-checked, data-disabled); there are no size, variant or color props.",
+    "Every part takes `as` for the element it renders: a tag name or a component.",
+    "@vunset/ui needs `import '@vunset/ui/all.css'` once; its components are App* or Form* and are themed with CSS variables.",
+    "Charts and data tables import from @vunset/vue/chart and @vunset/vue/data-table, which need @tanstack/charts and @tanstack/vue-table installed."
+  ]
+}

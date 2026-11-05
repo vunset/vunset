@@ -1,3 +1,7 @@
+---
+description: debounce and other plain TypeScript helpers from @vunset/utils, with no dependencies.
+---
+
 # Functions
 
 ## debounce

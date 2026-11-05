@@ -1,9 +1,10 @@
 <template>
-  <div class="sticky top-(--header-height) h-[calc(100vh-var(--header-height))]">
-    <ScrollArea v-if="links.length" fade="y" class="px-3.5 py-6 outline-none">
+  <div class="sticky top-(--header-height) flex h-[calc(100vh-var(--header-height))] flex-col px-3.5 py-6">
+    <template v-if="links.length">
       <div class="side-title">On this page</div>
 
-      <nav class="flex flex-col">
+      <!-- only the headings scroll, so the links below stay in view -->
+      <ScrollArea ref="toc" as="nav" fade="y" :fade-size="24" class="min-h-0 shrink outline-none scrollbar-thumb-current/10 scrollbar-thin">
         <a
           v-for="header in links"
           :key="header.slug"
@@ -15,19 +16,62 @@
         >
           {{ header.title }}
         </a>
-      </nav>
-    </ScrollArea>
+      </ScrollArea>
+    </template>
+
+    <!-- the page as an assistant reads it: written out by `llms.ts` -->
+    <div class="shrink-0" :class="{ 'pt-6': links.length }">
+      <div class="side-title">For AI assistants</div>
+      <div class="flex flex-col">
+        <button type="button" class="side-link text-left" @pointerenter="load" @focus="load" @click="copyPage">
+          {{ copied ? 'Copied' : 'Copy as Markdown' }}
+        </button>
+        <a :href="markdownUrl" target="_blank" class="side-link">View as Markdown</a>
+        <a :href="withBase('/llms.txt')" target="_blank" class="side-link">llms.txt</a>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ScrollArea } from '@vunset/vue';
-import { onContentUpdated, useData, type Header } from 'vitepress';
-import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
+import { ScrollArea, useClipboard } from '@vunset/vue';
+import { onContentUpdated, useData, withBase, type Header } from 'vitepress';
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 
 const { page } = useData();
 
+const markdownUrl = computed(() => withBase(`/${page.value.relativePath}`));
+const { copy, copied } = useClipboard();
+
+// fetched on hover or focus, so the click still counts as one for the clipboard (Safari)
+let markdown: Promise<string> | null = null;
+let loadedFor = '';
+
+function load() {
+  if (markdown && loadedFor === markdownUrl.value) return markdown;
+  loadedFor = markdownUrl.value;
+  markdown = fetch(loadedFor).then((response) => (response.ok ? response.text() : ''));
+  return markdown;
+}
+
+async function copyPage() {
+  copy(await load());
+}
+
 const activeLink = ref('');
+const toc = ref<InstanceType<typeof ScrollArea> | null>(null);
+
+// keep the active heading inside the list's own scroll, without moving the page
+watch(activeLink, (link) => {
+  const list = toc.value?.viewport;
+  const item = link && list?.querySelector<HTMLElement>(`a[href="${CSS.escape(link)}"]`);
+  if (!list || !item) return;
+  const top = item.offsetTop - list.offsetTop;
+  if (top < list.scrollTop) list.scrollTop = top - item.offsetHeight;
+  else if (top + item.offsetHeight > list.scrollTop + list.clientHeight) {
+    list.scrollTop = top + item.offsetHeight * 2 - list.clientHeight;
+  }
+});
 
 function flatten(headers: Header[], acc: Header[] = []) {
   for (const header of headers) {

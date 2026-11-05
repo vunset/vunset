@@ -47,9 +47,10 @@ const head = computed(() => [
 <style>
 @reference '../style.css';
 
-/* the type reads as plain code beside the name's badge */
+/* the type reads as plain code beside the name's badge, and wraps: the prose's
+   inline code stays on one line, which a slot's long props list would overflow */
 article code.api-type {
-  @apply bg-transparent;
+  @apply bg-transparent whitespace-normal wrap-break-word;
 }
 
 .api-description a {

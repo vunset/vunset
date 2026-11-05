@@ -25,6 +25,10 @@ import { formatDate, formatNumber, formatCsv } from '@vunset/utils';
 
 [vunset.com/helpers/dates](https://vunset.com/helpers/dates)
 
+For AI assistants: [vunset.com/llms.txt](https://vunset.com/llms.txt) indexes
+every page, and each page is also served as markdown at its URL plus `.md`, with
+its examples' source and API tables written out.
+
 ## License
 
 MIT

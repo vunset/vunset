@@ -24,7 +24,7 @@ export function sourceContainer(md: MarkdownRenderer, name: string, expand: (con
   });
 }
 
-function scan(src: string, open: RegExp, expand: (container: SourceContainer) => string[], env: SourceContainer['env']) {
+export function scan(src: string, open: RegExp, expand: (container: SourceContainer) => string[], env: SourceContainer['env']) {
   const out: string[] = [];
   let fence: string | null = null;
   let heading = 0;

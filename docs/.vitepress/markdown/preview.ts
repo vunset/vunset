@@ -20,17 +20,7 @@ export function previewContainer(md: MarkdownRenderer, { root }: { root: string 
   });
 
   sourceContainer(md, 'preview', ({ arg, body, env }) => {
-    const demo = join(root, `${arg}.vue`);
-    const source = readFileSync(demo, 'utf8');
-
-    const files = [
-      { path: demo, code: source.replace(DEMO_OUTPUT, '') },
-      ...[...source.matchAll(COMPONENT_IMPORT), ...source.matchAll(STYLE_IMPORT)].map((match) => {
-        const path = resolve(dirname(demo), match[1]);
-        return { path, code: readFileSync(path, 'utf8') };
-      })
-    ].map(({ path, code }) => ({ path, lines: code.trimEnd().split('\n') }));
-
+    const files = demoFiles(root, arg);
     env.includes?.push(...files.map((file) => file.path));
 
     const names = JSON.stringify(files.map((file) => basename(file.path))).replace(/"/g, "'");
@@ -46,7 +36,21 @@ export function previewContainer(md: MarkdownRenderer, { root }: { root: string 
   });
 }
 
-function fence(path: string, lines: string[]): string[] {
+// a demo without its <DemoOutput>, then the components and sheets it imports
+export function demoFiles(root: string, arg: string): { path: string; lines: string[] }[] {
+  const demo = join(root, `${arg}.vue`);
+  const source = readFileSync(demo, 'utf8');
+
+  return [
+    { path: demo, code: source.replace(DEMO_OUTPUT, '') },
+    ...[...source.matchAll(COMPONENT_IMPORT), ...source.matchAll(STYLE_IMPORT)].map((match) => {
+      const path = resolve(dirname(demo), match[1]);
+      return { path, code: readFileSync(path, 'utf8') };
+    })
+  ].map(({ path, code }) => ({ path, lines: code.trimEnd().split('\n') }));
+}
+
+export function fence(path: string, lines: string[]): string[] {
   const longest = Math.max(2, ...lines.flatMap((line) => line.match(/`+/g) ?? []).map((run) => run.length));
   const marker = '`'.repeat(longest + 1);
   return [marker + extname(path).slice(1), ...lines, marker];

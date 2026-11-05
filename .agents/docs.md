@@ -36,6 +36,22 @@ page with `usePagePath()` (`theme/sidebar.ts`), never `route.path`, which
 includes the base. A public file a script asks for starts from
 `import.meta.env.BASE_URL` (the icon sprite in `theme/index.ts`).
 
+## Search engines and assistants
+
+- **`seo.ts`**: a page's description is the paragraph under its `# Title`
+  (cut at a sentence, ~160 characters), unless its frontmatter sets
+  `description:`, which a page opening with anything but prose needs. The title
+  template says what the page is by its folder (`· Headless Vue Component`,
+  `· Vue UI Component`). `transformHead` adds the canonical link, `og:*` and
+  JSON-LD (the project on the home page, a breadcrumb elsewhere).
+- **`llms.ts`**: every page is also written as `<page>.md` beside its HTML, with
+  each `::: preview`'s files (a sheet several demos import, once) and each
+  `::: api` as markdown tables, plus `llms.txt` (the sidebars as an index) and
+  `llms-full.txt` (every page). The dev server serves the same files. A page no
+  sidebar lists is left out of both indexes.
+- **The deploy checks out the full history** (`fetch-depth: 0`): `lastUpdated`
+  reads each page's git date for the sitemap's `lastmod`.
+
 ## Demos
 
 What the pages render lives in `docs/.vitepress/` beside the theme: the demos
