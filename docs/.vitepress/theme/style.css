@@ -15,11 +15,11 @@
   --radius-docs-window: 22px;
   --radius-docs-card: 15px;
 
-  --color-docs-bg: light-dark(#ffffff, #111111);
-  --color-docs-surface: light-dark(#f5f5f5, #191919);
+  --color-docs-bg: light-dark(#f2f2f2, #111111);
+  --color-docs-surface: light-dark(#ffffff, #191919);
   --color-docs-border: light-dark(#e7e7e7, #262626);
   --color-docs-text: light-dark(#111111, #f2f2f2);
-  --color-docs-accent: light-dark(#11782a, #85e89d);
+  --color-docs-accent: light-dark(#0c8f88, #19e2d8);
   --color-docs-danger: #c54428;
 }
 
@@ -61,9 +61,22 @@
     --demo-color-canvas: color-mix(in oklab, var(--demo-color-backdrop) 97%, var(--demo-color-text));
     color: var(--demo-color-text);
   }
+
+  .animate-appear {
+    animation: animate-appear 700ms cubic-bezier(0.2, 0.8, 0.2, 1) calc(var(--delay, 0) * 70ms) backwards;
+  }
+
+  @keyframes animate-appear {
+    from {
+      opacity: 0;
+      filter: blur(8px);
+      translate: 0 8px;
+    }
+  }
 }
 
 @custom-variant dark (&:is(.dark, :where(.dark *)));
+@custom-variant light (&:is(:root:not(.dark), :where(:root:not(.dark) *)));
 
 @utility edged {
   box-shadow:
@@ -79,6 +92,7 @@
 
 @utility pill {
   @apply bg-docs-bg edged;
+  @apply light:bg-white;
 
   &:is(a) {
     @apply hover:bg-docs-surface duration-200;

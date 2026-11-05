@@ -1,5 +1,4 @@
 <template>
-  <!-- clipped: the beams are taller than this short page, and would scroll it -->
   <div class="min-h-dvh relative isolate overflow-clip">
     <BeamShader
       :key="String(isDark)"
@@ -7,7 +6,7 @@
       class="absolute inset-x-0 top-0 -z-1 h-[min(68rem,130svh)] w-full mask-b-from-50%"
     />
 
-    <Header class="sticky top-0" />
+    <Header />
 
     <main class="mx-auto flex max-w-5xl flex-col items-center px-6 pt-20 pb-30 text-center sm:pt-28">
       <div

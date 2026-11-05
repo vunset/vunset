@@ -1,5 +1,5 @@
 <template>
-  <header class="z-5" :class="{ 'bg-docs-bg/90 backdrop-blur-xs': page.relativePath !== 'index.md' && !page.isNotFound }">
+  <header class="z-5 sticky top-0">
     <div
       class="flex justify-between md:grid md:grid-cols-[1fr_auto_1fr] gap-x-6 items-center max-w-7xl h-(--header-height) mx-auto px-4"
     >
@@ -124,6 +124,11 @@
         <MobileMenu class="lg:hidden" />
       </div>
     </div>
+
+    <div
+      v-if="page.relativePath !== 'index.md' && !page.isNotFound"
+      class="absolute bg-docs-bg/70 mask-b-from-25% backdrop-blur-sm inset-0 -bottom-10 pointer-events-none -z-1"
+    />
   </header>
 </template>
 

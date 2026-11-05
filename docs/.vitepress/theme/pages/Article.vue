@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Header class="sticky top-0" />
+    <Header />
 
     <main
       class="grid lg:grid-cols-[14rem_minmax(0,1fr)] xl:grid-cols-[minmax(12rem,1fr)_minmax(0,48rem)_minmax(12rem,1fr)] gap-x-8 max-w-7xl mx-auto overflow-clip"

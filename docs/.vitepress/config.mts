@@ -28,6 +28,7 @@ const api = {
   uiRoot: fileURLToPath(new URL('../../packages/ui/src', import.meta.url)),
   tsconfig: fileURLToPath(new URL('./tsconfig.api.json', import.meta.url))
 };
+
 const demos = fileURLToPath(new URL('./demos', import.meta.url));
 
 const llms: LlmsOptions = {
@@ -36,7 +37,7 @@ const llms: LlmsOptions = {
   url: site.url,
   intro: [
     'Packages: `@vunset/vue` (headless parts, no styles), `@vunset/ui` (pre-styled components built from',
-    'them, `import \'@vunset/ui/all.css\'`), `@vunset/nuxt` (a module registering both, no imports needed),',
+    "them, `import '@vunset/ui/all.css'`), `@vunset/nuxt` (a module registering both, no imports needed),",
     '`@vunset/utils` (plain date, number and string helpers, re-exported by `@vunset/vue`).',
     '',
     'How `@vunset/vue` works: a component is a root plus parts (`DialogRoot` > `DialogTrigger`, `DialogPopup`).',
@@ -47,8 +48,8 @@ const llms: LlmsOptions = {
     '`@vunset/ui` components are named `App*` (anything) or `Form*` (holds a form value), styled by a `.app-*`',
     'or `.form-*` class and themed with CSS variables.',
     '',
-    'Each page below is also served as markdown at its URL plus `.md`, with every example\'s source and every',
-    'part\'s props, state, slots and events written out.'
+    "Each page below is also served as markdown at its URL plus `.md`, with every example's source and every",
+    "part's props, state, slots and events written out."
   ].join('\n')
 };
 

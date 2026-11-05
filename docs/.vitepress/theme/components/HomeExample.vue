@@ -27,11 +27,11 @@ const demo = computed(() => (kind.value === 'ui' ? InputUi : styling.value === '
       <template #headless>
         <TabsRoot v-model="styling" class="relative">
           <TabsPanel value="tailwind">
-            <ScrollArea fade="y" class="home-code"><slot name="tailwind" /></ScrollArea>
+            <ScrollArea fade="y" class="h-60 overflow-auto"><slot name="tailwind" /></ScrollArea>
           </TabsPanel>
 
           <TabsPanel value="css">
-            <ScrollArea fade="y" class="home-code"><slot name="css" /></ScrollArea>
+            <ScrollArea fade="y" class="h-60 overflow-auto"><slot name="css" /></ScrollArea>
           </TabsPanel>
 
           <TabsList aria-label="Styling" class="absolute right-2 bottom-2 isolate flex rounded-full bg-docs-bg p-0.5">
@@ -58,7 +58,7 @@ const demo = computed(() => (kind.value === 'ui' ? InputUi : styling.value === '
       </template>
 
       <template #ui>
-        <ScrollArea fade="y" class="home-code"><slot name="ui" /></ScrollArea>
+        <ScrollArea fade="y" class="h-60 overflow-auto"><slot name="ui" /></ScrollArea>
       </template>
     </CodeTabs>
 
@@ -67,11 +67,3 @@ const demo = computed(() => (kind.value === 'ui' ? InputUi : styling.value === '
     </Stage>
   </div>
 </template>
-
-<style>
-@reference '../style.css';
-
-.home-code {
-  @apply h-60 overflow-auto;
-}
-</style>
