@@ -178,7 +178,7 @@
 
     &[data-enter-from][data-activation-direction='left'],
     &[data-leave-to][data-activation-direction='right'] {
-      transform: translateX(-var(--ui-panel-offset));
+      transform: translateX(calc(var(--ui-panel-offset) * -1));
     }
 
     &[data-enter-from][data-activation-direction='down'],
@@ -188,7 +188,7 @@
 
     &[data-enter-from][data-activation-direction='up'],
     &[data-leave-to][data-activation-direction='down'] {
-      transform: translateY(-var(--ui-panel-offset));
+      transform: translateY(calc(var(--ui-panel-offset) * -1));
     }
   }
 }
