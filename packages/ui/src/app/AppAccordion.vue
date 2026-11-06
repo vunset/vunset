@@ -46,6 +46,8 @@ withDefaults(
     sectionClass?: HTMLAttributes['class'];
     /** Classes for each trigger row. */
     triggerClass?: HTMLAttributes['class'];
+    /** Classes for each title. */
+    titleClass?: HTMLAttributes['class'];
     /** Classes for each panel's content. */
     panelClass?: HTMLAttributes['class'];
   }>(),
@@ -92,7 +94,7 @@ defineSlots<{
     >
       <AccordionHeader class="app-accordion-header">
         <AccordionTrigger class="app-collapsible-trigger" :class="triggerClass">
-          <span class="app-collapsible-title">
+          <span class="app-collapsible-title" :class="titleClass">
             <slot name="title" :section="section" :open="open">{{ section.title }}</slot>
           </span>
 

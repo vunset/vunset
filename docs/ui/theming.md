@@ -49,6 +49,7 @@ every component takes a `<part>-class` prop for each of them:
 - `popup-class` is the panel of anything that opens one.
 - Overlays add `trigger-class`, `backdrop-class`, `header-class`,
   `body-class` and `footer-class`.
+- Anything with a `title` takes `title-class` for it.
 
 They take whatever `class` takes: a string, an object or an array. Each
 component's page lists the ones it has under **Styling**.

@@ -76,6 +76,16 @@ first line, the button sits inset and sized to fit. Give it `size="xs"` or
 ::: preview ui/form-addon/Buttons
 :::
 
+## Fields
+
+Another field at either end, like a FormSelect picking a format or a
+currency, joins the box the same way. The outer box keeps the padding,
+border and focus ring, and the field's own border shows only as the divider.
+Give it an `aria-label`, since a label above it would break the row.
+
+::: preview ui/form-addon/Fields
+:::
+
 ## Styling
 
 | Class        | On                                                         |

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
 import { Part } from '@vunset/vue';
 import type { AppTone } from './AppButton.vue';
 import AppIcon from './AppIcon.vue';
@@ -14,6 +15,8 @@ withDefaults(
     description?: string;
     /** Colors the icon: `neutral`, `accent`, `success`, `warning` or `danger`, as on a button. */
     tone?: AppTone;
+    /** Classes for the title. */
+    titleClass?: HTMLAttributes['class'];
     /** Element or component to render. */
     as?: string | object;
   }>(),
@@ -37,7 +40,7 @@ defineSlots<{
     <span v-if="icon || $slots.icon" class="app-empty-state-icon">
       <slot name="icon"><AppIcon :name="icon!" /></slot>
     </span>
-    <p v-if="title || $slots.title" class="app-empty-state-title">
+    <p v-if="title || $slots.title" class="app-empty-state-title" :class="titleClass">
       <slot name="title">{{ title }}</slot>
     </p>
     <p v-if="description || $slots.description" class="app-empty-state-description">

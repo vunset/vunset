@@ -46,8 +46,8 @@ the first and last.
 | `app-accordion-header` | The heading around a trigger |
 
 The heading row, chevron and panel use [AppCollapsible's classes](/ui/app-collapsible#styling).
-`section-class`, `trigger-class` and `panel-class` add classes to each
-section, heading row and content. See
+`section-class`, `trigger-class`, `title-class` and `panel-class` add classes
+to each section, heading row, title and content. See
 [classes on the inner parts](/ui/theming#classes-on-the-inner-parts).
 
 ## API Reference

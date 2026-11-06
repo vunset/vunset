@@ -2,6 +2,24 @@
 
 All four packages are released together under one version.
 
+## 1.0.0-rc.6
+
+### @vunset/vue
+
+- `Input` and `Textarea` keep the caret where you type. With `v-model`, an
+  edit in the middle threw it to the end.
+- A collapsible's height follows content that changes while it's open.
+- `ChartLegend` takes `isolate`: a click shows only that series, a second
+  shows all again. Shift, Ctrl or ⌘ adds or removes one.
+- A virtual table's `rowHeight` is set on each row as `height`.
+
+### @vunset/ui
+
+- Anything with a `title` takes `title-class`.
+- FormCheckbox checked and disabled keeps its color, faded.
+- AppChartArea, AppChartLine, AppChartBar and AppChartDonut take
+  `legend-isolate`.
+
 ## 1.0.0-rc.5
 
 ### @vunset/vue

@@ -322,6 +322,27 @@ describe('Dialog', () => {
       expect(sibling.hasAttribute('inert')).toBe(false);
     });
 
+    it('leaves the #teleports container it renders into reachable', async () => {
+      const teleports = document.createElement('div');
+      teleports.id = 'teleports';
+      document.body.appendChild(teleports);
+      const sibling = document.createElement('div');
+      document.body.appendChild(sibling);
+
+      mountDialog();
+      trigger().click();
+      await settle();
+      expect(teleports.contains(popup())).toBe(true);
+      expect(teleports.hasAttribute('inert')).toBe(false);
+      expect(teleports.hasAttribute('aria-hidden')).toBe(false);
+      expect(sibling.hasAttribute('inert')).toBe(true);
+
+      escape();
+      await settle();
+      expect(sibling.hasAttribute('inert')).toBe(false);
+      teleports.remove();
+    });
+
     it('leaves the page reachable when not modal', async () => {
       const sibling = document.createElement('div');
       document.body.appendChild(sibling);

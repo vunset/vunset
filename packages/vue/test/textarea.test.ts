@@ -55,6 +55,27 @@ describe('Textarea', () => {
     expect(el.hasAttribute('data-filled')).toBe(true);
   });
 
+  it('keeps the caret where the user types, not at the end', async () => {
+    const { model, el } = mountTextarea({ modelValue: 'hello world' });
+    el.focus();
+    el.value = 'hello, world';
+    el.setSelectionRange(6, 6);
+    el.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText', data: ',' }));
+    await nextTick();
+    await nextTick();
+    expect(model.value).toBe('hello, world');
+    expect(el.selectionStart).toBe(6);
+  });
+
+  it('puts back the model when it does not take the typed text', async () => {
+    wrapper = mount(defineComponent(() => () => h(Textarea as any, { modelValue: 'fixed' })), {
+      attachTo: document.body
+    });
+    const el = wrapper.find('textarea').element as HTMLTextAreaElement;
+    await type(el, 'changed');
+    expect(el.value).toBe('fixed');
+  });
+
   it('is labeled by the field around it', async () => {
     wrapper = mount(
       defineComponent(

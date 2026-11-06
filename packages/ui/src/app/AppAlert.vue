@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { HTMLAttributes } from 'vue';
 import { computed } from 'vue';
 import { AlertRoot, AlertTitle, AlertDescription } from '@vunset/vue';
 import type { AppTone } from './AppButton.vue';
@@ -19,6 +20,8 @@ const props = withDefaults(
     closable?: boolean;
     /** Names the close button. */
     closeLabel?: string;
+    /** Classes for the title. */
+    titleClass?: HTMLAttributes['class'];
     /** Element or component to render. */
     as?: string | object;
   }>(),
@@ -49,7 +52,7 @@ const iconName = computed(() => ICONS[props.tone] ?? ICONS.neutral!);
     </span>
 
     <div class="app-alert-body">
-      <AlertTitle v-if="title || $slots.title" class="app-alert-title">
+      <AlertTitle v-if="title || $slots.title" class="app-alert-title" :class="titleClass">
         <slot name="title">{{ title }}</slot>
       </AlertTitle>
 

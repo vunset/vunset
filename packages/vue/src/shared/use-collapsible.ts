@@ -84,19 +84,41 @@ export function useCollapsible(options: UseCollapsibleOptions = {}): UseCollapsi
 
   let abort: AbortController | null = null;
   let observer: ResizeObserver | null = null;
+  let childObserver: MutationObserver | null = null;
 
   function measure(panel: HTMLElement) {
     panel.style.setProperty(PANEL_HEIGHT_VAR, `${panel.scrollHeight}px`);
     panel.style.setProperty(PANEL_WIDTH_VAR, `${panel.scrollWidth}px`);
   }
 
-  function observe(panel: HTMLElement) {
+  function unobserve() {
     observer?.disconnect();
     observer = null;
+    childObserver?.disconnect();
+    childObserver = null;
+  }
+
+  // The panel's own box is capped by the height it was given, so content growing inside it never
+  // resizes it: its children are watched too, and re-listed as they come and go.
+  function observe(panel: HTMLElement) {
+    unobserve();
     if (typeof ResizeObserver === 'undefined') return;
 
-    observer = new ResizeObserver(() => measure(panel));
-    observer.observe(panel);
+    const resize = new ResizeObserver(() => measure(panel));
+    const track = () => {
+      resize.disconnect();
+      resize.observe(panel);
+      for (const child of Array.from(panel.children)) resize.observe(child);
+    };
+    observer = resize;
+    track();
+
+    if (typeof MutationObserver === 'undefined') return;
+    childObserver = new MutationObserver(() => {
+      track();
+      measure(panel);
+    });
+    childObserver.observe(panel, { childList: true });
   }
 
   watch(
@@ -114,8 +136,7 @@ export function useCollapsible(options: UseCollapsibleOptions = {}): UseCollapsi
         return;
       }
 
-      observer?.disconnect();
-      observer = null;
+      unobserve();
 
       const { signal } = abort;
       waitForAnimationsToFinish(panel, signal).then(() => {
@@ -127,7 +148,7 @@ export function useCollapsible(options: UseCollapsibleOptions = {}): UseCollapsi
 
   onScopeDispose(() => {
     abort?.abort();
-    observer?.disconnect();
+    unobserve();
   });
 
   function toggle() {

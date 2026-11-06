@@ -36,8 +36,15 @@
     }
 
     &[data-disabled] {
-      background-color: color-mix(in srgb, var(--ui-text) 10%, var(--ui-bg));
       cursor: not-allowed;
+    }
+
+    &[data-disabled]:not([data-checked], [data-indeterminate]) {
+      background-color: color-mix(in srgb, var(--ui-text) 10%, var(--ui-bg));
+    }
+
+    &[data-disabled]:is([data-checked], [data-indeterminate]) {
+      opacity: 0.5;
     }
   }
 

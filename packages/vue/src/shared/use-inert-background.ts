@@ -53,17 +53,18 @@ export function useInertBackground(enabled: MaybeRefOrGetter<boolean>, container
     { flush: 'pre' }
   );
 
-  // Taken after it, once the surface is in the page to leave out.
+  // Taken only once the surface is in the page to leave out: it can render a tick after `enabled`,
+  // and taken before, a container it teleports into (Nuxt's `#teleports`) would go inert with it.
   watch(
-    () => toValue(enabled),
-    (on) => on && acquire(),
+    () => (toValue(enabled) ? container.value : null),
+    (surface) => surface && acquire(),
     { flush: 'post' }
   );
 
-  // Enabled from the start (mounted already open): wait for the surface to be in the page.
+  // Enabled from the start (mounted already open), with the surface already set.
   if (getCurrentInstance()) {
     onMounted(() => {
-      if (toValue(enabled)) acquire();
+      if (toValue(enabled) && container.value) acquire();
     });
   }
 

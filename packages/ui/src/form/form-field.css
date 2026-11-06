@@ -130,35 +130,48 @@
     max-height: calc(var(--ui-control-height) - 2 * var(--ui-border-width) - 0.5rem);
   }
 
+  /* A button or another field's box (a FormSelect) at either end fills that end, its own border only the divider. */
   .form-control:not(.form-textarea) {
-    &:has(> .form-addon:first-child .app-button) {
+    &:has(> .form-addon:first-child :is(.app-button, .form-control)) {
       padding-inline-start: 0;
     }
 
-    &:has(> .form-addon:last-child .app-button) {
+    &:has(> .form-addon:last-child :is(.app-button, .form-control)) {
       padding-inline-end: 0;
     }
 
-    & > .form-addon:is(:first-child, :last-child):has(.app-button) {
+    & > .form-addon:is(:first-child, :last-child):has(:is(.app-button, .form-control)) {
       align-self: stretch;
       align-items: stretch;
     }
 
-    & > .form-addon:is(:first-child, :last-child) .app-button {
+    /* The wrappers between the addon and a nested field's box (its field, its root). */
+    & > .form-addon:is(:first-child, :last-child) :has(.form-control) {
+      display: flex;
+      align-items: stretch;
+    }
+
+    & > .form-addon:is(:first-child, :last-child) :is(.app-button, .form-control) {
       height: auto;
       max-height: none;
       border-block-color: transparent;
       --form-addon-radius: calc(var(--ui-radius) - var(--ui-border-width));
     }
 
-    & > .form-addon:first-child .app-button {
+    /* The outer box draws the focus ring, around both. */
+    & > .form-addon:is(:first-child, :last-child) .form-control {
+      flex: 1;
+      box-shadow: none;
+    }
+
+    & > .form-addon:first-child :is(.app-button, .form-control) {
       border-inline-start-color: transparent;
       border-radius: 0;
       border-start-start-radius: var(--form-addon-radius);
       border-end-start-radius: var(--form-addon-radius);
     }
 
-    & > .form-addon:last-child .app-button {
+    & > .form-addon:last-child :is(.app-button, .form-control) {
       border-inline-end-color: transparent;
       border-radius: 0;
       border-start-end-radius: var(--form-addon-radius);

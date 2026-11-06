@@ -100,8 +100,8 @@ closes it.
 | `app-overlay-title` | The title |
 | `app-overlay-description` | The description |
 
-For classes on the inner parts, use `trigger-class`, `popup-class` and
-`header-class`. See
+For classes on the inner parts, use `trigger-class`, `popup-class`,
+`header-class` and `title-class`. See
 [classes on the inner parts](/ui/theming#classes-on-the-inner-parts). To fit
 your own layers above or below it, see [stacking](/ui/theming#stacking).
 

@@ -59,6 +59,8 @@ const props = withDefaults(
     popupClass?: HTMLAttributes['class'];
     /** Classes for the header around the title and description. */
     headerClass?: HTMLAttributes['class'];
+    /** Classes for the title. */
+    titleClass?: HTMLAttributes['class'];
   }>(),
   {
     open: undefined,
@@ -120,7 +122,7 @@ function close() {
                 class="app-overlay-header"
                 :class="headerClass"
               >
-                <PopoverTitle v-if="title || $slots.title" class="app-overlay-title">
+                <PopoverTitle v-if="title || $slots.title" class="app-overlay-title" :class="titleClass">
                   <slot name="title">{{ title }}</slot>
                 </PopoverTitle>
 

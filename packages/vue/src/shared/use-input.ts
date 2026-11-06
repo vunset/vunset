@@ -1,5 +1,6 @@
 import {
   computed,
+  nextTick,
   onScopeDispose,
   ref,
   toValue,
@@ -179,7 +180,9 @@ export function useInput(options: UseInputOptions = {}): UseInputReturn {
     const el = event.target as HTMLInputElement;
     value.value = el.value;
 
-    if (el.value !== value.value) el.value = value.value;
+    nextTick(() => {
+      if (el.value !== value.value) el.value = value.value;
+    });
   }
 
   const controlProps = computed(() => ({

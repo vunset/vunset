@@ -39,6 +39,8 @@ const props = withDefaults(
     align?: Align;
     /** Classes for the popup, beside its own. */
     popupClass?: HTMLAttributes['class'];
+    /** Classes for the title. */
+    titleClass?: HTMLAttributes['class'];
   }>(),
   { title: 'Confirm', confirmText: 'Confirm', cancelText: 'Cancel', tone: 'danger', side: 'top', align: 'start' }
 );
@@ -98,7 +100,7 @@ function onOpenChange(open: boolean): void {
               <div class="app-confirm-header">
                 <AppIcon name="alert-warning" class="app-confirm-icon" />
 
-                <PopoverTitle class="app-confirm-title">{{ title }}</PopoverTitle>
+                <PopoverTitle class="app-confirm-title" :class="titleClass">{{ title }}</PopoverTitle>
               </div>
 
               <PopoverDescription v-if="props.message || props.content || $slots.message" class="app-confirm-message">

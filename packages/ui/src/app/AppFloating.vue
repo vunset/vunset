@@ -51,6 +51,8 @@ withDefaults(
     bottom?: number;
     /** Classes for the header, the drag handle. */
     headerClass?: HTMLAttributes['class'];
+    /** Classes for the title. */
+    titleClass?: HTMLAttributes['class'];
     /** Classes for the body, which scrolls. */
     bodyClass?: HTMLAttributes['class'];
   }>(),
@@ -117,7 +119,7 @@ function close() {
     <Portal>
       <Popup class="app-surface app-floating" v-bind="$attrs">
         <FloatingHeader class="app-floating-header" :class="headerClass">
-          <FloatingTitle v-if="title || $slots.title" class="app-floating-title">
+          <FloatingTitle v-if="title || $slots.title" class="app-floating-title" :class="titleClass">
             <slot name="title">{{ title }}</slot>
           </FloatingTitle>
 

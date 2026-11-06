@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
-import { defineComponent, h, nextTick } from 'vue';
+import { defineComponent, h, nextTick, ref } from 'vue';
 import {
   CollapsibleRoot, CollapsibleTrigger, CollapsiblePanel,
 } from '../src';
@@ -90,6 +90,63 @@ describe('Collapsible', () => {
       await settle();
       const el = document.querySelector('[id]:not(button)') as HTMLElement;
       expect(el.style.getPropertyValue('--collapsible-panel-height')).toMatch(/px$/);
+    });
+
+    it('re-measures when content grows inside the capped panel', async () => {
+      const observers: { targets: Set<Element>; fire: () => void }[] = [];
+      vi.stubGlobal(
+        'ResizeObserver',
+        class {
+          targets = new Set<Element>();
+          constructor(private callback: () => void) {
+            observers.push(this);
+          }
+          observe(el: Element) {
+            this.targets.add(el);
+          }
+          unobserve(el: Element) {
+            this.targets.delete(el);
+          }
+          disconnect() {
+            this.targets.clear();
+          }
+          fire() {
+            this.callback();
+          }
+        }
+      );
+
+      try {
+        const show = ref(false);
+        const Host = defineComponent({
+          setup: () => () =>
+            h(CollapsibleRoot as any, { defaultOpen: true }, {
+              default: () => [
+                h(CollapsibleTrigger as any, null, { default: () => 'Toggle' }),
+                h(CollapsiblePanel as any, null, {
+                  default: () => [h('div', { class: 'content' }, 'Content'), show.value ? h('div', { class: 'more' }) : null]
+                })
+              ]
+            })
+        });
+        mount(Host, { attachTo: document.body });
+        await settle();
+
+        const el = document.querySelector<HTMLElement>('[data-part="collapsible-panel"]')!;
+        const observer = observers.find((o) => o.targets.has(el))!;
+        // The panel's own box can't grow past the height it was given; its content can.
+        expect(observer.targets.has(el.querySelector('.content')!)).toBe(true);
+
+        Object.defineProperty(el, 'scrollHeight', { configurable: true, value: 200 });
+        observer.fire();
+        expect(el.style.getPropertyValue('--collapsible-panel-height')).toBe('200px');
+
+        show.value = true;
+        await settle();
+        expect(observer.targets.has(el.querySelector('.more')!)).toBe(true);
+      } finally {
+        vi.unstubAllGlobals();
+      }
     });
 
     it('applies data-enter-from while opening', async () => {

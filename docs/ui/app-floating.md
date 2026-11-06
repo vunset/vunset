@@ -68,8 +68,8 @@ window. It stays there as the window resizes, until someone drags it.
 | `app-floating-footer` | The footer |
 | `app-floating-resizer` | Each edge and corner handle, with `data-handle` |
 
-`class` goes on the panel. `header-class` and `body-class` add classes to the
-header and body. See [classes on the inner parts](/ui/theming#classes-on-the-inner-parts).
+`class` goes on the panel. `header-class`, `title-class` and `body-class` add classes to
+the header, title and body. See [classes on the inner parts](/ui/theming#classes-on-the-inner-parts).
 To fit your own layers above or below it, see [stacking](/ui/theming#stacking).
 
 <<< ../../packages/ui/src/app/app-floating.css

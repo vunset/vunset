@@ -28,7 +28,7 @@ Each part shows only when it has something: the header with a `title`,
 `description` or `#actions`, the body with the default slot, the footer with
 `#footer`. The `#title` and `#description` slots take markup instead of the
 props, and `#header` replaces the whole header. `class` and other attributes
-go on the card, and `header-class`, `body-class` and `footer-class` on its
+go on the card, and `header-class`, `title-class`, `body-class` and `footer-class` on its
 parts (see [classes on the inner parts](/ui/theming#classes-on-the-inner-parts)).
 
 ## Examples

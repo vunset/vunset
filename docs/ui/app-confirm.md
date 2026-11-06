@@ -73,7 +73,7 @@ doesn't confirm anything.
 | `app-confirm-actions` | The two buttons |
 | `app-confirm-cancel`, `app-confirm-confirm` | Each button, an [AppButton](/ui/app-button) |
 
-`popup-class` adds classes to the panel. See
+`popup-class` and `title-class` add classes to the panel and its title. See
 [classes on the inner parts](/ui/theming#classes-on-the-inner-parts).
 
 <<< ../../packages/ui/src/app/app-confirm.css

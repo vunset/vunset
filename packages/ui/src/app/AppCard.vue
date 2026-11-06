@@ -11,6 +11,8 @@ withDefaults(
     description?: string;
     /** Classes for the header, beside its own. */
     headerClass?: HTMLAttributes['class'];
+    /** Classes for the title, beside its own. */
+    titleClass?: HTMLAttributes['class'];
     /** Classes for the body, beside its own. */
     bodyClass?: HTMLAttributes['class'];
     /** Classes for the footer, beside its own. */
@@ -44,7 +46,7 @@ defineSlots<{
     >
       <slot name="header">
         <div class="app-card-heading">
-          <p v-if="title || $slots.title" class="app-card-title">
+          <p v-if="title || $slots.title" class="app-card-title" :class="titleClass">
             <slot name="title">{{ title }}</slot>
           </p>
           <p v-if="description || $slots.description" class="app-card-description">

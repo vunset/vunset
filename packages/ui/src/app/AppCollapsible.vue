@@ -20,6 +20,8 @@ withDefaults(
     keepMounted?: boolean;
     /** Classes for the trigger row. */
     triggerClass?: HTMLAttributes['class'];
+    /** Classes for the title. */
+    titleClass?: HTMLAttributes['class'];
     /** Classes for the panel's content. */
     panelClass?: HTMLAttributes['class'];
   }>(),
@@ -50,7 +52,7 @@ defineSlots<{
     @update:open="emit('update:open', $event)"
   >
     <CollapsibleTrigger class="app-collapsible-trigger" :class="triggerClass">
-      <span class="app-collapsible-title">
+      <span class="app-collapsible-title" :class="titleClass">
         <slot name="trigger" :open="isOpen">{{ title }}</slot>
       </span>
 

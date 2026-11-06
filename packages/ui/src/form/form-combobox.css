@@ -18,7 +18,7 @@
     }
 
     /* A joined button spans the box's padding too. */
-    & > .form-addon:first-child:has(.app-button) {
+    & > .form-addon:first-child:has(:is(.app-button, .form-control)) {
       margin-block: calc(-1 * var(--form-combobox-inset));
     }
 

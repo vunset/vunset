@@ -49,8 +49,8 @@ keep it, so find-in-page reaches it or its state survives.
 | `app-collapsible-panel` | The panel, which slides by `--collapsible-panel-height` |
 | `app-collapsible-content` | The content's padding |
 
-`trigger-class` and `panel-class` add classes to the trigger row and the
-content. See [classes on the inner parts](/ui/theming#classes-on-the-inner-parts).
+`trigger-class`, `title-class` and `panel-class` add classes to the trigger
+row, its title and the content. See [classes on the inner parts](/ui/theming#classes-on-the-inner-parts).
 
 <<< ../../packages/ui/src/app/app-collapsible.css
 
