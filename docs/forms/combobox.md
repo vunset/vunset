@@ -116,6 +116,18 @@ add it to your options.
 ::: preview combobox/Creatable
 :::
 
+### Async search
+
+`v-model:query` is the typed text: `''` while nothing is typed, and again once
+a choice is made. Binding it, or just listening with `@update:query`, makes the
+search yours: search with it, set `options` from the answer, and the combobox
+shows them as they come, without filtering them again. A `filter` still
+applies if you pass one. Setting the query seeds or clears the search.
+`SelectRoot` has it too, for a `searchable` select.
+
+::: preview combobox/AsyncSearch
+:::
+
 ### Custom chips
 
 The `chip` slot builds each chip from `ComboboxChip`, here with a color dot,

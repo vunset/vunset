@@ -70,7 +70,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 
-  & [data-part='placeholder'] {
+  &:has(> [data-part='placeholder']) {
     opacity: 0.5;
   }
 }

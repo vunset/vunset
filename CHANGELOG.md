@@ -2,6 +2,21 @@
 
 All four packages are released together under one version.
 
+## 1.0.0-rc.7
+
+### @vunset/vue
+
+- `ComboboxRoot` and `SelectRoot` take `v-model:query`, the typed text: `''`
+  while nothing is typed, and again once a choice is made. Setting it seeds or
+  clears the search. Bound or listened to, the search is yours: the list shows
+  `options` as given, unfiltered, unless a `filter` is passed.
+
+### @vunset/ui
+
+- FormSelect and FormCombobox take `loading`: the box draws a moving stripes and the list is marked busy, but it stays usable,
+  so a search goes on typing.
+- FormSelect's placeholder ellipsis is muted with the placeholder.
+
 ## 1.0.0-rc.6
 
 ### @vunset/vue

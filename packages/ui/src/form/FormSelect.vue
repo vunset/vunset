@@ -36,6 +36,8 @@ defineOptions({ name: 'FormSelect', inheritAttrs: false });
 // Forwarded only when bound, so a field without `v-model` keeps its own value.
 const modelBound = isPropBound('modelValue');
 const openBound = isPropBound('open');
+// Binding the query hands the search to the app, so only a bound one goes on.
+const queryBound = isPropBound('query') || isPropBound('onUpdate:query');
 
 const props = withDefaults(
   defineProps<{
@@ -72,6 +74,8 @@ const props = withDefaults(
     valueKey?: string;
     labelKey?: string;
     filter?: (option: ListboxOption, query: string) => boolean;
+    /** The search text, bound with `v-model:query`: `''` when nothing is typed. Bound or listened to, it is your search: the list keeps every option, unless a `filter` is given. */
+    query?: string;
     side?: Side;
     align?: Align;
     sideOffset?: number;
@@ -83,6 +87,10 @@ const props = withDefaults(
     placeholder?: string;
     searchPlaceholder?: string;
     emptyText?: string;
+    /** Draws moving stripes on the box and marks the list busy, but stays usable, so a search can go on typing. */
+    loading?: boolean;
+    /** Shown in place of `empty-text` while loading. */
+    loadingText?: string;
     name?: string;
     id?: string;
     disabled?: boolean;
@@ -110,13 +118,15 @@ const props = withDefaults(
     clearable: false,
     loop: true,
     searchPlaceholder: 'Search',
-    emptyText: 'No matches'
+    emptyText: 'No matches',
+    loadingText: 'Loading…'
   }
 );
 
 const emit = defineEmits<{
   'update:modelValue': [value: ListboxOptionValue | ListboxOptionValue[] | null | undefined];
   'update:open': [open: boolean];
+  'update:query': [query: string];
 }>();
 
 // Field-wide state goes to `FormField`, which the select inherits it from.
@@ -128,6 +138,8 @@ const selectProps = computed(() => {
     placeholder,
     searchPlaceholder,
     emptyText,
+    loading,
+    loadingText,
     name,
     id,
     disabled,
@@ -143,9 +155,15 @@ const selectProps = computed(() => {
     size,
     modelValue,
     open,
+    query,
     ...rest
   } = props;
-  return { ...rest, ...(modelBound ? { modelValue } : {}), ...(openBound ? { open } : {}) };
+  return {
+    ...rest,
+    ...(modelBound ? { modelValue } : {}),
+    ...(openBound ? { open } : {}),
+    ...(queryBound ? { query, 'onUpdate:query': (next: string) => emit('update:query', next) } : {})
+  };
 });
 
 const { fieldAttrs, controlAttrs: triggerAttrs } = useFieldAttrs();
@@ -183,6 +201,7 @@ const { fieldAttrs, controlAttrs: triggerAttrs } = useFieldAttrs();
       <SelectTrigger
         v-slot="state"
         class="form-control form-select-trigger"
+        :data-loading="loading || undefined"
         :class="controlClass"
         v-bind="triggerAttrs"
       >
@@ -247,7 +266,7 @@ const { fieldAttrs, controlAttrs: triggerAttrs } = useFieldAttrs();
                   <AppIcon name="chevron-up" class="form-icon" />
                 </SelectScrollIndicator>
 
-                <SelectList class="form-listbox-list">
+                <SelectList class="form-listbox-list" :aria-busy="loading || undefined">
                   <template v-if="$slots.option" #option="option"><slot name="option" v-bind="option" /></template>
                   <template v-if="$slots.group" #group="group"><slot name="group" v-bind="group" /></template>
                 </SelectList>
@@ -258,7 +277,8 @@ const { fieldAttrs, controlAttrs: triggerAttrs } = useFieldAttrs();
               </div>
 
               <SelectEmpty class="form-listbox-empty">
-                <slot name="empty">{{ emptyText }}</slot>
+                <slot v-if="loading" name="loading">{{ loadingText }}</slot>
+                <slot v-else name="empty">{{ emptyText }}</slot>
               </SelectEmpty>
             </div>
           </Popup>

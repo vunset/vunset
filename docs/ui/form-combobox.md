@@ -88,6 +88,24 @@ enforce it, so the check is up to you.
 ::: preview ui/form-combobox/Validation
 :::
 
+### Loading
+
+`loading` draws moving stripes on the box, like a loading
+[AppButton](/ui/app-button), and marks the list busy. It blocks nothing, so
+you can keep typing while results load. While loading, a popup with no options
+says `loading-text` ("Loading…") in place of `empty-text`; the `#loading` slot
+replaces it.
+
+For a server search, bind `v-model:query` (or just `@update:query`) and set
+`options` from the answer. A bound query makes the search yours, so the
+combobox shows the options as they come, without filtering them again; pass a
+`filter` to filter them anyway. The query is `''` while nothing is typed, and
+again once a choice is made. Setting it from outside seeds or clears the
+search.
+
+::: preview ui/form-combobox/Loading
+:::
+
 ### Read-only
 
 A read-only combobox doesn't open, and its chips have no remove buttons.

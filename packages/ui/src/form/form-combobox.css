@@ -39,6 +39,8 @@
 
   .form-combobox-input {
     flex: 1;
+    min-width: 0;
+    max-width: 100%;
     height: var(--form-combobox-row);
     field-sizing: content;
     outline: none;

@@ -21,7 +21,7 @@
     white-space: nowrap;
     text-overflow: ellipsis;
 
-    & [data-part='placeholder'] {
+    &:has(> [data-part='placeholder']) {
       color: var(--ui-muted);
     }
   }

@@ -178,4 +178,28 @@ describe('FormSelect', () => {
     expect(valueText()).toBe('→ France');
     expect(document.querySelector('[role="option"] em')!.textContent).toBe('FRANCE');
   });
+
+  it('stays usable while loading, and says so in the popup', async () => {
+    mountSelect({ loading: true, options: [] });
+    await nextTick();
+
+    expect(trigger().hasAttribute('data-loading')).toBe(true);
+    await open();
+    expect(trigger().getAttribute('aria-expanded')).toBe('true');
+    expect(document.querySelector('[role="listbox"]')!.getAttribute('aria-busy')).toBe('true');
+    expect(document.querySelector('.form-listbox-empty')!.textContent!.trim()).toBe('Loading…');
+
+    await wrapper!.setProps({ loading: false });
+    expect(trigger().hasAttribute('data-loading')).toBe(false);
+    expect(document.querySelector('[role="listbox"]')!.hasAttribute('aria-busy')).toBe(false);
+    expect(document.querySelector('.form-listbox-empty')!.textContent!.trim()).toBe('No matches');
+  });
+
+  it('keeps the options it has while loading', async () => {
+    mountSelect({ loading: true });
+    await open();
+
+    expect(option('Spain')).toBeTruthy();
+    expect(document.querySelector('.form-listbox-empty')).toBeNull();
+  });
 });

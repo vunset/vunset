@@ -48,10 +48,32 @@
       cursor: default;
     }
 
+    /* The same stripes as a loading AppButton. */
+    &[data-loading] {
+      cursor: progress;
+      background-image: repeating-linear-gradient(
+        -75deg,
+        color-mix(in srgb, currentColor 6%, transparent) 0 10px,
+        transparent 10px 20px
+      );
+      background-size: 20px 100%;
+      background-position: 0 0;
+
+      @media (prefers-reduced-motion: no-preference) {
+        animation: form-control-pending 2s linear infinite;
+      }
+    }
+
     &:is(:disabled, [data-disabled]) {
       background-color: color-mix(in srgb, var(--ui-text) 10%, var(--ui-bg));
       cursor: not-allowed;
       color: var(--ui-muted);
+    }
+  }
+
+  @keyframes form-control-pending {
+    to {
+      background-position: 20px 0;
     }
   }
 }

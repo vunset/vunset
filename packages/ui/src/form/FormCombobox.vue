@@ -36,6 +36,8 @@ defineOptions({ name: 'FormCombobox', inheritAttrs: false });
 // Forwarded only when bound, so a field without `v-model` keeps its own value.
 const modelBound = isPropBound('modelValue');
 const openBound = isPropBound('open');
+// Binding the query hands the search to the app, so only a bound one goes on.
+const queryBound = isPropBound('query') || isPropBound('onUpdate:query');
 
 const props = withDefaults(
   defineProps<{
@@ -72,6 +74,8 @@ const props = withDefaults(
     labelKey?: string;
     /** Replaces the built-in search, a case-insensitive match on the label. */
     filter?: (option: ListboxOption, query: string) => boolean;
+    /** The search text, bound with `v-model:query`: `''` when nothing is typed. Bound or listened to, it is your search: the list keeps every option, unless a `filter` is given. */
+    query?: string;
     side?: Side;
     align?: Align;
     sideOffset?: number;
@@ -85,6 +89,10 @@ const props = withDefaults(
     /** Keeps the placeholder beside the chips too. */
     showPlaceholder?: boolean;
     emptyText?: string;
+    /** Draws moving stripes on the box and marks the list busy, but stays usable, so a search can go on typing. */
+    loading?: boolean;
+    /** Shown in place of `empty-text` while loading. */
+    loadingText?: string;
     name?: string;
     id?: string;
     disabled?: boolean;
@@ -113,13 +121,15 @@ const props = withDefaults(
     closeOnSelect: undefined,
     clearable: true,
     loop: true,
-    emptyText: 'No matches'
+    emptyText: 'No matches',
+    loadingText: 'Loading…'
   }
 );
 
 const emit = defineEmits<{
   'update:modelValue': [value: ListboxOptionValue | ListboxOptionValue[] | null | undefined];
   'update:open': [open: boolean];
+  'update:query': [query: string];
   /** Typed text about to become a value, so the page can add it as a real option. */
   create: [value: string];
 }>();
@@ -133,6 +143,8 @@ const comboboxProps = computed(() => {
     placeholder,
     showPlaceholder,
     emptyText,
+    loading,
+    loadingText,
     name,
     id,
     disabled,
@@ -149,9 +161,15 @@ const comboboxProps = computed(() => {
     size,
     modelValue,
     open,
+    query,
     ...rest
   } = props;
-  return { ...rest, ...(modelBound ? { modelValue } : {}), ...(openBound ? { open } : {}) };
+  return {
+    ...rest,
+    ...(modelBound ? { modelValue } : {}),
+    ...(openBound ? { open } : {}),
+    ...(queryBound ? { query, 'onUpdate:query': (next: string) => emit('update:query', next) } : {})
+  };
 });
 const { fieldAttrs, controlAttrs } = useFieldAttrs();
 </script>
@@ -186,7 +204,12 @@ const { fieldAttrs, controlAttrs } = useFieldAttrs();
       @update:open="emit('update:open', $event)"
       @create="emit('create', $event)"
     >
-      <ComboboxTrigger v-slot="state" class="form-control form-combobox-trigger" :class="controlClass">
+      <ComboboxTrigger
+        v-slot="state"
+        class="form-control form-combobox-trigger"
+        :class="controlClass"
+        :data-loading="loading || undefined"
+      >
         <Addon v-if="$slots.start" side="start" class="form-addon">
           <slot name="start" v-bind="state" />
         </Addon>
@@ -260,7 +283,7 @@ const { fieldAttrs, controlAttrs } = useFieldAttrs();
                   <AppIcon name="chevron-up" class="form-icon" />
                 </ComboboxScrollIndicator>
 
-                <ComboboxList class="form-listbox-list">
+                <ComboboxList class="form-listbox-list" :aria-busy="loading || undefined">
                   <template v-if="$slots.option" #option="option"><slot name="option" v-bind="option" /></template>
                   <template v-if="$slots.group" #group="group"><slot name="group" v-bind="group" /></template>
                   <template v-if="$slots.create" #create="option"><slot name="create" v-bind="option" /></template>
@@ -272,7 +295,8 @@ const { fieldAttrs, controlAttrs } = useFieldAttrs();
               </div>
 
               <ComboboxEmpty class="form-listbox-empty">
-                <slot name="empty">{{ emptyText }}</slot>
+                <slot v-if="loading" name="loading">{{ loadingText }}</slot>
+                <slot v-else name="empty">{{ emptyText }}</slot>
               </ComboboxEmpty>
             </div>
           </Popup>

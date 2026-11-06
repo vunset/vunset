@@ -3,6 +3,7 @@ import { applyModelModifiers, type ModelModifiers } from '../../shared/model-mod
 import { Part } from '../../shared/part';
 import { computed, toRef, useAttrs } from 'vue';
 import { mergeProps } from '../../shared/merge-props';
+import { isPropBound } from '../../shared/use-controlled';
 import {
   useListbox,
   provideListboxContext,
@@ -68,6 +69,8 @@ const props = withDefaults(
     labelKey?: string;
     /** Replaces the built-in search, a case-insensitive match on the label. */
     filter?: (option: ListboxOption, query: string) => boolean;
+    /** The search text, bound with `v-model:query`: `''` when nothing is typed. Bound or listened to, it is your search: the list keeps every option, unless a `filter` is given. */
+    query?: string;
     /** Which side of the trigger the popup prefers. */
     side?: Side;
     /** How the popup lines up along that side. */
@@ -100,9 +103,14 @@ const emit = defineEmits<{
   'update:modelValue': [value: ListboxOptionValue | ListboxOptionValue[] | null | undefined];
   /** The popup opened or closed, for `v-model:open`. */
   'update:open': [open: boolean];
+  /** The search text changed, for `v-model:query`. */
+  'update:query': [query: string];
   /** Typed text about to become a value, so the page can add it as a real option. */
   create: [value: string];
 }>();
+
+// Whoever binds the query runs the search, so the options arrive already matched.
+const ownSearch = isPropBound('query') || isPropBound('onUpdate:query');
 
 const api = useListbox({
   mode: 'combobox',
@@ -129,12 +137,14 @@ const api = useListbox({
   presetsLabel: toRef(() => props.presetsLabel),
   valueKey: toRef(() => props.valueKey),
   labelKey: toRef(() => props.labelKey),
-  filter: props.filter,
+  filter: props.filter ?? (ownSearch ? () => true : undefined),
+  query: toRef(() => props.query),
   side: toRef(() => props.side),
   align: toRef(() => props.align),
   sideOffset: toRef(() => props.sideOffset),
   onChange: (value) => emit('update:modelValue', applyModelModifiers(value, props.modelModifiers)),
   onOpenChange: (open) => emit('update:open', open),
+  onQueryChange: (query) => emit('update:query', query),
   onCreate: (value) => emit('create', value)
 });
 

@@ -1,4 +1,4 @@
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import { mount, type VueWrapper } from '@vue/test-utils';
 import { h, nextTick } from 'vue';
 import { FormCombobox } from '../src';
@@ -317,5 +317,38 @@ describe('FormCombobox', () => {
     mountCombobox({}, { option: ({ label }: { label: string }) => h('em', label.toUpperCase()) });
     await type('v');
     expect(document.querySelector('[role="option"] em')!.textContent).toBe('VUE');
+  });
+
+  it('lets typing go on while loading, and says so in the popup', async () => {
+    const onInput = vi.fn();
+    mountCombobox({ loading: true, options: [], onInput });
+    await nextTick();
+
+    expect(document.querySelector('.form-combobox-trigger')!.hasAttribute('data-loading')).toBe(true);
+    expect(input().disabled).toBe(false);
+    await type('vu');
+    expect(onInput).toHaveBeenCalled();
+    expect(input().getAttribute('aria-expanded')).toBe('true');
+    expect(document.querySelector('[role="listbox"]')!.getAttribute('aria-busy')).toBe('true');
+    expect(document.querySelector('.form-listbox-empty')!.textContent!.trim()).toBe('Loading…');
+
+    await wrapper!.setProps({ loading: false });
+    expect(document.querySelector('.form-listbox-empty')!.textContent!.trim()).toBe('No matches');
+  });
+
+  it('passes the search text through v-model:query', async () => {
+    mountCombobox({ query: 'sv' });
+    await nextTick();
+    expect(input().value).toBe('sv');
+
+    await type('vu');
+    expect(wrapper!.emitted('update:query')!.at(-1)).toEqual(['vu']);
+    expect(document.querySelectorAll('[role="option"]')).toHaveLength(3);
+  });
+
+  it('filters by itself while the query is not bound', async () => {
+    mountCombobox();
+    await type('vu');
+    expect(document.querySelectorAll('[role="option"]')).toHaveLength(1);
   });
 });

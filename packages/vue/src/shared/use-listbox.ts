@@ -221,6 +221,8 @@ export interface UseListboxOptions extends UsePositioningOptions {
   valueKey?: MaybeRefOrGetter<string | undefined>;
   labelKey?: MaybeRefOrGetter<string | undefined>;
   filter?: (option: ListboxOption, query: string) => boolean;
+  /** Seeds or clears the search from outside. `''` drops what was typed. */
+  query?: MaybeRefOrGetter<string | undefined>;
   disabled?: MaybeRefOrGetter<boolean>;
   readOnly?: MaybeRefOrGetter<boolean>;
   /** Whether a selection is required: announced and marked, not enforced. Inherited from a surrounding field. */
@@ -232,6 +234,8 @@ export interface UseListboxOptions extends UsePositioningOptions {
   onChange?: (value: ListboxOptionValue | ListboxOptionValue[] | null) => void;
   onCreate?: (value: string) => void;
   onOpenChange?: (open: boolean) => void;
+  /** The text the list is filtered by changed; `''` once nothing typed is left. */
+  onQueryChange?: (query: string) => void;
 }
 
 export type ListboxScrollDirection = 'up' | 'down';
@@ -1108,6 +1112,22 @@ export function useListbox(options: UseListboxOptions = {}): UseListboxReturn {
 
       typed.value = false;
       query.value = label;
+    },
+    { immediate: true }
+  );
+
+  watch(activeQuery, (next) => options.onQueryChange?.(next));
+
+  watch(
+    () => toValue(options.query),
+    (next) => {
+      if (next === undefined || next === activeQuery.value) return;
+      if (next === '') {
+        resetInput();
+      } else {
+        query.value = next;
+        typed.value = true;
+      }
     },
     { immediate: true }
   );

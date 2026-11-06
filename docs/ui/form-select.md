@@ -92,8 +92,6 @@ under a heading of their own, and `preset-columns` lays them out in columns.
 To render each preset your own way, use the `#preset` slot.
 
 ::: preview ui/form-select/Presets
-
-::: preview ui/form-select/Presets
 :::
 
 ### Align with trigger
@@ -129,6 +127,18 @@ scrolled, so the popup stays fast. It needs `max-height`, and works on lists
 without groups.
 
 ::: preview ui/form-select/Virtual
+:::
+
+### Loading
+
+`loading` draws moving stripes on the trigger, like a loading
+[AppButton](/ui/app-button), and marks the list busy. Unlike the button it
+doesn't block anything: the select still opens. While loading, a popup with no
+options says `loading-text` ("Loading…") in place of `empty-text`; the
+`#loading` slot replaces it. Options already there stay, so a reload doesn't
+empty the list.
+
+::: preview ui/form-select/Loading
 :::
 
 ### Read-only

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
-import { defineComponent, h, nextTick, ref } from 'vue';
+import { defineComponent, h, nextTick, reactive, ref } from 'vue';
 import {
   ComboboxRoot,
   ComboboxTrigger,
@@ -620,5 +620,44 @@ describe('Combobox, rows the app renders', () => {
     await type('Item 87');
 
     expect(optionEls().map((el) => el.textContent)).toEqual(['Item 87']);
+  });
+
+  describe('query', () => {
+    it('reports the typed text, and clears it after a choice', async () => {
+      const onQuery = vi.fn();
+      mountCombobox({ 'onUpdate:query': onQuery });
+      await type('so');
+      expect(onQuery).toHaveBeenLastCalledWith('so');
+
+      labeled('Solid').click();
+      await settle();
+      expect(input().value).toBe('Solid');
+      expect(onQuery).toHaveBeenLastCalledWith('');
+    });
+
+    it('seeds and clears the search from outside', async () => {
+      const props = reactive<Record<string, any>>({ modelValue: 'ng', query: 'sv' });
+      mountCombobox(props);
+      await open();
+      expect(input().value).toBe('sv');
+
+      props.query = '';
+      await settle();
+      expect(input().value).toBe('Angular');
+    });
+
+    it('leaves the options unfiltered once the query is bound', async () => {
+      const onQuery = vi.fn();
+      mountCombobox({ 'onUpdate:query': onQuery });
+      await type('zzz');
+      expect(onQuery).toHaveBeenLastCalledWith('zzz');
+      expect(optionEls()).toHaveLength(5);
+    });
+
+    it('still filters through a filter it is given', async () => {
+      mountCombobox({ query: '', filter: (option: any, query: string) => option.label.startsWith(query) });
+      await type('S');
+      expect(optionEls().map((el) => el.textContent?.trim())).toEqual(['Svelte', 'Solid']);
+    });
   });
 });

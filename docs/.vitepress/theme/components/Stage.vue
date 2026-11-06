@@ -23,7 +23,7 @@ provide(PREVIEW_OUTPUT, {
     <output
       v-show="outputs > 0"
       ref="output"
-      class="absolute left-3 bottom-2 flex flex-wrap gap-x-4 gap-y-1 text-xs/none text-current/20 hover:text-current duration-150"
+      class="absolute inset-x-3 bottom-2 flex flex-wrap [overflow-wrap:anywhere] gap-x-4 gap-y-1 text-xs/none text-current/20 hover:text-current duration-150"
     />
   </div>
 </template>
