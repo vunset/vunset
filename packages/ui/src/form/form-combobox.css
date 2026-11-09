@@ -17,9 +17,12 @@
       padding-inline-start: var(--form-combobox-inset);
     }
 
-    /* A joined button spans the box's padding too. */
     & > .form-addon:first-child:has(:is(.app-button, .form-control)) {
       margin-block: calc(-1 * var(--form-combobox-inset));
+    }
+
+    & > .form-addon:first-child .app-button[data-square] {
+      width: calc(var(--ui-control-height) - 2 * var(--ui-border-width));
     }
 
     .form-clear {
@@ -38,7 +41,7 @@
   }
 
   .form-combobox-input {
-    flex: 1;
+    flex: 1 1 auto;
     min-width: 0;
     max-width: 100%;
     height: var(--form-combobox-row);

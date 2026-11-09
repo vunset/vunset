@@ -2,6 +2,16 @@
 
 All four packages are released together under one version.
 
+## 1.0.0-rc.8
+
+### @vunset/ui
+
+- FormSelect, FormCombobox and FormToggleGroup take `v-model.object`: the model
+  holds the whole option, matched by `value-key`, or by identity without one.
+- FormCombobox's search text moves to a new line below the chips once it no
+  longer fits beside them.
+- An icon button at the start of a FormCombobox keeps its square width.
+
 ## 1.0.0-rc.7
 
 ### @vunset/vue
