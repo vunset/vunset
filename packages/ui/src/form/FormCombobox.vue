@@ -28,6 +28,7 @@ import {
   type ModelModifiers
 } from '@vunset/vue';
 import FormField, { type FormSize } from './FormField.vue';
+import { listboxOptions, useObjectModel } from './use-object-model';
 import type { HTMLAttributes } from 'vue';
 import AppIcon from '../app/AppIcon.vue';
 
@@ -41,10 +42,14 @@ const queryBound = isPropBound('query') || isPropBound('onUpdate:query');
 
 const props = withDefaults(
   defineProps<{
-    modelValue?: ListboxOptionValue | ListboxOptionValue[] | null;
-    /** `v-model.optional` writes `undefined` once the value is emptied. */
-    modelModifiers?: ModelModifiers;
-    defaultValue?: ListboxOptionValue | ListboxOptionValue[] | null;
+    /** With `v-model.object`, the options themselves. */
+    modelValue?: ListboxOptionValue | ListboxOptionValue[] | ListboxOption | ListboxOption[] | null;
+    /**
+     * `v-model.optional` writes `undefined` once the value is emptied;
+     * `.object` writes the whole option, matched by `value-key`, or by identity without one.
+     */
+    modelModifiers?: ModelModifiers & { object?: boolean };
+    defaultValue?: ListboxOptionValue | ListboxOptionValue[] | ListboxOption | ListboxOption[] | null;
     options?: ListboxItem[];
     /** Lets more than one option be chosen, shown as chips. */
     multiple?: boolean;
@@ -127,7 +132,9 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-  'update:modelValue': [value: ListboxOptionValue | ListboxOptionValue[] | null | undefined];
+  'update:modelValue': [
+    value: ListboxOptionValue | ListboxOptionValue[] | ListboxOption | ListboxOption[] | null | undefined
+  ];
   'update:open': [open: boolean];
   'update:query': [query: string];
   /** Typed text about to become a value, so the page can add it as a real option. */
@@ -135,6 +142,14 @@ const emit = defineEmits<{
 }>();
 
 // Field-wide state goes to `FormField`, which the combobox inherits it from.
+const object = useObjectModel({
+  enabled: () => Boolean(props.modelModifiers?.object),
+  valueKey: () => props.valueKey,
+  labelKey: () => props.labelKey,
+  options: () => listboxOptions(props.options),
+  model: () => props.modelValue
+});
+
 const comboboxProps = computed(() => {
   const {
     label,
@@ -162,11 +177,17 @@ const comboboxProps = computed(() => {
     modelValue,
     open,
     query,
+    options,
+    valueKey,
+    defaultValue,
     ...rest
   } = props;
   return {
     ...rest,
-    ...(modelBound ? { modelValue } : {}),
+    options: object.withKeys(options),
+    valueKey: object.partValueKey(),
+    defaultValue: object.toKeys(defaultValue) as ListboxOptionValue | ListboxOptionValue[] | null | undefined,
+    ...(modelBound ? { modelValue: object.toKeys(modelValue) as ListboxOptionValue | ListboxOptionValue[] | null } : {}),
     ...(openBound ? { open } : {}),
     ...(queryBound ? { query, 'onUpdate:query': (next: string) => emit('update:query', next) } : {})
   };
@@ -200,7 +221,7 @@ const { fieldAttrs, controlAttrs } = useFieldAttrs();
     <ComboboxRoot
       v-bind="comboboxProps"
       class="form-combobox"
-      @update:model-value="emit('update:modelValue', $event)"
+      @update:model-value="emit('update:modelValue', object.fromKeys($event) as ListboxOption)"
       @update:open="emit('update:open', $event)"
       @create="emit('create', $event)"
     >

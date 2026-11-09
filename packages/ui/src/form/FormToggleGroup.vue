@@ -14,6 +14,7 @@ export interface FormToggleOption {
 import { computed } from 'vue';
 import { ToggleGroup, Toggle, Addon, type ToggleGroupValue, isPropBound, type ModelModifiers } from '@vunset/vue';
 import FormField, { type FormSize } from './FormField.vue';
+import { useObjectModel } from './use-object-model';
 import type { HTMLAttributes } from 'vue';
 
 defineOptions({ name: 'FormToggleGroup' });
@@ -23,14 +24,15 @@ const modelBound = isPropBound('modelValue');
 
 const props = withDefaults(
   defineProps<{
-    /** One value or `null`; an array with `multiple`. */
-    modelValue?: ToggleGroupValue;
+    /** One value or `null`; an array with `multiple`. With `v-model.object`, the options themselves. */
+    modelValue?: ToggleGroupValue | TOption | TOption[];
     /**
      * `v-model.lowercase` lowercases each option's string value, keeping its label as given;
-     * `.optional` writes `undefined` once the value is emptied.
+     * `.optional` writes `undefined` once the value is emptied;
+     * `.object` writes the whole option, matched by `value-key`, or by identity without one.
      */
-    modelModifiers?: ModelModifiers & { lowercase?: boolean };
-    defaultValue?: ToggleGroupValue;
+    modelModifiers?: ModelModifiers & { lowercase?: boolean; object?: boolean };
+    defaultValue?: ToggleGroupValue | TOption | TOption[];
     /** A toggle per option; or put `Toggle`s with `class="form-toggle"` in the default slot instead. */
     options?: (ToggleValue | TOption)[];
     /** Which key on an option holds its value. @default 'value' */
@@ -72,7 +74,7 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-  'update:modelValue': [value: ToggleGroupValue | undefined];
+  'update:modelValue': [value: ToggleGroupValue | TOption | TOption[] | undefined];
 }>();
 
 type Item = TOption & { value: ToggleValue; label: string };
@@ -93,6 +95,14 @@ defineSlots<{
   error?(props: { message: string | undefined }): unknown;
 }>();
 
+const object = useObjectModel({
+  enabled: () => Boolean(props.modelModifiers?.object),
+  valueKey: () => props.valueKey,
+  labelKey: () => props.labelKey,
+  options: () => props.options ?? [],
+  model: () => props.modelValue
+});
+
 // Each option as `{ value, label }`, read through `value-key` and `label-key`; its other fields stay for the slot.
 const items = computed<Item[]>(() =>
   (props.options ?? []).map((option) => {
@@ -100,12 +110,14 @@ const items = computed<Item[]>(() =>
       typeof option === 'object'
         ? {
             ...option,
-            value: option[props.valueKey ?? 'value'] as ToggleValue,
+            value: (props.modelModifiers?.object
+              ? object.keyOf(option)
+              : option[props.valueKey ?? 'value']) as ToggleValue,
             label: String(option[props.labelKey ?? 'label'] ?? option[props.valueKey ?? 'value'])
           }
         : { value: option, label: String(option) }
     ) as Item;
-    return props.modelModifiers?.lowercase && typeof item.value === 'string'
+    return props.modelModifiers?.lowercase && !props.modelModifiers.object && typeof item.value === 'string'
       ? { ...item, value: item.value.toLowerCase() }
       : item;
   })
@@ -138,15 +150,15 @@ const items = computed<Item[]>(() =>
       class="form-toggle-group"
       :class="controlClass"
       :data-orientation="orientation"
-      v-bind="modelBound ? { modelValue } : {}"
+      v-bind="modelBound ? { modelValue: object.toKeys(modelValue) as ToggleGroupValue } : {}"
       :model-modifiers="modelModifiers"
-      :default-value="defaultValue"
+      :default-value="object.toKeys(defaultValue) as ToggleGroupValue"
       :multiple="multiple"
       :required="keepOne"
       :orientation="orientation"
       :loop="loop"
       :form="form"
-      @update:model-value="emit('update:modelValue', $event)"
+      @update:model-value="emit('update:modelValue', object.fromKeys($event) as ToggleGroupValue | TOption | TOption[])"
     >
       <Addon v-if="$slots.start" side="start" class="form-addon form-toggle-group-addon">
         <slot name="start" />

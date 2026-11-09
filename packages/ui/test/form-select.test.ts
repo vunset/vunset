@@ -202,4 +202,40 @@ describe('FormSelect', () => {
     expect(option('Spain')).toBeTruthy();
     expect(document.querySelector('.form-listbox-empty')).toBeNull();
   });
+
+  describe('v-model.object', () => {
+    const COUNTRIES = [
+      { label: 'Europe', options: [{ code: 'fr', name: 'France' }, { code: 'es', name: 'Spain' }] },
+      { code: 'us', name: 'United States' }
+    ];
+    const SPAIN = COUNTRIES[0]!.options![1]!;
+
+    it('shows a model object by its option, groups and all, and writes the option back', async () => {
+      const w = mountSelect({
+        options: COUNTRIES,
+        valueKey: 'code',
+        labelKey: 'name',
+        modelValue: { code: 'us' },
+        modelModifiers: { object: true }
+      });
+      await nextTick();
+      expect(valueText()).toBe('United States');
+
+      await open();
+      option('Spain').click();
+      await settle();
+      expect(w.emitted('update:modelValue')!.at(-1)![0]).toBe(SPAIN);
+    });
+
+    it('matches by identity without value-key', async () => {
+      const w = mountSelect({ options: COUNTRIES, labelKey: 'name', modelValue: SPAIN, modelModifiers: { object: true } });
+      await nextTick();
+      expect(valueText()).toBe('Spain');
+
+      await open();
+      option('United States').click();
+      await settle();
+      expect(w.emitted('update:modelValue')!.at(-1)![0]).toBe(COUNTRIES[1]);
+    });
+  });
 });

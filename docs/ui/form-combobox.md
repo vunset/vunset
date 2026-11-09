@@ -54,6 +54,18 @@ add it to your options for next time.
 ::: preview ui/form-combobox/Creatable
 :::
 
+### Objects
+
+`v-model.object` puts the whole option in your model instead of its value, so
+you can read its other fields without looking it up. With `value-key`, an
+object matches the option whose field is equal, so a copy from a URL or an API
+works too. Without `value-key`, only the option object itself matches. With `multiple`, the model is an array of options. Created text
+becomes a new object with your text under `value-key` and `label-key`. Presets
+and `name` work with values, so they need `value-key`.
+
+::: preview ui/form-combobox/Objects
+:::
+
 ### Presets
 
 Presets are named sets of values above the list, for picking several options

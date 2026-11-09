@@ -58,6 +58,17 @@ collapse into a count. The `#option` slot renders each option your own way.
 ::: preview ui/form-select/Multiple
 :::
 
+### Objects
+
+`v-model.object` puts the whole option in your model instead of its value, so
+you can read its other fields without looking it up. With `value-key`, an
+object matches the option whose field is equal, so a copy from a URL or an API
+works too. Without `value-key`, only the option object itself matches. With `multiple`, the model is an array of options. Presets and `name`
+work with values, so they need `value-key`.
+
+::: preview ui/form-select/Objects
+:::
+
 ### Presets
 
 Presets are named sets of values, shown above the list, for picking several

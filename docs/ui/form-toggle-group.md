@@ -81,6 +81,17 @@ between options rather than a set of on/off switches.
 ::: preview ui/form-toggle-group/KeepOne
 :::
 
+### Objects
+
+`v-model.object` puts the whole option in your model instead of its value, so
+you can read its other fields without looking it up. With `value-key`, an
+object matches the option whose field is equal, so a copy from a URL or an API
+works too. Without `value-key`, only the option object itself matches. With `multiple`, the model is an array of options. `name` submits
+each option's `value-key` field, so set one when the group is in a form. `.lowercase` has no effect alongside `.object`.
+
+::: preview ui/form-toggle-group/Objects
+:::
+
 ### Validation
 
 `required` adds an asterisk and tells screen readers a choice is needed. The

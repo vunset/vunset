@@ -174,4 +174,59 @@ describe('FormToggleGroup', () => {
     mountGroup({ orientation: 'vertical' });
     expect(group().getAttribute('data-orientation')).toBe('vertical');
   });
+
+  describe('v-model.object', () => {
+    const TYPES = [
+      { code: 'ip', label: 'IP', route: 'ip.list' },
+      { code: 'ua', label: 'UA', route: 'ua.list' }
+    ];
+
+    it('presses the option a model object matches by value-key, a copy too, and writes the option back', async () => {
+      const w = mountGroup({
+        options: TYPES,
+        valueKey: 'code',
+        modelValue: { ...TYPES[1]! },
+        modelModifiers: { object: true }
+      });
+      await nextTick();
+      expect(pressed()).toEqual(['false', 'true']);
+
+      toggle('IP').click();
+      await nextTick();
+      expect(w.emitted('update:modelValue')!.at(-1)![0]).toBe(TYPES[0]);
+    });
+
+    it('matches by identity without value-key, so only the option itself presses', async () => {
+      const w = mountGroup({ options: TYPES, modelValue: TYPES[1], modelModifiers: { object: true } });
+      await nextTick();
+      expect(pressed()).toEqual(['false', 'true']);
+
+      await w.setProps({ modelValue: { ...TYPES[0]! } });
+      expect(pressed()).toEqual(['false', 'false']);
+
+      toggle('IP').click();
+      await nextTick();
+      expect(w.emitted('update:modelValue')!.at(-1)![0]).toBe(TYPES[0]);
+    });
+
+    it('writes an array of options with multiple', async () => {
+      const w = mountGroup({ options: TYPES, multiple: true, modelValue: [TYPES[0]], modelModifiers: { object: true } });
+      await nextTick();
+
+      toggle('UA').click();
+      await nextTick();
+      expect(w.emitted('update:modelValue')!.at(-1)![0]).toEqual([TYPES[0], TYPES[1]]);
+      expect((w.emitted('update:modelValue')!.at(-1)![0] as unknown[])[1]).toBe(TYPES[1]);
+    });
+
+    it('keeps the pressed option on with keep-one', async () => {
+      const w = mountGroup({ options: TYPES, keepOne: true, modelValue: TYPES[0], modelModifiers: { object: true } });
+      await nextTick();
+
+      toggle('IP').click();
+      await nextTick();
+      expect(pressed()).toEqual(['true', 'false']);
+      expect(w.emitted('update:modelValue')).toBeUndefined();
+    });
+  });
 });

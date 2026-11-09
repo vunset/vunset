@@ -27,6 +27,7 @@ import {
   type ModelModifiers
 } from '@vunset/vue';
 import FormField, { type FormSize } from './FormField.vue';
+import { listboxOptions, useObjectModel } from './use-object-model';
 import type { HTMLAttributes } from 'vue';
 import AppIcon from '../app/AppIcon.vue';
 
@@ -41,10 +42,14 @@ const queryBound = isPropBound('query') || isPropBound('onUpdate:query');
 
 const props = withDefaults(
   defineProps<{
-    modelValue?: ListboxOptionValue | ListboxOptionValue[] | null;
-    /** `v-model.optional` writes `undefined` once the value is emptied. */
-    modelModifiers?: ModelModifiers;
-    defaultValue?: ListboxOptionValue | ListboxOptionValue[] | null;
+    /** With `v-model.object`, the options themselves. */
+    modelValue?: ListboxOptionValue | ListboxOptionValue[] | ListboxOption | ListboxOption[] | null;
+    /**
+     * `v-model.optional` writes `undefined` once the value is emptied;
+     * `.object` writes the whole option, matched by `value-key`, or by identity without one.
+     */
+    modelModifiers?: ModelModifiers & { object?: boolean };
+    defaultValue?: ListboxOptionValue | ListboxOptionValue[] | ListboxOption | ListboxOption[] | null;
     options?: ListboxItem[];
     multiple?: boolean;
     /** A search box at the top of the popup. */
@@ -124,12 +129,22 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-  'update:modelValue': [value: ListboxOptionValue | ListboxOptionValue[] | null | undefined];
+  'update:modelValue': [
+    value: ListboxOptionValue | ListboxOptionValue[] | ListboxOption | ListboxOption[] | null | undefined
+  ];
   'update:open': [open: boolean];
   'update:query': [query: string];
 }>();
 
 // Field-wide state goes to `FormField`, which the select inherits it from.
+const object = useObjectModel({
+  enabled: () => Boolean(props.modelModifiers?.object),
+  valueKey: () => props.valueKey,
+  labelKey: () => props.labelKey,
+  options: () => listboxOptions(props.options),
+  model: () => props.modelValue
+});
+
 const selectProps = computed(() => {
   const {
     label,
@@ -156,11 +171,17 @@ const selectProps = computed(() => {
     modelValue,
     open,
     query,
+    options,
+    valueKey,
+    defaultValue,
     ...rest
   } = props;
   return {
     ...rest,
-    ...(modelBound ? { modelValue } : {}),
+    options: object.withKeys(options),
+    valueKey: object.partValueKey(),
+    defaultValue: object.toKeys(defaultValue) as ListboxOptionValue | ListboxOptionValue[] | null | undefined,
+    ...(modelBound ? { modelValue: object.toKeys(modelValue) as ListboxOptionValue | ListboxOptionValue[] | null } : {}),
     ...(openBound ? { open } : {}),
     ...(queryBound ? { query, 'onUpdate:query': (next: string) => emit('update:query', next) } : {})
   };
@@ -195,7 +216,7 @@ const { fieldAttrs, controlAttrs: triggerAttrs } = useFieldAttrs();
     <SelectRoot
       v-bind="selectProps"
       class="form-select"
-      @update:model-value="emit('update:modelValue', $event)"
+      @update:model-value="emit('update:modelValue', object.fromKeys($event) as ListboxOption)"
       @update:open="emit('update:open', $event)"
     >
       <SelectTrigger

@@ -351,4 +351,40 @@ describe('FormCombobox', () => {
     await type('vu');
     expect(document.querySelectorAll('[role="option"]')).toHaveLength(1);
   });
+
+  describe('v-model.object', () => {
+    it('writes the chosen options, chips and all', async () => {
+      const w = mountCombobox({ multiple: true, valueKey: 'value', modelValue: [OPTIONS[0]], modelModifiers: { object: true } });
+      await settle();
+      expect(chips()).toEqual(['Vue']);
+
+      await type('Sol');
+      option('Solid').click();
+      await settle();
+      const value = w.emitted('update:modelValue')!.at(-1)![0] as unknown[];
+      expect(value[0]).toBe(OPTIONS[0]);
+      expect(value[1]).toBe(OPTIONS[2]);
+    });
+
+    it('writes created text as an object under value-key and label-key', async () => {
+      const w = mountCombobox({ creatable: true, valueKey: 'value', modelModifiers: { object: true } });
+      await type('Qwik');
+      option('Create “Qwik”').click();
+      await settle();
+      expect(w.emitted('update:modelValue')!.at(-1)).toEqual([{ value: 'Qwik', label: 'Qwik' }]);
+    });
+
+    it('keys created text by itself without value-key', async () => {
+      const w = mountCombobox({ creatable: true, modelModifiers: { object: true } });
+      await type('Qwik');
+      option('Create “Qwik”').click();
+      await settle();
+      const created = w.emitted('update:modelValue')!.at(-1)![0];
+      expect(created).toEqual({ value: 'Qwik', label: 'Qwik' });
+
+      await w.setProps({ modelValue: created });
+      await settle();
+      expect(input().value).toBe('Qwik');
+    });
+  });
 });
