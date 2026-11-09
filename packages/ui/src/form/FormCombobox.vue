@@ -20,8 +20,9 @@ import {
   type Align,
   type ListboxItem,
   type ListboxOption,
-  type ListboxOptionValue,
+  type ListboxKeyValue,
   type ListboxOrder,
+  type ListboxValue,
   type ListboxPresetItem,
   type Side,
   isPropBound,
@@ -43,13 +44,13 @@ const queryBound = isPropBound('query') || isPropBound('onUpdate:query');
 const props = withDefaults(
   defineProps<{
     /** With `v-model.object`, the options themselves. */
-    modelValue?: ListboxOptionValue | ListboxOptionValue[] | ListboxOption | ListboxOption[] | null;
+    modelValue?: ListboxValue;
     /**
      * `v-model.optional` writes `undefined` once the value is emptied;
      * `.object` writes the whole option, matched by `value-key`, or by identity without one.
      */
     modelModifiers?: ModelModifiers & { object?: boolean };
-    defaultValue?: ListboxOptionValue | ListboxOptionValue[] | ListboxOption | ListboxOption[] | null;
+    defaultValue?: ListboxValue;
     options?: ListboxItem[];
     /** Lets more than one option be chosen, shown as chips. */
     multiple?: boolean;
@@ -132,9 +133,7 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-  'update:modelValue': [
-    value: ListboxOptionValue | ListboxOptionValue[] | ListboxOption | ListboxOption[] | null | undefined
-  ];
+  'update:modelValue': [value: ListboxValue | undefined];
   'update:open': [open: boolean];
   'update:query': [query: string];
   /** Typed text about to become a value, so the page can add it as a real option. */
@@ -186,8 +185,8 @@ const comboboxProps = computed(() => {
     ...rest,
     options: object.withKeys(options),
     valueKey: object.partValueKey(),
-    defaultValue: object.toKeys(defaultValue) as ListboxOptionValue | ListboxOptionValue[] | null | undefined,
-    ...(modelBound ? { modelValue: object.toKeys(modelValue) as ListboxOptionValue | ListboxOptionValue[] | null } : {}),
+    defaultValue: object.toKeys(defaultValue) as ListboxKeyValue | undefined,
+    ...(modelBound ? { modelValue: object.toKeys(modelValue) as ListboxKeyValue } : {}),
     ...(openBound ? { open } : {}),
     ...(queryBound ? { query, 'onUpdate:query': (next: string) => emit('update:query', next) } : {})
   };

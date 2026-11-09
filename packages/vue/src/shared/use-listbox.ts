@@ -40,6 +40,12 @@ export interface ListboxOption {
 
 export type ListboxOptionInput = ListboxOptionValue | ListboxOption;
 
+/** What `SelectRoot` and `ComboboxRoot` hold: one value, or an array with `multiple`. */
+export type ListboxKeyValue = ListboxOptionValue | ListboxOptionValue[] | null;
+
+/** A FormSelect or FormCombobox model: values, or the options themselves with `v-model.object`. */
+export type ListboxValue = ListboxKeyValue | ListboxOption | ListboxOption[];
+
 export interface ListboxGroup {
   label: string;
   disabled?: boolean;
@@ -193,8 +199,8 @@ export type ListboxOrder = 'selected-first';
 export interface UseListboxOptions extends UsePositioningOptions {
   /** `combobox` makes the trigger a text input, which lets a typed value be committed. Implies `searchable`. */
   mode?: MaybeRefOrGetter<ListboxMode>;
-  value?: MaybeRefOrGetter<ListboxOptionValue | ListboxOptionValue[] | null | undefined>;
-  defaultValue?: MaybeRefOrGetter<ListboxOptionValue | ListboxOptionValue[] | null | undefined>;
+  value?: MaybeRefOrGetter<ListboxKeyValue | undefined>;
+  defaultValue?: MaybeRefOrGetter<ListboxKeyValue | undefined>;
   options?: MaybeRefOrGetter<ListboxItem[]>;
   multiple?: MaybeRefOrGetter<boolean>;
   searchable?: MaybeRefOrGetter<boolean>;
@@ -231,7 +237,7 @@ export interface UseListboxOptions extends UsePositioningOptions {
   name?: MaybeRefOrGetter<string | undefined>;
   id?: MaybeRefOrGetter<string | undefined>;
   open?: MaybeRefOrGetter<boolean | undefined>;
-  onChange?: (value: ListboxOptionValue | ListboxOptionValue[] | null) => void;
+  onChange?: (value: ListboxKeyValue) => void;
   onCreate?: (value: string) => void;
   onOpenChange?: (open: boolean) => void;
   /** The text the list is filtered by changed; `''` once nothing typed is left. */
@@ -241,7 +247,7 @@ export interface UseListboxOptions extends UsePositioningOptions {
 export type ListboxScrollDirection = 'up' | 'down';
 
 export interface UseListboxReturn {
-  value: WritableComputedRef<ListboxOptionValue | ListboxOptionValue[] | null>;
+  value: WritableComputedRef<ListboxKeyValue>;
   open: WritableComputedRef<boolean>;
   /** The search text. Writable, so a caller can seed or clear it. */
   query: Ref<string>;
@@ -338,7 +344,7 @@ export function useListbox(options: UseListboxOptions = {}): UseListboxReturn {
 
   const closeOnSelect = () => toValue(options.closeOnSelect) ?? !multiple();
 
-  const value = useControlled<ListboxOptionValue | ListboxOptionValue[] | null>({
+  const value = useControlled<ListboxKeyValue>({
     value: () => toValue(options.value),
     defaultValue: () => toValue(options.defaultValue) ?? (multiple() ? [] : null),
     prop: 'modelValue',

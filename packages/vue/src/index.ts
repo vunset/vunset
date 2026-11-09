@@ -355,6 +355,8 @@ export type {
   ListboxGroup,
   ListboxItem,
   ListboxOptionInput,
+  ListboxKeyValue,
+  ListboxValue,
   ListboxState,
   RenderedOption,
   RenderedSection,

@@ -9,7 +9,7 @@ import {
   provideListboxContext,
   type ListboxItem,
   type ListboxOption,
-  type ListboxOptionValue,
+  type ListboxKeyValue,
   type ListboxOrder,
   type ListboxPresetItem
 } from '../../shared/use-listbox';
@@ -20,11 +20,11 @@ defineOptions({ name: 'SelectRoot', inheritAttrs: false });
 const props = withDefaults(
   defineProps<{
     /** The selection, bound with `v-model`: a value, an array when `multiple`, or `null`. */
-    modelValue?: ListboxOptionValue | ListboxOptionValue[] | null;
+    modelValue?: ListboxKeyValue;
     /** `v-model.optional` writes `undefined` once the value is emptied. */
     modelModifiers?: ModelModifiers;
     /** The selection at first, when no `v-model` owns it. */
-    defaultValue?: ListboxOptionValue | ListboxOptionValue[] | null;
+    defaultValue?: ListboxKeyValue;
     /** The options: values, `{ value, label, disabled }` objects, or `{ label, options }` groups. */
     options?: ListboxItem[];
     /** Lets more than one option be chosen; the model becomes an array. */
@@ -103,7 +103,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   /** The new selection, for `v-model`. */
-  'update:modelValue': [value: ListboxOptionValue | ListboxOptionValue[] | null | undefined];
+  'update:modelValue': [value: ListboxKeyValue | undefined];
   /** The popup opened or closed, for `v-model:open`. */
   'update:open': [open: boolean];
   /** The search text changed, for `v-model:query`. */
