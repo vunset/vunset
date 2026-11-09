@@ -9,7 +9,7 @@ const tabs = [
 
 const cities = {
   asia: ['Tokyo', 'Delhi', 'Shanghai', 'Mumbai', 'Beijing', 'Dhaka', 'Osaka', 'Karachi', 'Chongqing', 'Manila', 'Tianjin', 'Jakarta'],
-  europe: ['Istanbul', 'Moscow', 'Paris', 'London', 'Madrid', 'Barcelona', 'Saint Petersburg', 'Rome', 'Berlin', 'Milan', 'Athens', 'Kyiv']
+  europe: ['Istanbul', 'Paris', 'London', 'Madrid', 'Barcelona', 'Rome', 'Vienna', 'Warsaw', 'Berlin', 'Milan', 'Athens', 'Kyiv']
 };
 </script>
 
