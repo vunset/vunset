@@ -247,6 +247,7 @@ export {
 export { useLocalStorage, type UseLocalStorageReturn } from './composables/use-local-storage';
 export { useDownload, useExportCsv } from './composables/use-download';
 export { useTheme } from './composables/use-theme';
+export { useMediaQuery, type UseMediaQueryOptions } from './composables/use-media-query';
 export type { ThemeMode, ThemeStorage, UseThemeOptions, UseThemeReturn } from './composables/use-theme';
 export {
   useValidate,

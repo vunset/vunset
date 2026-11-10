@@ -373,6 +373,7 @@ export default defineConfig({
             { text: 'Addon', link: '/utilities/addon' },
             { text: 'Separator', link: '/utilities/separator' },
             { text: 'Theme', link: '/utilities/theme' },
+            { text: 'Media query', link: '/utilities/media-query' },
             { text: 'Links', link: '/utilities/links' },
             { text: 'Click outside', link: '/utilities/click-outside' },
             { text: 'Virtual list', link: '/utilities/virtual-list' },

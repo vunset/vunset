@@ -1,0 +1,19 @@
+:root {
+  --demo-color-text: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));
+  --demo-color-canvas: light-dark(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.03));
+}
+
+.demo-media-query {
+  box-sizing: border-box;
+  width: 18rem;
+  max-width: 100%;
+  padding: 0.75rem;
+  border: 1px dashed currentColor;
+  background-color: var(--demo-color-canvas);
+  font-size: 0.875rem;
+  color: var(--demo-color-text);
+
+  &[data-narrow] {
+    width: 10rem;
+  }
+}
