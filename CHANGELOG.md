@@ -32,6 +32,7 @@ All four packages are released together under one version.
   for screen readers and on hover. `size`, and the `app-avatar-square` class.
 - FormNumberField: a number field with − and + buttons in a form control box.
 - FormOtp: a one-time code field.
+- AppNumberFlow rolls a changed digit on a wheel, up or down as the value moves.
 
 ### @vunset/utils
 

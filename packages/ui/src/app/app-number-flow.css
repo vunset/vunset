@@ -1,8 +1,16 @@
 @layer components {
-  /* A new value rises into place a character at a time, left to right, out of
-     a blur; the old one goes at once, out of the flow. Under reduced motion it
-     only fades. */
+  /* A digit that changes rolls to its new one on a wheel: up as the value
+     grows, down as it shrinks, carrying on past 9 or 0. A character that's
+     new rises into place out of a blur, a few milliseconds after the one
+     before it; one that's gone fades where it was, and the rest slide over.
+     Text without digits animates character by character the same way. Under
+     reduced motion nothing rolls or moves: characters only fade. */
   .app-number-flow {
+    --app-number-flow-duration: 0.6s;
+    --app-number-flow-ease: cubic-bezier(0.34, 1.2, 0.64, 1);
+    /* Between the wheel's digits, so a neighbor never shows above or below the one in view. */
+    --app-number-flow-gap: 0.5lh;
+
     position: relative;
     display: inline-flex;
     font-variant-numeric: tabular-nums;
@@ -19,15 +27,54 @@
   }
 
   .app-number-flow-chars {
+    position: relative;
     display: inline-flex;
     white-space: pre;
   }
 
+  .app-number-flow-char {
+    display: inline-block;
+  }
+
+  /* One line tall, a little more above and below that fades out, so a rolling digit
+     slides out of view rather than being cut off. */
+  .app-number-flow-digit {
+    position: relative;
+    display: inline-block;
+    padding-block: 0.25lh;
+    margin-block: -0.25lh;
+    overflow: hidden;
+    mask-image: linear-gradient(transparent, #000 0.25lh, #000 calc(100% - 0.25lh), transparent);
+  }
+
+  .app-number-flow-sizer {
+    visibility: hidden;
+  }
+
+  .app-number-flow-wheel {
+    position: absolute;
+    inset-inline: 0;
+    top: 0.25lh;
+    display: flex;
+    flex-direction: column;
+    gap: var(--app-number-flow-gap);
+    align-items: center;
+    translate: 0 calc(var(--app-number-flow-at) * -1 * (1lh + var(--app-number-flow-gap)));
+
+    &[data-rolling] {
+      transition: translate var(--app-number-flow-duration) var(--app-number-flow-ease);
+    }
+  }
+
+  .app-number-flow-cell {
+    height: 1lh;
+  }
+
   .app-number-flow-enter-active {
     transition:
-      opacity 0.5s cubic-bezier(0.34, 1.45, 0.64, 1),
-      translate 0.5s cubic-bezier(0.34, 1.45, 0.64, 1),
-      filter 0.5s cubic-bezier(0.34, 1.45, 0.64, 1);
+      opacity 0.5s var(--app-number-flow-ease),
+      translate 0.5s var(--app-number-flow-ease),
+      filter 0.5s var(--app-number-flow-ease);
     transition-delay: calc(var(--app-number-flow-index) * 15ms);
     will-change: opacity, translate, filter;
   }
@@ -43,6 +90,16 @@
 
   .app-number-flow-leave-active {
     position: absolute;
+    transition: opacity 0.25s ease;
+  }
+
+  .app-number-flow-leave-to {
     opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .app-number-flow-move {
+      transition: transform var(--app-number-flow-duration) var(--app-number-flow-ease);
+    }
   }
 }

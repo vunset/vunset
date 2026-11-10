@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { AppButton, AppNumberFlow } from '@vunset/ui';
-import { formatCurrency } from '@vunset/utils';
 
 const revenue = ref(12480.5);
 
@@ -12,7 +11,7 @@ function refresh() {
 
 <template>
   <div class="grid justify-items-center gap-3">
-    <AppNumberFlow :value="formatCurrency(revenue)" appear class="text-3xl font-semibold" />
+    <AppNumberFlow :value="revenue" :format="{ style: 'currency', currency: 'USD' }" appear class="text-3xl font-semibold" />
     <AppButton variant="outline" @click="refresh">Refresh</AppButton>
   </div>
 </template>
