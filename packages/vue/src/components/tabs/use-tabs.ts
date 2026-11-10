@@ -14,6 +14,7 @@ import {
 import { createContext } from '../../shared/context';
 import { useControlled } from '../../shared/use-controlled';
 import { dataAttrs } from '../../shared/data-attrs';
+import { isRtl } from '../../shared/direction';
 import { popupStateAttrs } from '../../shared/popup-state-attrs';
 import { useRovingFocus, type Orientation } from '../../shared/use-roving-focus';
 import { useRovingItems, type RovingItem } from '../../shared/use-roving-items';
@@ -143,7 +144,7 @@ export function useTabs(options: UseTabsOptions = {}): UseTabsReturn {
     const forward = toIndex > fromIndex;
     if (orientation() === 'vertical') return forward ? 'down' : 'up';
 
-    return forward ? 'right' : 'left';
+    return forward !== isRtl(listElement.value) ? 'right' : 'left';
   }
 
   watch(

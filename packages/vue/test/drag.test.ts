@@ -340,6 +340,18 @@ describe('DragRoot with the keyboard', () => {
     expect(list.value).toEqual(['b', 'a', 'c', 'd']);
   });
 
+  it('swaps left and right in a right-to-left layout', async () => {
+    document.documentElement.dir = 'rtl';
+    try {
+      const { wrapper, list } = mountList({ orientation: 'horizontal' });
+      await key(item(wrapper, 'a'), ' ');
+      await key(item(wrapper, 'a'), 'ArrowLeft');
+      expect(list.value).toEqual(['b', 'a', 'c', 'd']);
+    } finally {
+      document.documentElement.removeAttribute('dir');
+    }
+  });
+
   it('leaves keys typed into a field inside the item to the field', async () => {
     const list = ref(['a', 'b']);
     const Host = defineComponent({

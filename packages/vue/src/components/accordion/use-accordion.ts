@@ -13,6 +13,7 @@ import { createContext } from '../../shared/context';
 import { useControlled } from '../../shared/use-controlled';
 import { dataAttrs } from '../../shared/data-attrs';
 import { useRovingItems } from '../../shared/use-roving-items';
+import { logicalKey } from '../../shared/direction';
 import { useCollapsible, type UseCollapsibleReturn } from '../../shared/use-collapsible';
 import type { Orientation } from '../../shared/use-roving-focus';
 
@@ -87,7 +88,7 @@ export function useAccordion(options: UseAccordionOptions = {}): UseAccordionRet
     if (current === -1) return;
 
     let next: number;
-    switch (event.key) {
+    switch (logicalKey(event.key, event.currentTarget)) {
       case vertical ? 'ArrowDown' : 'ArrowRight':
         next = current + 1;
         break;

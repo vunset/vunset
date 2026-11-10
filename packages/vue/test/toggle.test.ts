@@ -419,6 +419,21 @@ describe('Toggle', () => {
       expect(pressed()).toEqual([]);
     });
 
+    it('swaps left and right in a right-to-left layout', async () => {
+      document.documentElement.dir = 'rtl';
+      try {
+        mountGroup();
+        await nextTick();
+        toggle('left').focus();
+
+        key('ArrowLeft');
+        await nextTick();
+        expect(document.activeElement).toBe(toggle('center'));
+      } finally {
+        document.documentElement.removeAttribute('dir');
+      }
+    });
+
     it('uses the axis it was given', async () => {
       mountGroup({ groupProps: { orientation: 'vertical' } });
       await nextTick();

@@ -13,6 +13,7 @@ import {
 import { createContext } from '../../shared/context';
 import { useControlled } from '../../shared/use-controlled';
 import { dataAttrs } from '../../shared/data-attrs';
+import { logicalKey } from '../../shared/direction';
 import { useToggleInput } from '../../shared/use-toggle-input';
 import { useFieldValue, useOptionalFieldContext } from '../../shared/use-field';
 
@@ -281,7 +282,8 @@ export function useRadio(options: UseRadioOptions): UseRadioReturn {
         const index = list.indexOf(toggleInput.rootEl.value as HTMLElement);
         if (index === -1) return;
 
-        const step = FORWARD_KEYS.has(event.key) ? 1 : BACKWARD_KEYS.has(event.key) ? -1 : 0;
+        const key = logicalKey(event.key, event.currentTarget);
+        const step = FORWARD_KEYS.has(key) ? 1 : BACKWARD_KEYS.has(key) ? -1 : 0;
 
         if (step !== 0) {
           event.preventDefault();

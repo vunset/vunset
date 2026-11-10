@@ -86,6 +86,7 @@ import { Part } from '../../shared/part';
 import { computed, onScopeDispose, ref, useAttrs, watch } from 'vue';
 import { mergeProps } from '../../shared/merge-props';
 import { dataAttrs } from '../../shared/data-attrs';
+import { isRtl } from '../../shared/direction';
 
 defineOptions({ name: 'ScrollArea', inheritAttrs: false });
 
@@ -152,7 +153,7 @@ function measure(): void {
 const rtl = ref(false);
 
 function readDirection(element: HTMLElement): void {
-  rtl.value = getComputedStyle(element).direction === 'rtl';
+  rtl.value = isRtl(element);
 }
 
 let resizeObserver: ResizeObserver | null = null;

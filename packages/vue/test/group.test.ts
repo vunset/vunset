@@ -118,6 +118,20 @@ describe('Group', () => {
       expect(document.activeElement).toBe(el('c'));
     });
 
+    it('swaps left and right in a right-to-left layout', () => {
+      document.documentElement.dir = 'rtl';
+      try {
+        mountGroup({ variant: 'toolbar' }, buttons('a', 'b', 'c'));
+        el('a').focus();
+        press(el('a'), 'ArrowLeft');
+        expect(document.activeElement).toBe(el('b'));
+        press(el('b'), 'ArrowRight');
+        expect(document.activeElement).toBe(el('a'));
+      } finally {
+        document.documentElement.removeAttribute('dir');
+      }
+    });
+
     it('jumps to the ends with Home and End', () => {
       mountGroup({ variant: 'toolbar' }, buttons('a', 'b', 'c'));
       el('b').focus();

@@ -357,6 +357,19 @@ describe('bounds', () => {
 });
 
 describe('the keyboard', () => {
+  it('swaps left and right in a right-to-left layout', async () => {
+    document.documentElement.dir = 'rtl';
+    try {
+      const wrapper = mountCalendar();
+      await press(wrapper, 'ArrowLeft');
+      expect(highlighted(wrapper)).toBe('2026-09-24');
+      await press(wrapper, 'ArrowRight');
+      expect(highlighted(wrapper)).toBe(TODAY);
+    } finally {
+      document.documentElement.removeAttribute('dir');
+    }
+  });
+
   it('moves by a day, a week, and a month', async () => {
     const wrapper = mountCalendar();
 

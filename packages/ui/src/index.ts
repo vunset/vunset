@@ -23,6 +23,7 @@ export {
 } from './app/AppButton.vue';
 export { default as AppCopy } from './app/AppCopy.vue';
 export { default as AppBadge, type AppBadgeVariant, type AppBadgeSize } from './app/AppBadge.vue';
+export { default as AppAvatar, type AppAvatarSize } from './app/AppAvatar.vue';
 export { default as AppAlert } from './app/AppAlert.vue';
 export { default as AppProgress } from './app/AppProgress.vue';
 export { default as AppMeter } from './app/AppMeter.vue';

@@ -2,6 +2,7 @@
 import { computed, nextTick, onScopeDispose, ref, useAttrs, useId, type ComputedRef, type CSSProperties } from 'vue';
 import { createContext } from '../../shared/context';
 import { dataAttrs } from '../../shared/data-attrs';
+import { logicalKey } from '../../shared/direction';
 import { mergeProps } from '../../shared/merge-props';
 import { useControlled } from '../../shared/use-controlled';
 
@@ -310,7 +311,7 @@ function onKeydown(event: KeyboardEvent, index: number): void {
 
   if (grabbed.value !== index) return;
 
-  const to = keyTarget(event.key, index);
+  const to = keyTarget(logicalKey(event.key, event.target), index);
 
   if (to !== undefined) {
     event.preventDefault();

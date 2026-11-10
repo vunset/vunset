@@ -1,5 +1,6 @@
 import { ref, toValue, type MaybeRefOrGetter, type Ref } from 'vue';
 import { scrollIntoViewWithin } from './focus';
+import { logicalKey } from './direction';
 
 export type Orientation = 'horizontal' | 'vertical';
 
@@ -88,7 +89,7 @@ export function useRovingFocus(options: UseRovingFocusOptions) {
     const nextKey = vertical ? 'ArrowDown' : 'ArrowRight';
     const prevKey = vertical ? 'ArrowUp' : 'ArrowLeft';
 
-    switch (event.key) {
+    switch (logicalKey(event.key, event.target)) {
       case nextKey:
         event.preventDefault();
         move(1);

@@ -2,6 +2,32 @@
 
 All four packages are released together under one version.
 
+## 1.0.0-rc.9
+
+### @vunset/vue
+
+- Right-to-left layouts swap the left and right arrow keys in tabs, toggle
+  groups, toolbars, horizontal accordions, radio groups, menubars, menus,
+  calendars, drag lists and timepickers. The direction is read from the
+  focused element, `dir` or CSS `direction`.
+- A submenu opens to the left in a right-to-left layout, and ArrowLeft opens
+  it. Tabs' `data-activation-direction` names the side the selection moved to.
+- `AvatarRoot`, `AvatarImage` and `AvatarFallback`: an image loaded before it's
+  shown, so a broken one never appears, and a fallback until then.
+- `useMediaQuery('(max-width: 1024px)')`: whether a media query matches, kept
+  up to date as the window or a system setting changes.
+
+### @vunset/ui
+
+- AppAvatar: with no image, or a broken one, it shows the `#fallback` slot, the
+  initials of `title` with `initials`, or `fallback` (`N/A`). `title` names it
+  for screen readers and on hover. `size`, and the `app-avatar-square` class.
+
+### @vunset/utils
+
+- `getInitials(name, max = 2)`: the first and the last word's initials,
+  upper-cased.
+
 ## 1.0.0-rc.8
 
 ### @vunset/ui

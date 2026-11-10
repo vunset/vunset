@@ -244,6 +244,20 @@ describe('Timepicker', () => {
       expect(document.activeElement).toBe(segment('minute'));
     });
 
+    it('swaps left and right between segments in a right-to-left layout', async () => {
+      document.documentElement.dir = 'rtl';
+      try {
+        setup({ seconds: true });
+        segment('hour').focus();
+        await key(segment('hour'), 'ArrowLeft');
+        expect(document.activeElement).toBe(segment('minute'));
+        await key(segment('minute'), 'ArrowRight');
+        expect(document.activeElement).toBe(segment('hour'));
+      } finally {
+        document.documentElement.removeAttribute('dir');
+      }
+    });
+
     it('is a spinbutton announcing its value', async () => {
       setup({}, ref('07:05'));
       await nextTick();

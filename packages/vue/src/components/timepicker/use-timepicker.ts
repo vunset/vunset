@@ -14,6 +14,7 @@ import {
 } from 'vue';
 import { createContext } from '../../shared/context';
 import { dataAttrs } from '../../shared/data-attrs';
+import { logicalKey } from '../../shared/direction';
 import { provideSurface } from '../../shared/surface';
 import { useControlled } from '../../shared/use-controlled';
 import { useFieldValue, useOptionalFieldContext } from '../../shared/use-field';
@@ -413,7 +414,7 @@ export function useTimepicker(options: UseTimepickerOptions = {}): UseTimepicker
       Delete: () => set(unit, null)
     };
 
-    const move = moves[event.key];
+    const move = moves[logicalKey(event.key, event.target)];
     const edit = edits[event.key];
     const digit = unit !== 'period' && /^\d$/.test(event.key);
     const letter = unit === 'period' && /^\p{L}$/u.test(event.key);
@@ -685,7 +686,7 @@ export function useTimepickerColumn(unit: MaybeRefOrGetter<TimeUnit>): UseTimepi
       }
     };
 
-    const action = keys[event.key];
+    const action = keys[logicalKey(event.key, event.target)];
     if (!action) return;
     event.preventDefault();
     action();

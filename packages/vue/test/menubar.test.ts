@@ -190,6 +190,24 @@ describe('Menubar', () => {
       expect(document.activeElement).toBe(triggers()[1]);
     });
 
+    it('swaps left and right in a right-to-left layout', async () => {
+      document.documentElement.dir = 'rtl';
+      try {
+        mountMenubar();
+        triggers()[0].focus();
+        key(triggers()[0], 'ArrowLeft');
+        expect(document.activeElement).toBe(triggers()[1]);
+
+        triggers()[0].focus();
+        triggers()[0].click();
+        await settle();
+        key(openMenu()!, 'ArrowLeft');
+        expect(document.activeElement).toBe(triggers()[1]);
+      } finally {
+        document.documentElement.removeAttribute('dir');
+      }
+    });
+
     it('focuses an item by typeahead', async () => {
       mountMenubar();
       triggers()[0].focus();

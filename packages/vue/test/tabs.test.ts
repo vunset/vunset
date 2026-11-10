@@ -228,6 +228,24 @@ describe('Tabs', () => {
       expect(selectedTab()).toBe(tab('overview'));
     });
 
+    it('swaps left and right in a right-to-left layout', async () => {
+      document.documentElement.dir = 'rtl';
+      try {
+        mountTabs();
+        await nextTick();
+        tab('overview').focus();
+
+        key('ArrowLeft');
+        await nextTick();
+        expect(document.activeElement).toBe(tab('usage'));
+        key('ArrowRight');
+        await nextTick();
+        expect(document.activeElement).toBe(tab('overview'));
+      } finally {
+        document.documentElement.removeAttribute('dir');
+      }
+    });
+
     it('selects on arrow keys when activateOnFocus is set', async () => {
       mountTabs({ rootProps: { activateOnFocus: true } });
       await nextTick();
@@ -373,6 +391,20 @@ describe('Tabs', () => {
 
       await press(tab('overview'));
       expect(list().getAttribute('data-activation-direction')).toBe('left');
+    });
+
+    it('reports the side it moved to in a right-to-left layout', async () => {
+      document.documentElement.dir = 'rtl';
+      try {
+        mountTabs();
+        await nextTick();
+        await press(tab('api'));
+        expect(list().getAttribute('data-activation-direction')).toBe('left');
+        await press(tab('overview'));
+        expect(list().getAttribute('data-activation-direction')).toBe('right');
+      } finally {
+        document.documentElement.removeAttribute('dir');
+      }
     });
 
     it('reports it along the axis the tabs run on', async () => {

@@ -244,7 +244,8 @@ export default defineConfig({
           text: 'Data',
           items: [
             { text: 'AppTable', link: '/ui/app-table' },
-            { text: 'AppDataTable', link: '/ui/app-data-table' }
+            { text: 'AppDataTable', link: '/ui/app-data-table' },
+            { text: 'AppAvatar', link: '/ui/app-avatar' }
           ]
         },
         {
@@ -346,7 +347,8 @@ export default defineConfig({
           text: 'Data',
           items: [
             { text: 'Table', link: '/data/table' },
-            { text: 'Data table', link: '/data/data-table' }
+            { text: 'Data table', link: '/data/data-table' },
+            { text: 'Avatar', link: '/data/avatar' }
           ]
         },
         {

@@ -71,7 +71,11 @@ A component holds no behavior of its own: a gap it finds is fixed in
   and the `inverted` class (the other `color-scheme` from its parent's, read by a
   style query on a registered `light-dark()` probe, so it nests and needs no
   theme hook). They render `as` through `Part`, exported from `@vunset/vue`
-  for that. No Avatar: a few lines an app writes itself.
+  for that.
+- **AppAvatar's `title`** is whose avatar it is (hover text, the accessible name,
+  the source of `initials`), not a rendered title part, so it takes no `title-class`.
+  Its fallback text is the `#fallback` slot, else `title`'s initials with
+  `initials`, else `fallback` (`'N/A'`).
 - **Icons** ui draws go through AppIcon from `UI_ICONS`, so an app icon of the
   same name replaces them everywhere. No inline SVG in ui.
 - **Optional peers** get their own entry: `@vunset/ui/chart`, `@vunset/ui/data-table` (AppDataTable),

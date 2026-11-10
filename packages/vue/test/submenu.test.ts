@@ -136,6 +136,29 @@ describe('Submenu', () => {
       expect(document.activeElement?.textContent).toBe('doc-one');
     });
 
+    it('opens with ArrowLeft and closes with ArrowRight in a right-to-left layout', async () => {
+      document.documentElement.dir = 'rtl';
+      try {
+        mountNested();
+        await openRoot();
+        subTrigger().focus();
+        key(subTrigger(), 'ArrowRight');
+        await settle();
+        expect(subMenu()).toBeNull();
+
+        key(subTrigger(), 'ArrowLeft');
+        await settle();
+        expect(document.activeElement?.textContent).toBe('doc-one');
+
+        key(document.activeElement!, 'ArrowRight');
+        await settle();
+        expect(subMenu()).toBeNull();
+        expect(document.activeElement).toBe(subTrigger());
+      } finally {
+        document.documentElement.removeAttribute('dir');
+      }
+    });
+
     it('keeps the parent menu open', async () => {
       mountNested();
       await openRoot();
@@ -255,6 +278,19 @@ describe('Submenu placement', () => {
     await settle();
     // The default comes from the composable, which knows the menu is nested; a component default would force 'bottom'.
     expect(subMenu()!.getAttribute('data-side')).toBe('right');
+  });
+
+  it('opens to the left by default in a right-to-left layout', async () => {
+    document.documentElement.dir = 'rtl';
+    try {
+      mountNested();
+      await openRoot();
+      hover(subTrigger());
+      await settle();
+      expect(subMenu()!.getAttribute('data-side')).toBe('left');
+    } finally {
+      document.documentElement.removeAttribute('dir');
+    }
   });
 
   it('leaves the top-level menu opening downwards', async () => {

@@ -537,6 +537,21 @@ describe('RadioGroup', () => {
       expect(checkedValues()).toEqual(['a']);
     });
 
+    it('swap left and right in a right-to-left layout', async () => {
+      document.documentElement.dir = 'rtl';
+      try {
+        const w = mountRadios({ defaultValue: 'a' });
+        press(radios()[0], 'ArrowLeft');
+        await w.vm.$nextTick();
+        expect(checkedValues()).toEqual(['b']);
+        press(radios()[1], 'ArrowRight');
+        await w.vm.$nextTick();
+        expect(checkedValues()).toEqual(['a']);
+      } finally {
+        document.documentElement.removeAttribute('dir');
+      }
+    });
+
     it('stop at the end when looping is off', async () => {
       const w = mountRadios({ defaultValue: 'c', loop: false });
       press(radios()[2], 'ArrowRight');

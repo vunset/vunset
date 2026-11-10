@@ -22,6 +22,20 @@ export function toSeparatedList(value: string, separator: string, unique = false
   return toSeparatedString(toSeparatedArray(value, separator, unique), separator);
 }
 
+/**
+ * Up to `max` initials of a name, upper-cased: the first and the last word's, so `'Ada King Lovelace'` is `'AL'`.
+ * Words split at spaces and hyphens; one with no letter or digit, like `'—'`, is skipped. `''` when none is left.
+ */
+export function getInitials(name: string | null | undefined, max = 2): string {
+  if (!name || max < 1) return '';
+  const firsts = name
+    .split(/[\s-]+/u)
+    .map((word) => word.match(/[\p{L}\p{N}]/u)?.[0])
+    .filter((letter): letter is string => !!letter);
+  const picked = firsts.length <= max ? firsts : [...firsts.slice(0, max - 1), firsts[firsts.length - 1]];
+  return picked.join('').toLocaleUpperCase();
+}
+
 const ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 /** `length` letters and digits, from the platform's random source. */

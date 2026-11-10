@@ -14,6 +14,7 @@ import { createContext } from '../../shared/context';
 import { isPropBound, useControlled } from '../../shared/use-controlled';
 import { dataAttrs } from '../../shared/data-attrs';
 import { useRovingFocus, type Orientation } from '../../shared/use-roving-focus';
+import { logicalKey } from '../../shared/direction';
 import { useOptionalGroupContext } from '../group/Group.vue';
 import { useRovingItems, type RovingItem } from '../../shared/use-roving-items';
 import { useFieldValue, useOptionalFieldContext } from '../../shared/use-field';
@@ -329,7 +330,7 @@ export function useToggleGroup(options: UseToggleGroupOptions = {}): UseToggleGr
     'aria-required': announcedRequired() || undefined,
     'aria-invalid': invalid() || undefined,
     onKeydown(event: KeyboardEvent) {
-      if (inToolbar() && !loop() && pastEnd(event.key)) return;
+      if (inToolbar() && !loop() && pastEnd(logicalKey(event.key, event.target))) return;
       roving.onKeydown(event);
     },
     onFocusin: () => field?.setFocused(true),

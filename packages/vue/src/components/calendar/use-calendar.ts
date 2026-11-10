@@ -14,6 +14,7 @@ import {
 import { createContext } from '../../shared/context';
 import { useControlled } from '../../shared/use-controlled';
 import { dataAttrs } from '../../shared/data-attrs';
+import { logicalKey } from '../../shared/direction';
 import { useFieldValue, useOptionalFieldContext } from '../../shared/use-field';
 import {
   addDays,
@@ -628,7 +629,7 @@ export function useCalendar(options: UseCalendarOptions = {}): UseCalendarReturn
   function onKeydown(event: KeyboardEvent): void {
     let next: Date | null = null;
 
-    switch (event.key) {
+    switch (logicalKey(event.key, event.target)) {
       case 'ArrowLeft':
         next = unit(-1);
         break;

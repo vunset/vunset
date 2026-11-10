@@ -105,6 +105,13 @@ export { default as ToastProgress } from './components/toast/ToastProgress.vue';
 
 export { default as Button } from './components/button/Button.vue';
 export { default as Badge } from './components/badge/Badge.vue';
+export {
+  default as AvatarRoot,
+  type AvatarState,
+  type AvatarStatus
+} from './components/avatar/AvatarRoot.vue';
+export { default as AvatarImage } from './components/avatar/AvatarImage.vue';
+export { default as AvatarFallback } from './components/avatar/AvatarFallback.vue';
 export { default as Icon } from './components/icon/Icon.vue';
 
 export { default as TableRoot, type TableSticky } from './components/table/TableRoot.vue';

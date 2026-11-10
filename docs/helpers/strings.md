@@ -1,7 +1,7 @@
 # Strings and CSV
 
-Splitting and joining lists kept in a single string, random ids, and CSV files
-built from rows.
+Splitting and joining lists kept in a single string, a name's initials, random
+ids, and CSV files built from rows.
 
 ```ts
 import { toSeparatedArray, formatCsv } from '@vunset/utils';
@@ -38,6 +38,21 @@ input's `transform`:
 toSeparatedList(' a, b,,a ', ','); // 'a,b,a'
 toSeparatedList(' a, b,,a ', ',', true); // 'a,b'
 ```
+
+## Initials
+
+`getInitials` takes a name's initials, upper-cased: the first and the last
+word's, so a middle name is skipped. Words split at spaces and hyphens, and a
+word with no letter or digit is passed over. Pass a second argument for more
+than two:
+
+```ts
+getInitials('Ada King Love'); // 'AL'
+getInitials('Jean-Luc Picard', 3); // 'JLP'
+getInitials(''); // ''
+```
+
+[AppAvatar](/ui/app-avatar) uses it for `initials`.
 
 ## CSV
 

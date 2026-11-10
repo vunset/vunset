@@ -13,6 +13,7 @@ import {
 } from 'vue';
 import { useControlled } from './use-controlled';
 import { dataAttrs } from './data-attrs';
+import { isRtl, logicalKey } from './direction';
 import { anchoredStateAttrs } from './popup-state-attrs';
 import { useTransitionStatus, type TransitionStatus } from './use-transition-status';
 import {
@@ -178,8 +179,10 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
     }
   });
 
+  // A submenu opens towards the end of the line: the left in a right-to-left one. Read as it opens.
+  const rtl = ref(false);
   const positioning = usePositioning({
-    side: () => toValue(options.side) ?? (isSubmenu ? 'right' : 'bottom'),
+    side: () => toValue(options.side) ?? (isSubmenu ? (rtl.value ? 'left' : 'right') : 'bottom'),
     align: () => toValue(options.align) ?? 'start',
     sideOffset: () => toValue(options.sideOffset) ?? (isSubmenu ? 0 : 4),
     alignOffset: options.alignOffset,
@@ -188,6 +191,9 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
   });
 
   const triggerEl = positioning.anchorRef;
+  watch(open, (now) => {
+    if (now && isSubmenu) rtl.value = isRtl(triggerEl.value);
+  });
   const popupEl = ref<HTMLElement | null>(null);
   let returnFocus: HTMLElement | null = null;
   const focusTrigger = () => (triggerEl.value ?? returnFocus)?.focus();
@@ -380,7 +386,8 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
       if (disabled()) return;
 
       const openKey = isSubmenu ? 'ArrowRight' : 'ArrowDown';
-      if (event.key === openKey || event.key === 'Enter' || event.key === ' ') {
+      const key = logicalKey(event.key, event.currentTarget);
+      if (key === openKey || event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
         event.stopPropagation();
         void openAndFocusFirst();
@@ -402,16 +409,17 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
     onKeydown(event: KeyboardEvent) {
       if (roving.onKeydown(event)) return;
 
-      if (isSubmenu && event.key === 'ArrowLeft') {
+      const key = logicalKey(event.key, event.currentTarget);
+      if (isSubmenu && key === 'ArrowLeft') {
         event.preventDefault();
         event.stopPropagation();
         close(true);
         return;
       }
 
-      if (menubar && !isSubmenu && (event.key === 'ArrowLeft' || event.key === 'ArrowRight')) {
+      if (menubar && !isSubmenu && (key === 'ArrowLeft' || key === 'ArrowRight')) {
         event.preventDefault();
-        menubar.focusSibling(event.key === 'ArrowRight' ? 1 : -1);
+        menubar.focusSibling(key === 'ArrowRight' ? 1 : -1);
         return;
       }
 

@@ -231,6 +231,18 @@ describe('Accordion', () => {
       expect(document.activeElement).toBe(trigger('b'));
     });
 
+    it('swaps left and right when horizontal in a right-to-left layout', () => {
+      document.documentElement.dir = 'rtl';
+      try {
+        mountAccordion({ orientation: 'horizontal' });
+        trigger('a').focus();
+        key(trigger('a'), 'ArrowLeft');
+        expect(document.activeElement).toBe(trigger('b'));
+      } finally {
+        document.documentElement.removeAttribute('dir');
+      }
+    });
+
     it('keeps a nested accordion out of the outer one', async () => {
       mountAccordion({ defaultValue: ['a'] }, [{ value: 'a', nested: [{ value: 'x' }, { value: 'y' }] }, { value: 'b' }]);
       await settle();

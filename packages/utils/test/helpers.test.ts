@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import {
+  getInitials,
   calcAvg,
   calcDiffPercentage,
   calcPercentage,
@@ -87,6 +88,28 @@ describe('toSeparatedList', () => {
     expect(toSeparatedList(' a, b,,a ', ',', true)).toBe('a,b');
     expect(toSeparatedList('a\n\n b\n', '\n')).toBe('a\nb');
     expect(toSeparatedList('', ',')).toBe('');
+  });
+});
+
+describe('getInitials', () => {
+  it('takes the first and the last word', () => {
+    expect(getInitials('Ada Love')).toBe('AL');
+    expect(getInitials('ada king lovelace')).toBe('AL');
+    expect(getInitials('  Ada  ')).toBe('A');
+    expect(getInitials('Jean-Luc Picard', 3)).toBe('JLP');
+  });
+
+  it('skips words with nothing to take, and gives a string for nothing', () => {
+    expect(getInitials('Ada — Love')).toBe('AL');
+    expect(getInitials('— ·')).toBe('');
+    expect(getInitials('')).toBe('');
+    expect(getInitials(undefined)).toBe('');
+    expect(getInitials('Ada Love', 0)).toBe('');
+  });
+
+  it('reads any script', () => {
+    expect(getInitials('Émile Zola')).toBe('ÉZ');
+    expect(getInitials('أحمد علي')).toBe('أع');
   });
 });
 

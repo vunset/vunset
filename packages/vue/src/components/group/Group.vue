@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, useAttrs, watch, type ComputedRef } from 'vue';
 import { createContext } from '../../shared/context';
 import { dataAttrs } from '../../shared/data-attrs';
+import { logicalKey } from '../../shared/direction';
 import { mergeProps } from '../../shared/merge-props';
 import type { Orientation } from '../../shared/use-roving-focus';
 
@@ -164,19 +165,20 @@ function onKeydown(event: KeyboardEvent) {
   const vertical = state.value.orientation === 'vertical';
   const next = vertical ? 'ArrowDown' : 'ArrowRight';
   const previous = vertical ? 'ArrowUp' : 'ArrowLeft';
-  if (![next, previous, 'Home', 'End'].includes(event.key)) return;
-  if (keepsKey(event.target as Element, event.key, next, previous)) return;
+  const key = logicalKey(event.key, root);
+  if (![next, previous, 'Home', 'End'].includes(key)) return;
+  if (keepsKey(event.target as Element, logicalKey(event.key, event.target), next, previous)) return;
 
   const { all } = toolbarItems(root, new Set(touched.keys()));
   if (!all.length) return;
 
   const from = all.findIndex((el) => el === event.target || el.contains(event.target as Node));
   const index =
-    event.key === 'Home'
+    key === 'Home'
       ? 0
-      : event.key === 'End'
+      : key === 'End'
         ? all.length - 1
-        : (from + (event.key === next ? 1 : -1) + all.length) % all.length;
+        : (from + (key === next ? 1 : -1) + all.length) % all.length;
 
   event.preventDefault();
   all[index].focus();

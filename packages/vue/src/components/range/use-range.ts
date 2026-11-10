@@ -16,6 +16,7 @@ import {
 import { createContext } from '../../shared/context';
 import { useControlled } from '../../shared/use-controlled';
 import { dataAttrs } from '../../shared/data-attrs';
+import { isRtl } from '../../shared/direction';
 import { visuallyHidden } from '../../shared/visually-hidden';
 import { isKeyboardFocus } from '../../shared/input-modality';
 import { useFieldValue, useOptionalFieldContext } from '../../shared/use-field';
@@ -271,7 +272,7 @@ export function useRange(options: UseRangeOptions = {}): UseRangeReturn {
   const rtl = ref(false);
 
   function readDirection() {
-    if (controlEl.value) rtl.value = getComputedStyle(controlEl.value).direction === 'rtl';
+    if (controlEl.value) rtl.value = isRtl(controlEl.value);
   }
 
   function onKeydown(index: number, event: KeyboardEvent) {
