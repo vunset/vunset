@@ -1,10 +1,10 @@
 # Numbers
 
-Writing numbers, money and percentages for people, and the sums a dashboard
-needs: a total, an average, a share, a change.
+Writing numbers, money and percentages for people, reading them back, and the
+sums a dashboard needs: a total, an average, a share, a change.
 
 ```ts
-import { formatCurrency, formatPercentage, calcTotal } from '@vunset/utils';
+import { formatCurrency, formatPercentage, parseNumber, calcTotal } from '@vunset/utils';
 
 formatCurrency(1234.5); // '$1,234.50'
 formatPercentage(0.125); // '12.5%'
@@ -49,6 +49,21 @@ anything that isn't a finite number. A table full of gaps stays readable:
 ```ts
 formatNumber('abc'); // 'N/A'
 formatCurrency(null, { fallback: '—' }); // '—'
+```
+
+## Reading numbers back
+
+`parseNumber` reads text the way the same options write it: the locale's
+grouping and decimal separators, a currency or unit sign, a percent (as the
+fraction). It's what [Number field](/forms/number-field) reads typing with.
+Unlike `formatNumber`, the locale is the runtime's own unless you pass one.
+
+```ts
+parseNumber('1.234,5', { locale: 'de-DE' }); // 1234.5
+parseNumber('$1,234.50', { locale: 'en-US', style: 'currency', currency: 'USD' }); // 1234.5
+parseNumber('12%', { locale: 'en-US', style: 'percent' }); // 0.12
+parseNumber(''); // null
+parseNumber('abc'); // NaN
 ```
 
 ## Totals and changes
@@ -103,6 +118,18 @@ A `currency` alone is enough: the style becomes `'currency'` on its own.
 `(value: NumberInput, options?: FormatNumberOptions) => string`: a fraction as
 a percentage. One decimal by default. Any number options you pass replace
 that default rather than being added to it.
+
+### parseNumber
+
+`(text: string | null | undefined, options?: ParseNumberOptions) => number | null`:
+the number `text` reads as under `locale` and `Intl.NumberFormat` options;
+`null` for empty text, `NaN` for text that isn't a number.
+
+### toPlainNumber
+
+`(text: string, options?: ParseNumberOptions) => string | null`: `text` as plain
+digits with `.` and `-`, a half-typed number (`'-'`, `'1.'`) kept as it is;
+`null` when it holds a character no number in that format could.
 
 ### toFixedNumber
 

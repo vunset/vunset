@@ -203,7 +203,8 @@ twice. That means you import those yourself, first, in this order:
 | Stylesheet                                                                                       | Needs first                                                               |
 | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------- |
 | `form-checkbox`, `form-radio`, `form-switch`, `form-range`, `form-calendar`, `form-toggle-group` | `form-field`                                                              |
-| `form-input`, `form-textarea`, `form-timepicker`  | `form-field`, `form-control`                                              |
+| `form-input`, `form-textarea`, `form-timepicker`, `form-number-field` | `form-field`, `form-control`                                    |
+| `form-otp`                                                                                       | `form-field`, `form-control`, and `app-group` for `groups`                |
 | `form-checkbox-group`                                                                            | `form-field`, `form-checkbox`                                             |
 | `form-select`, `form-combobox`                                                                   | `form-field`, `form-control`, `form-listbox`                              |
 | `form-datepicker`                                                                                | `form-field`, `form-control`, `form-calendar`                             |

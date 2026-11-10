@@ -189,11 +189,13 @@ export default defineConfig({
             { text: 'FormSwitch', link: '/ui/form-switch' },
             { text: 'FormSelect', link: '/ui/form-select' },
             { text: 'FormCombobox', link: '/ui/form-combobox' },
+            { text: 'FormToggleGroup', link: '/ui/form-toggle-group' },
             { text: 'FormRange', link: '/ui/form-range' },
             { text: 'FormCalendar', link: '/ui/form-calendar' },
             { text: 'FormDatepicker', link: '/ui/form-datepicker' },
             { text: 'FormTimepicker', link: '/ui/form-timepicker' },
-            { text: 'FormToggleGroup', link: '/ui/form-toggle-group' }
+            { text: 'FormNumberField', link: '/ui/form-number-field' },
+            { text: 'FormOtp', link: '/ui/form-otp' }
           ]
         },
         {
@@ -299,7 +301,9 @@ export default defineConfig({
             { text: 'Range', link: '/forms/range' },
             { text: 'Calendar', link: '/forms/calendar' },
             { text: 'Datepicker', link: '/forms/datepicker' },
-            { text: 'Timepicker', link: '/forms/timepicker' }
+            { text: 'Timepicker', link: '/forms/timepicker' },
+            { text: 'Number field', link: '/forms/number-field' },
+            { text: 'One-time code', link: '/forms/otp' }
           ]
         },
         {

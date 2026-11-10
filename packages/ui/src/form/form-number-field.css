@@ -1,0 +1,56 @@
+@layer components {
+  .form-number-field {
+    gap: 0;
+    padding: 0;
+    overflow: clip;
+    cursor: text;
+  }
+
+  .form-number-field-input {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    padding-inline: var(--ui-control-padding-x);
+    font-variant-numeric: tabular-nums;
+    outline: none;
+
+    .form-number-field-button + & {
+      text-align: center;
+    }
+
+    &::placeholder {
+      color: var(--ui-muted);
+      opacity: 1;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  .form-number-field-button {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: var(--ui-control-height);
+    height: 100%;
+    color: var(--ui-muted);
+    cursor: pointer;
+    user-select: none;
+    touch-action: manipulation;
+    transition:
+      background-color var(--ui-duration) ease,
+      color var(--ui-duration) ease;
+
+    &:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--ui-text) 6%, transparent);
+      color: var(--ui-text);
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  }
+}

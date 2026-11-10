@@ -14,6 +14,14 @@ All four packages are released together under one version.
   it. Tabs' `data-activation-direction` names the side the selection moved to.
 - `AvatarRoot`, `AvatarImage` and `AvatarFallback`: an image loaded before it's
   shown, so a broken one never appears, and a fallback until then.
+- `NumberFieldRoot`, `NumberFieldInput`, `NumberFieldIncrement` and
+  `NumberFieldDecrement`: a number typed in its locale and `format`, stepped by
+  the buttons (held, they repeat), the arrow and Page keys, or the wheel;
+  clamped to `min`/`max` on commit, submitted as the plain number.
+- `OtpRoot` and `OtpInput`: a one-time code or PIN, one box per character, one
+  value. Typing, Backspace and the arrows move along the boxes; a paste or a
+  code offered from a message fills them all; `@complete` fires once full. Put
+  boxes in a `Group` to join them.
 - `useMediaQuery('(max-width: 1024px)')`: whether a media query matches, kept
   up to date as the window or a system setting changes.
 
@@ -22,11 +30,16 @@ All four packages are released together under one version.
 - AppAvatar: with no image, or a broken one, it shows the `#fallback` slot, the
   initials of `title` with `initials`, or `fallback` (`N/A`). `title` names it
   for screen readers and on hover. `size`, and the `app-avatar-square` class.
+- FormNumberField: a number field with − and + buttons in a form control box.
+- FormOtp: a one-time code field.
 
 ### @vunset/utils
 
 - `getInitials(name, max = 2)`: the first and the last word's initials,
   upper-cased.
+- `parseNumber(text, { locale, ...format })` reads back what `formatNumber`
+  writes: `'1.234,5'` in German is `1234.5`, `'12%'` is `0.12`. `null` for
+  empty text, `NaN` for text that isn't a number.
 
 ## 1.0.0-rc.8
 

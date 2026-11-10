@@ -1,0 +1,50 @@
+:root {
+  --demo-color-text: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));
+  --demo-color-edge: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.3));
+  --demo-color-canvas: light-dark(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.03));
+}
+
+.demo-otp {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.demo-otp-joined {
+  display: flex;
+
+  /* Neighbors share a border. */
+  & > .demo-otp-input + .demo-otp-input {
+    margin-inline-start: -1px;
+  }
+}
+
+.demo-otp-input {
+  box-sizing: border-box;
+  width: 2.25rem;
+  height: 2.5rem;
+  margin: 0;
+  padding: 0;
+  border: 1px dashed var(--demo-color-edge);
+  background-color: var(--demo-color-canvas);
+  color: var(--demo-color-text);
+  font: inherit;
+  font-size: 1rem;
+  text-align: center;
+  outline: none;
+  caret-color: transparent;
+
+  &:focus-visible {
+    position: relative;
+    border-style: solid;
+    border-color: currentColor;
+  }
+
+  &[data-disabled] {
+    opacity: 0.5;
+  }
+}
+
+.demo-otp-dash {
+  opacity: 0.4;
+}

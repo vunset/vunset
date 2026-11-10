@@ -9,6 +9,8 @@
 @import './form/form-control.css';
 @import './form/form-input.css';
 @import './form/form-textarea.css';
+@import './form/form-number-field.css';
+@import './form/form-otp.css';
 @import './form/form-checkbox.css';
 @import './form/form-radio.css';
 @import './form/form-switch.css';

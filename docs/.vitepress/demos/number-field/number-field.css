@@ -1,0 +1,63 @@
+:root {
+  --demo-color-text: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));
+  --demo-color-edge: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.3));
+  --demo-color-canvas: light-dark(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.03));
+}
+
+.demo-number-field {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: stretch;
+  width: 12rem;
+  height: 2.25rem;
+  border: 1px dashed var(--demo-color-edge);
+  background-color: var(--demo-color-canvas);
+  color: var(--demo-color-text);
+  font-size: 0.875rem;
+
+  &:has(:focus-visible) {
+    border-style: solid;
+    border-color: currentColor;
+  }
+}
+
+.demo-number-field-input {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 0 0.5rem;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: center;
+  outline: none;
+}
+
+.demo-number-field-button {
+  width: 2.25rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+
+  &:hover:not(:disabled) {
+    background-color: rgba(from var(--demo-color-text) r g b / 10%);
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+}
+
+.demo-number-field-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}

@@ -1,0 +1,26 @@
+@layer components {
+  .form-otp {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .form-otp-input {
+    justify-content: center;
+    width: var(--ui-control-height);
+    padding: 0;
+    font-size: var(--ui-font-size-lg);
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    caret-color: transparent;
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  .form-otp-separator {
+    color: var(--ui-muted);
+    user-select: none;
+  }
+}

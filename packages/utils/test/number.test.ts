@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { formatNumber, formatCurrency, chartColors } from '../src';
+import { formatNumber, formatCurrency, chartColors, parseNumber, toPlainNumber } from '../src';
 
 describe('formatNumber', () => {
   it('formats a number, and a numeric string', () => {
@@ -67,5 +67,40 @@ describe('chartColors', () => {
 
   it('falls back past the palette to the text color, or to what it is given', () => {
     expect(chartColors(1, '--brand-', '#888')).toEqual(['var(--brand-0, #888)']);
+  });
+});
+
+describe('parseNumber', () => {
+  it('reads what formatNumber writes, in any locale and format', () => {
+    expect(parseNumber('1,234.5', { locale: 'en-US' })).toBe(1234.5);
+    expect(parseNumber('1.234.567,8', { locale: 'de-DE' })).toBe(1234567.8);
+    expect(parseNumber('1 234,5', { locale: 'fr-FR' })).toBe(1234.5);
+    expect(parseNumber("1'234.5", { locale: 'de-CH' })).toBe(1234.5);
+    expect(parseNumber('$1,234.50', { locale: 'en-US', style: 'currency', currency: 'USD' })).toBe(1234.5);
+    expect(parseNumber('12 kg', { locale: 'en-US', style: 'unit', unit: 'kilogram' })).toBe(12);
+    expect(parseNumber('12%', { locale: 'en-US', style: 'percent' })).toBe(0.12);
+  });
+
+  it('takes a typographic minus, and the point only where it is not a grouping separator', () => {
+    expect(parseNumber('\u22125', { locale: 'en-US' })).toBe(-5);
+    expect(parseNumber('1.5', { locale: 'fr-FR' })).toBe(1.5);
+    expect(parseNumber('1.5', { locale: 'de-DE' })).toBe(15);
+  });
+
+  it('gives null for nothing and NaN for what is not a number', () => {
+    expect(parseNumber('', { locale: 'en-US' })).toBeNull();
+    expect(parseNumber('  ')).toBeNull();
+    expect(parseNumber(undefined)).toBeNull();
+    expect(parseNumber('abc', { locale: 'en-US' })).toBeNaN();
+    expect(parseNumber('-', { locale: 'en-US' })).toBeNaN();
+  });
+});
+
+describe('toPlainNumber', () => {
+  it('keeps a half-typed number and refuses a stray character', () => {
+    expect(toPlainNumber('-', { locale: 'en-US' })).toBe('-');
+    expect(toPlainNumber('1.', { locale: 'en-US' })).toBe('1.');
+    expect(toPlainNumber('1,5', { locale: 'de-DE' })).toBe('1.5');
+    expect(toPlainNumber('1a', { locale: 'en-US' })).toBeNull();
   });
 });

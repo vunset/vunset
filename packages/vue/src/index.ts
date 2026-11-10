@@ -58,6 +58,15 @@ export { default as FieldLabel } from './components/field/FieldLabel.vue';
 export { default as FieldGroup } from './components/field/FieldGroup.vue';
 export { default as Input } from './components/input/Input.vue';
 export { default as Textarea } from './components/textarea/Textarea.vue';
+export {
+  default as NumberFieldRoot,
+  type NumberFieldState
+} from './components/number-field/NumberFieldRoot.vue';
+export { default as NumberFieldInput } from './components/number-field/NumberFieldInput.vue';
+export { default as NumberFieldIncrement } from './components/number-field/NumberFieldIncrement.vue';
+export { default as NumberFieldDecrement } from './components/number-field/NumberFieldDecrement.vue';
+export { default as OtpRoot, type OtpState, type OtpType } from './components/otp/OtpRoot.vue';
+export { default as OtpInput } from './components/otp/OtpInput.vue';
 export { default as FieldDescription } from './components/field/FieldDescription.vue';
 export { default as FieldError } from './components/field/FieldError.vue';
 

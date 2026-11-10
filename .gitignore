@@ -2,6 +2,7 @@ node_modules
 dist
 .idea
 docs/.vitepress/cache
+docs/.vitepress/.temp
 .DS_Store
 *.tgz
 *.log

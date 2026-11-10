@@ -72,9 +72,11 @@ shows everything it takes.
 ## VitePress decisions
 
 - **VitePress `2.0.0-alpha.20`, pinned;** needs Node 22+. Alphas rename options,
-  so read the changelog before bumping. The build needs ~2 GB of heap (peak RSS
-  ~2.8 GB): Node's default, sized from RAM, covers it, but a CI deploy (GitHub
-  Pages) should set `NODE_OPTIONS=--max-old-space-size=4096`.
+  so read the changelog before bumping. The build peaks at ~3.8 GB RSS, most of
+  it the `::: api` tables' shared TypeScript checker, growing with each
+  component documented: Node's default heap and 4 GB both run out, so run it as
+  `NODE_OPTIONS=--max-old-space-size=8192 npm run build`, as the deploy
+  (`docs.yml`) does.
 - **Deployed by `.github/workflows/docs.yml`** to GitHub Pages on every push to
   `main`.
 - **The build's chunk-size warning** is the docs pages: each preview's

@@ -1,5 +1,7 @@
 export { default as FormField, type FormFieldLayout, type FormSize } from './form/FormField.vue';
 export { default as FormInput } from './form/FormInput.vue';
+export { default as FormNumberField } from './form/FormNumberField.vue';
+export { default as FormOtp } from './form/FormOtp.vue';
 export { default as FormTextarea } from './form/FormTextarea.vue';
 export { default as FormCheckbox } from './form/FormCheckbox.vue';
 export { default as FormCheckboxGroup, type FormCheckboxOption } from './form/FormCheckboxGroup.vue';

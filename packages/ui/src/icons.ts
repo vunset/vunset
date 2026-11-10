@@ -19,6 +19,8 @@ export const UI_ICONS = {
   copy: stroke('<rect x="8" y="8" width="13" height="13" rx="2.5"/><path d="M16 8V5.5A2.5 2.5 0 0 0 13.5 3h-8A2.5 2.5 0 0 0 3 5.5v8A2.5 2.5 0 0 0 5.5 16H8"/>'),
   'copy-done': CHECK,
   'listbox-indicator': CHEVRONS_UP_DOWN,
+  'number-increment': path('M12 5v14M5 12h14'),
+  'number-decrement': path('M5 12h14'),
   'chevron-down': path('M20 9l-8 8-8-8'),
   'chevron-up': path('M4 15l8-8 8 8'),
   'chevron-left': path('M15 4l-8 8 8 8'),
