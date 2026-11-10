@@ -1,6 +1,6 @@
 {
   "name": "@vunset/vue",
-  "version": "1.0.0-rc.8",
+  "version": "1.0.0-rc.9",
   "description": "Headless, unstyled Vue 3 components: keyboard, focus and ARIA handled, the look left to you.",
   "keywords": [
     "vue",
@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "@floating-ui/vue": "^2.0.1",
-    "@vunset/utils": "1.0.0-rc.8"
+    "@vunset/utils": "1.0.0-rc.9"
   },
   "peerDependencies": {
     "@tanstack/charts": "^1.1.0",
