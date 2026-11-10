@@ -1,14 +1,7 @@
 @layer components {
-  /* A digit that changes rolls to its new one on a wheel: up as the value
-     grows, down as it shrinks, carrying on past 9 or 0. A character that's
-     new rises into place out of a blur, a few milliseconds after the one
-     before it; one that's gone fades where it was, and the rest slide over.
-     Text without digits animates character by character the same way. Under
-     reduced motion nothing rolls or moves: characters only fade. */
   .app-number-flow {
     --app-number-flow-duration: 0.6s;
     --app-number-flow-ease: cubic-bezier(0.34, 1.2, 0.64, 1);
-    /* Between the wheel's digits, so a neighbor never shows above or below the one in view. */
     --app-number-flow-gap: 0.5lh;
 
     position: relative;
@@ -16,7 +9,6 @@
     font-variant-numeric: tabular-nums;
   }
 
-  /* The whole value, for assistive technology only. */
   .app-number-flow-text {
     position: absolute;
     width: 1px;
@@ -33,14 +25,12 @@
   }
 
   .app-number-flow-char {
-    display: inline-block;
+    display: inline-flex;
   }
 
-  /* One line tall, a little more above and below that fades out, so a rolling digit
-     slides out of view rather than being cut off. */
   .app-number-flow-digit {
     position: relative;
-    display: inline-block;
+    display: inline-flex;
     padding-block: 0.25lh;
     margin-block: -0.25lh;
     overflow: hidden;

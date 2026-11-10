@@ -11,8 +11,14 @@ const CELLS = Array.from({ length: RUN * 3 }, (_, index) => index % RUN);
 
 // What the digits read as a number, to tell which way the value moved.
 function amountOf(parts: FlowPart[]): number {
-  const whole = parts.filter((part) => part.key.startsWith('i')).map((part) => part.char).join('');
-  const fraction = parts.filter((part) => /^f\d+$/.test(part.key)).map((part) => part.char).join('');
+  const whole = parts
+    .filter((part) => part.key.startsWith('i'))
+    .map((part) => part.char)
+    .join('');
+  const fraction = parts
+    .filter((part) => /^f\d+$/.test(part.key))
+    .map((part) => part.char)
+    .join('');
   return Number(`${whole || '0'}.${fraction || '0'}`);
 }
 </script>
@@ -37,7 +43,10 @@ const props = defineProps<{
 }>();
 
 const parts = computed(() =>
-  toFlowParts(props.value, { locale: props.locale, ...(props.format ?? { useGrouping: false, maximumFractionDigits: 20 }) })
+  toFlowParts(props.value, {
+    locale: props.locale,
+    ...(props.format ?? { useGrouping: false, maximumFractionDigits: 20 })
+  })
 );
 const text = computed(() => parts.value.map((part) => part.char).join(''));
 
@@ -51,7 +60,9 @@ const wheels = ref<Record<string, Wheel>>({});
 
 function rest(): Record<string, Wheel> {
   return Object.fromEntries(
-    parts.value.filter((part) => part.digit !== null).map((part) => [part.key, { at: RUN + part.digit!, rolling: false }])
+    parts.value
+      .filter((part) => part.digit !== null)
+      .map((part) => [part.key, { at: RUN + part.digit!, rolling: false }])
   );
 }
 
@@ -99,9 +110,9 @@ function holdPlace(element: Element) {
 </script>
 
 <template>
-  <!-- Read once, whole; the characters that animate are hidden from assistive technology. -->
   <span class="app-number-flow">
     <span class="app-number-flow-text">{{ text }}</span>
+
     <TransitionGroup
       tag="span"
       name="app-number-flow"
@@ -126,9 +137,10 @@ function holdPlace(element: Element) {
           >
             <span v-for="(cell, at) in CELLS" :key="at" class="app-number-flow-cell">{{ cell }}</span>
           </span>
-          <!-- Sizes the wheel's slot to the digit it shows. -->
+
           <span class="app-number-flow-sizer">{{ part.char }}</span>
         </span>
+
         <template v-else>{{ part.char }}</template>
       </span>
     </TransitionGroup>
