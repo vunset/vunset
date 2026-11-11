@@ -115,7 +115,9 @@ For classes on the inner parts, use `trigger-class`, `popup-class`,
 `footer-class`. See [classes on the inner parts](/ui/theming#classes-on-the-inner-parts).
 The `#close` slot replaces the close button's icon.
 
-The width is `--app-dialog-width`, set by `data-size`. To fit your own
+The width is capped by `max-width: var(--app-dialog-width)`, set by
+`data-size`, so `popup-class="max-w-xl"` (or your own `max-width`) resizes it.
+To fit your own
 layers above or below it, see [stacking](/ui/theming#stacking).
 
 <<< ../../packages/ui/src/app/app-dialog.css

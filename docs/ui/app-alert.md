@@ -20,8 +20,10 @@ import { AppAlert } from '@vunset/ui';
 ```
 
 `title` is the alert's heading and `description` (or the default slot) its
-text. Screen readers get both as its name and description. The `#title` and
-`#icon` slots replace those parts, and `:icon="false"` leaves the icon out.
+text. Screen readers get both as its name and description, and
+`title-class` and `description-class` add classes to them. The `#title` and
+`#icon` slots replace those parts. `icon="rocket"` draws that icon instead of
+the tone's, and `:icon="false"` leaves the icon out.
 
 An alert has `role="alert"`, so a screen reader reads it out as soon as it
 appears. That suits a message that just arrived, like a failed save. For one

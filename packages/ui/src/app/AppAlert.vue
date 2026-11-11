@@ -14,14 +14,16 @@ const props = withDefaults(
     title?: string;
     /** The text under the title. Or put it in the default slot. */
     description?: string;
-    /** The icon before the title; `false` leaves it out. Each tone has its own. */
-    icon?: boolean;
+    /** The icon before the title: a name to draw that icon, `false` to leave it out. Each tone has its own. */
+    icon?: boolean | string;
     /** A close button, which emits `close`; the page removes the alert. */
     closable?: boolean;
     /** Names the close button. */
     closeLabel?: string;
     /** Classes for the title. */
     titleClass?: HTMLAttributes['class'];
+    /** Classes for the description. */
+    descriptionClass?: HTMLAttributes['class'];
     /** Element or component to render. */
     as?: string | object;
   }>(),
@@ -40,7 +42,9 @@ const ICONS: Record<string, string> = {
   warning: 'alert-warning',
   danger: 'alert-danger'
 };
-const iconName = computed(() => ICONS[props.tone] ?? ICONS.neutral!);
+const iconName = computed(() =>
+  typeof props.icon === 'string' && props.icon ? props.icon : (ICONS[props.tone] ?? ICONS.neutral!)
+);
 </script>
 
 <template>
@@ -56,7 +60,11 @@ const iconName = computed(() => ICONS[props.tone] ?? ICONS.neutral!);
         <slot name="title">{{ title }}</slot>
       </AlertTitle>
 
-      <AlertDescription v-if="description || $slots.default" class="app-alert-description">
+      <AlertDescription
+        v-if="description || $slots.default"
+        class="app-alert-description"
+        :class="descriptionClass"
+      >
         <slot>{{ description }}</slot>
       </AlertDescription>
 

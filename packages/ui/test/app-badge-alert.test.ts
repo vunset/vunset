@@ -54,6 +54,12 @@ describe('AppAlert', () => {
     expect(alert().dataset).toMatchObject({ tone: 'success' });
   });
 
+  it('puts title-class and description-class on their parts', () => {
+    mountAlert({ title: 'T', description: 'D', titleClass: 'tc', descriptionClass: 'dc' });
+    expect(alert().querySelector('.app-alert-title')!.classList).toContain('tc');
+    expect(alert().querySelector('.app-alert-description')!.classList).toContain('dc');
+  });
+
   it('takes the description from the default slot', () => {
     mountAlert({}, { default: () => h('span', 'Slot text') });
     expect(alert().querySelector('.app-alert-description')!.textContent).toBe('Slot text');
@@ -67,6 +73,10 @@ describe('AppAlert', () => {
 
     mountAlert({ title: 'Plain', icon: false });
     expect(alert().querySelector('.app-alert-icon')).toBeNull();
+    wrapper!.unmount();
+
+    mountAlert({ tone: 'danger', title: 'Named', icon: 'alert-success' });
+    expect(alert().querySelector('.app-alert-icon svg path')!.getAttribute('d')).not.toContain('M15 9l-6 6');
     wrapper!.unmount();
 
     mountAlert({ title: 'Custom' }, { icon: () => h('b', '!') });
