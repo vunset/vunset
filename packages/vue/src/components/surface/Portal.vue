@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { useSurface } from '../../shared/surface';
+import { computed, onMounted, ref } from 'vue';
+import { useOptionalSurface } from '../../shared/surface';
 
 defineOptions({ name: 'Portal' });
 
@@ -21,11 +22,17 @@ function target() {
   return typeof document === 'undefined' || document.querySelector(TELEPORTS) ? TELEPORTS : 'body';
 }
 
-const { present } = useSurface();
+const surface = useOptionalSurface();
+
+const mounted = ref(false);
+onMounted(() => (mounted.value = true));
+
+const present = computed(() => surface?.present.value ?? true);
+const disabled = computed(() => props.disabled || (!surface && !mounted.value));
 </script>
 
 <template>
-  <Teleport v-if="present" :to="target()" :disabled="props.disabled">
+  <Teleport v-if="present" :to="target()" :disabled="disabled">
     <slot />
   </Teleport>
 </template>

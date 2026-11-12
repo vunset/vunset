@@ -30,6 +30,7 @@ import {
   ToastAction,
   ToastClose,
   ToastProgress,
+  Portal,
   type ToastPosition,
   type ToastStore,
   type ToastSwipeDirection
@@ -91,56 +92,59 @@ const iconed = (type: string | undefined) => type !== undefined && type in TYPE_
 </script>
 
 <template>
-  <ToastViewport
-    class="app-toaster"
-    :position="position"
-    :limit="limit"
-    :timeout="timeout"
-    :label="label"
-    :store="store"
-  >
-    <ToastRoot v-slot="{ toast, close }" class="app-surface app-toast" :class="toastClass" :swipe-direction="swipe">
-      <span v-if="$slots.icon || iconed(toast.type)" class="app-toast-icon" aria-hidden="true">
-        <slot name="icon" :toast="toast">
-          <AppSpinner v-if="toast.type === 'loading'" />
-          <AppIcon v-else :name="TYPE_ICONS[toast.type!]!" />
-        </slot>
-      </span>
-
-      <div class="app-toast-body">
-        <slot :toast="toast" :close="close">
-          <ToastTitle class="app-toast-title" />
-          <ToastDescription class="app-toast-description" />
-        </slot>
-
-        <div v-if="toast.data?.action || $slots.actions" class="app-toast-actions">
-          <slot name="actions" :toast="toast" :close="close">
-            <ToastAction
-              :as="AppButton"
-              size="sm"
-              variant="outline"
-              v-bind="toast.data.action.props"
-              @click="toast.data.action.onClick(toast)"
-            >
-              {{ toast.data.action.label }}
-            </ToastAction>
+  <!-- Beside the overlays in body, so no stacking context above it puts a dialog on top. -->
+  <Portal>
+    <ToastViewport
+      class="app-toaster"
+      :position="position"
+      :limit="limit"
+      :timeout="timeout"
+      :label="label"
+      :store="store"
+    >
+      <ToastRoot v-slot="{ toast, close }" class="app-surface app-toast" :class="toastClass" :swipe-direction="swipe">
+        <span v-if="$slots.icon || iconed(toast.type)" class="app-toast-icon" aria-hidden="true">
+          <slot name="icon" :toast="toast">
+            <AppSpinner v-if="toast.type === 'loading'" />
+            <AppIcon v-else :name="TYPE_ICONS[toast.type!]!" />
           </slot>
+        </span>
+
+        <div class="app-toast-body">
+          <slot :toast="toast" :close="close">
+            <ToastTitle class="app-toast-title" />
+            <ToastDescription class="app-toast-description" />
+          </slot>
+
+          <div v-if="toast.data?.action || $slots.actions" class="app-toast-actions">
+            <slot name="actions" :toast="toast" :close="close">
+              <ToastAction
+                :as="AppButton"
+                size="sm"
+                variant="outline"
+                v-bind="toast.data.action.props"
+                @click="toast.data.action.onClick(toast)"
+              >
+                {{ toast.data.action.label }}
+              </ToastAction>
+            </slot>
+          </div>
         </div>
-      </div>
 
-      <ToastClose
-        v-if="closable"
-        :as="AppButton"
-        variant="ghost"
-        size="sm"
-        square
-        class="app-toast-close"
-        :aria-label="closeLabel"
-      >
-        <AppIcon name="close" />
-      </ToastClose>
+        <ToastClose
+          v-if="closable"
+          :as="AppButton"
+          variant="ghost"
+          size="sm"
+          square
+          class="app-toast-close"
+          :aria-label="closeLabel"
+        >
+          <AppIcon name="close" />
+        </ToastClose>
 
-      <ToastProgress v-if="progress" class="app-toast-progress" />
-    </ToastRoot>
-  </ToastViewport>
+        <ToastProgress v-if="progress" class="app-toast-progress" />
+      </ToastRoot>
+    </ToastViewport>
+  </Portal>
 </template>

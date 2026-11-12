@@ -22,6 +22,10 @@ import { AppToaster } from '@vunset/ui';
 </template>
 ```
 
+It renders where the dialogs do, into `#teleports` when the page has one
+(Nuxt) and at the end of `<body>` otherwise, so toasts show above an open
+dialog. No `<Teleport>` around it is needed.
+
 Then set toasts from anywhere, a component or not, with `useToast()` from
 `@vunset/vue`:
 

@@ -137,6 +137,17 @@ describe('shared surface parts', () => {
       expect(document.querySelector('[role="dialog"]')!.parentElement).toBe(teleports);
     });
 
+    it('works outside any overlay, moving its content once mounted', async () => {
+      const host = document.createElement('div');
+      document.body.append(host);
+      mount(
+        defineComponent({ setup: () => () => h(Portal as any, null, () => [h('div', { id: 'toaster' })]) }),
+        { attachTo: host },
+      );
+      await settle();
+      expect(document.getElementById('toaster')!.parentElement).toBe(document.body);
+    });
+
     it('leaves nothing in the target while closed', async () => {
       const before = document.body.childNodes.length;
       const w = mount(

@@ -38,6 +38,19 @@ import {
 </template>
 ```
 
+Wrap the viewport in a [`Portal`](/utilities/overlay#portal) so it renders
+beside the dialogs, at the end of `<body>` (or in `#teleports`). Left inside
+your layout, any element above it with a `z-index` or `transform` can put an
+open dialog on top of your toasts:
+
+```vue
+<template>
+  <Portal>
+    <ToastViewport>...</ToastViewport>
+  </Portal>
+</template>
+```
+
 What you put inside the viewport is a template: it's drawn once for each
 toast, and the parts inside show that toast. `ToastTitle` and
 `ToastDescription` show its `title` and `text`, unless you give them content
