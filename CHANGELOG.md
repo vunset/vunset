@@ -2,6 +2,32 @@
 
 All four packages are released together under one version.
 
+## 1.0.0-rc.10
+
+### @vunset/vue
+
+- `Portal` works outside an overlay too: it renders in place on the server and
+  moves its content to `#teleports` or `<body>` once mounted. Wrap a
+  `ToastViewport` in one so an open dialog can't cover the toasts.
+- `ProgressRoot`, `MeterRoot` and `RangeRoot` format in `en-US` when no
+  `locale` is given, as `formatNumber` does, instead of the runtime's locale,
+  so the server and the browser write the same text.
+- `NumberFieldRoot` with no `locale` reads typed text in `en-US`, the locale
+  it writes in. In a German browser, `71,000` was read back as `71`.
+
+### @vunset/ui
+
+- AppToaster renders where the dialogs do, so toasts show above an open
+  dialog. No `<Teleport>` around it is needed.
+- AppAlert's `icon` takes an icon name to draw instead of the tone's, and
+  `description-class` adds classes to the description.
+- AppDialog's width is a `max-width`, so `popup-class="max-w-xl"` or your own
+  `max-width` resizes it.
+
+### @vunset/utils
+
+- `parseNumber` reads in `en-US` when no `locale` is given
+
 ## 1.0.0-rc.9
 
 ### @vunset/vue
