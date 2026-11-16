@@ -41,7 +41,7 @@ const props = withDefaults(
     thumbCollisionBehavior?: ThumbCollisionBehavior;
     /** How values are written in `RangeValue` and announced, as `Intl.NumberFormat` options. */
     format?: Intl.NumberFormatOptions;
-    /** The locale for `format`. The page's when not given. */
+    /** The locale for `format`. @default 'en-US' */
     locale?: Intl.LocalesArgument;
     /** The root's id. */
     id?: string;

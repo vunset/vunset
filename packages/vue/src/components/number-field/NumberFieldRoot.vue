@@ -73,7 +73,7 @@ const props = withDefaults(
     largeStep?: number;
     /** How the value is shown and read back, as `Intl.NumberFormat` options. */
     format?: Intl.NumberFormatOptions;
-    /** The locale `format` uses. The runtime's own by default. */
+    /** The locale `format` uses. @default 'en-US' */
     locale?: Intl.LocalesArgument;
     /** Steps with the mouse wheel while the input has focus. */
     wheel?: boolean;

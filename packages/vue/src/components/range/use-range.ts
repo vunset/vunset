@@ -97,6 +97,7 @@ export interface UseRangeOptions {
   /** @default 'push' */
   thumbCollisionBehavior?: MaybeRefOrGetter<ThumbCollisionBehavior>;
   format?: MaybeRefOrGetter<Intl.NumberFormatOptions | undefined>;
+  /** @default 'en-US' */
   locale?: MaybeRefOrGetter<Intl.LocalesArgument | undefined>;
   id?: MaybeRefOrGetter<string | undefined>;
   name?: MaybeRefOrGetter<string | undefined>;
@@ -218,7 +219,7 @@ export function useRange(options: UseRangeOptions = {}): UseRangeReturn {
   field?.setFilled(true);
 
   const formatter = computed(
-    () => new Intl.NumberFormat(config.value.locale as string | undefined, config.value.format)
+    () => new Intl.NumberFormat(config.value.locale ?? 'en-US', config.value.format)
   );
   const formattedValues = computed(() => values.value.map((item) => formatter.value.format(item)));
 

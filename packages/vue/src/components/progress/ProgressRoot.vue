@@ -16,7 +16,7 @@ const props = withDefaults(
     max?: number;
     /** How the value is shown and read out, as `Intl.NumberFormat` options. The bare number otherwise. */
     format?: Intl.NumberFormatOptions;
-    /** The locale `format` uses. The runtime's own by default. */
+    /** The locale `format` uses. @default 'en-US' */
     locale?: Intl.LocalesArgument;
     /** The text read out for the value, from the formatted value and the raw one: "3 of 7 steps" rather than "3". */
     getValueText?: (formattedValue: string, value: number | null) => string;

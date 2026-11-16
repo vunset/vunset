@@ -49,6 +49,7 @@ export interface UseGaugeOptions {
   max?: MaybeRefOrGetter<number | undefined>;
   /** Passed to `Intl.NumberFormat`. Omit it and the number is used as-is. */
   format?: MaybeRefOrGetter<Intl.NumberFormatOptions | undefined>;
+  /** @default 'en-US' */
   locale?: MaybeRefOrGetter<Intl.LocalesArgument | undefined>;
   /** Replaces the read-out text, e.g. "3 of 7 steps" rather than "3". */
   getValueText?: (formattedValue: string, value: number | null) => string;
@@ -160,7 +161,7 @@ function format(
 ): string {
   if (!options) return String(value);
 
-  return new Intl.NumberFormat(locale as Intl.LocalesArgument, options).format(value);
+  return new Intl.NumberFormat(locale ?? 'en-US', options).format(value);
 }
 
 export const { provideContext: provideGaugeContext, useContext: useGaugeContext } =

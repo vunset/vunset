@@ -52,7 +52,7 @@ export function formatPercentage(value: NumberInput, options: FormatNumberOption
 }
 
 export interface ParseNumberOptions extends Intl.NumberFormatOptions {
-  /** The runtime's own when left out. */
+  /** As `formatNumber` writes it. @default 'en-US' */
   locale?: Intl.LocalesArgument;
 }
 
@@ -68,7 +68,7 @@ interface NumberSymbols {
 const symbolCache = new Map<string, NumberSymbols>();
 
 function symbolsOf(options: ParseNumberOptions): NumberSymbols {
-  const { locale, ...intl } = options;
+  const { locale = 'en-US', ...intl } = options;
   const key = JSON.stringify([String(locale), intl]);
   let found = symbolCache.get(key);
   if (!found) {

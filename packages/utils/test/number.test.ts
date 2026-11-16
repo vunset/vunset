@@ -87,6 +87,12 @@ describe('parseNumber', () => {
     expect(parseNumber('1.5', { locale: 'de-DE' })).toBe(15);
   });
 
+  it('reads in en-US unless told otherwise, as formatNumber writes, whatever the runtime locale', () => {
+    expect(parseNumber('71,000')).toBe(71000);
+    expect(parseNumber(formatNumber(1234567.89))).toBe(1234567.89);
+    expect(toPlainNumber('1,234.5')).toBe('1234.5');
+  });
+
   it('gives null for nothing and NaN for what is not a number', () => {
     expect(parseNumber('', { locale: 'en-US' })).toBeNull();
     expect(parseNumber('  ')).toBeNull();
