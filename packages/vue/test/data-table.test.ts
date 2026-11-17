@@ -411,6 +411,31 @@ describe('columns', () => {
     expect(inset('age')).toBe('90px');
   });
 
+  it('follows a column whose meta.pin changes after mount', async () => {
+    const pinned = (pin?: 'start') => [{ accessorKey: 'name', header: 'Name', meta: { pin } }, { accessorKey: 'age' }];
+    const wrapper = mountTable({ columns: pinned('start') });
+    expect(headOf(wrapper, 'name').attributes('data-pinned')).toBe('start');
+
+    await wrapper.setProps({ columns: pinned() });
+    expect(headOf(wrapper, 'name').attributes('data-pinned')).toBeUndefined();
+
+    await wrapper.setProps({ columns: pinned('start') });
+    expect(headOf(wrapper, 'name').attributes('data-pinned')).toBe('start');
+  });
+
+  it('keeps its own pinning over meta.pin once the table pins a column', async () => {
+    const wrapper = mountTable({
+      columns: [{ accessorKey: 'name', header: 'Name', meta: { pin: 'start' } }, { accessorKey: 'age' }]
+    });
+
+    (wrapper.vm as any).table.getColumn('age').pin('end');
+    await nextTick();
+
+    expect(headOf(wrapper, 'name').attributes('data-pinned')).toBe('start');
+    expect(headOf(wrapper, 'age').attributes('data-pinned')).toBe('end');
+    expect(wrapper.emitted('update:columnPinning')!.at(-1)).toEqual([{ start: ['name'], end: ['age'] }]);
+  });
+
   it('draws column groups as a row of their own', () => {
     const wrapper = mountTable({
       columns: [

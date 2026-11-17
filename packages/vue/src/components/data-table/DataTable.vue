@@ -387,18 +387,25 @@ const visibilityState = computed<VisibilityState>(() => {
   return { ...defaults, ...visibility.state.value };
 });
 
-const pinning = slice<ColumnPinningState>(
+const metaPinning = computed<ColumnPinningState>(() => ({
+  start: [
+    ...(props.nestedKey ? [EXPANDER_COLUMN] : []),
+    ...leaves.value.filter((c) => c.meta?.pin === 'start').map(idOf)
+  ],
+  end: leaves.value.filter((c) => c.meta?.pin === 'end').map(idOf)
+}));
+
+const pinning = slice<ColumnPinningState | undefined>(
   'columnPinning',
   () => props.columnPinning,
-  () => ({
-    start: [
-      ...(props.nestedKey ? [EXPANDER_COLUMN] : []),
-      ...leaves.value.filter((c) => c.meta?.pin === 'start').map(idOf)
-    ],
-    end: leaves.value.filter((c) => c.meta?.pin === 'end').map(idOf)
-  }),
-  (next) => emit('update:columnPinning', next)
+  () => undefined,
+  (next) => emit('update:columnPinning', next!)
 );
+const pinningState = computed(() => pinning.state.value ?? metaPinning.value);
+
+function updatePinning(updater: Updater<ColumnPinningState>): void {
+  pinning.state.value = typeof updater === 'function' ? updater(pinningState.value) : updater;
+}
 
 // Keyed by data object, not position, so a sort or filter moves each row's DOM with it.
 const objectIds = new WeakMap<object, string>();
@@ -440,7 +447,7 @@ const table = useTable({
       return visibilityState.value;
     },
     get columnPinning() {
-      return pinning.state.value;
+      return pinningState.value;
     },
     get columnSizing() {
       return sizing.state.value;
@@ -449,7 +456,7 @@ const table = useTable({
   onSortingChange: sorting.update,
   onExpandedChange: expanded.update,
   onColumnVisibilityChange: visibility.update,
-  onColumnPinningChange: pinning.update,
+  onColumnPinningChange: updatePinning,
   onColumnSizingChange: updateSizing
 });
 
