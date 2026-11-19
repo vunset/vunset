@@ -149,7 +149,7 @@ the ends.
 The field around it uses the [FormField](/ui/form-field) classes.
 
 To add your own classes inside, use `control-class` (the track),
-`label-class`, `help-class` and `error-class`. See
+`option-class` (each toggle drawn from `options`), `label-class`, `help-class` and `error-class`. See
 [Classes on the inner parts](/ui/theming#classes-on-the-inner-parts).
 
 <<< ../../packages/ui/src/form/form-toggle-group.css

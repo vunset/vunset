@@ -46,7 +46,8 @@ A component holds no behavior of its own: a gap it finds is fixed in
   `<part>-class` (`HTMLAttributes['class']`), merged beside their own:
   `control-class` on every `Form*`'s box, `popup-class` on anything with a
   popup, `title-class` on anything with a `title`, `trigger-class`, `backdrop-`/`header-`/`body-`/`footer-class` on the
-  overlays, `tabs-`/`tab-`/`panel-`/`indicator-class` on AppTabs, and
+  overlays, `tabs-`/`tab-`/`panel-`/`indicator-class` on AppTabs, `option-class` on
+  FormToggleGroup, and
   `table-`/`header-`/`body-`/`footer-`/`row-`/`th-`/`td-`/`tf-class` on
   AppDataTable (`table-class` on AppTable). Table cells inherit their
   `text-align` from `.app-table`, so a class there aligns them all.

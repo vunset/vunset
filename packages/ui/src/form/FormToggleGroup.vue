@@ -61,6 +61,8 @@ const props = withDefaults(
     invalid?: boolean;
     /** Classes for the control's box, beside its own. */
     controlClass?: HTMLAttributes['class'];
+    /** Classes for each toggle drawn from `options`, beside its own. */
+    optionClass?: HTMLAttributes['class'];
     /** Classes for the label, beside its own. */
     labelClass?: HTMLAttributes['class'];
     /** Classes for the help text, beside its own. */
@@ -171,6 +173,7 @@ const items = computed<Item[]>(() =>
           :value="option.value"
           :disabled="option.disabled"
           class="form-toggle"
+          :class="optionClass"
         >
           <slot name="option" v-bind="option" :option="option">{{ option.label }}</slot>
         </Toggle>
