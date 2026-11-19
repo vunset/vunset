@@ -17,11 +17,11 @@
       padding-inline-start: var(--form-combobox-inset);
     }
 
-    & > .form-addon:first-child:has(:is(.app-button, .form-control)) {
+    & > .form-addon:is(:first-child, :last-child):has(:is(.app-button, .form-control)) {
       margin-block: calc(-1 * var(--form-combobox-inset));
     }
 
-    & > .form-addon:first-child .app-button[data-square] {
+    & > .form-addon:is(:first-child, :last-child) .app-button[data-square] {
       width: calc(var(--ui-control-height) - 2 * var(--ui-border-width));
     }
 

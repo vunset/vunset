@@ -251,10 +251,6 @@ const { fieldAttrs, controlAttrs } = useFieldAttrs();
           />
         </div>
 
-        <Addon v-if="$slots.end" side="end" class="form-addon">
-          <slot name="end" v-bind="state" />
-        </Addon>
-
         <ComboboxClear class="form-clear">
           <slot name="clear">
             <AppIcon name="close" class="form-icon" />
@@ -266,6 +262,10 @@ const { fieldAttrs, controlAttrs } = useFieldAttrs();
             <AppIcon name="listbox-indicator" class="form-icon" />
           </slot>
         </ComboboxIndicator>
+
+        <Addon v-if="$slots.end" side="end" class="form-addon">
+          <slot name="end" v-bind="state" />
+        </Addon>
       </ComboboxTrigger>
 
       <Portal>

@@ -233,10 +233,6 @@ const { fieldAttrs, controlAttrs: triggerAttrs } = useFieldAttrs();
           <template v-if="$slots.value" #default="value"><slot name="value" v-bind="value" /></template>
         </SelectValue>
 
-        <Addon v-if="$slots.end" side="end" class="form-addon">
-          <slot name="end" v-bind="state" />
-        </Addon>
-
         <SelectClear class="form-clear">
           <slot name="clear">
             <AppIcon name="close" class="form-icon" />
@@ -248,6 +244,10 @@ const { fieldAttrs, controlAttrs: triggerAttrs } = useFieldAttrs();
             <AppIcon name="listbox-indicator" class="form-icon" />
           </slot>
         </SelectIndicator>
+
+        <Addon v-if="$slots.end" side="end" class="form-addon">
+          <slot name="end" v-bind="state" />
+        </Addon>
       </SelectTrigger>
 
       <Portal>
