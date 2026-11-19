@@ -6,6 +6,7 @@
     color: var(--ui-text);
     font-size: var(--ui-font-size);
     text-align: start;
+    isolation: isolate;
 
     [data-part='table'] {
       width: 100%;
