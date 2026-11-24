@@ -2,6 +2,30 @@
 
 All four packages are released together under one version.
 
+## 1.0.0-rc.11
+
+### @vunset/vue
+
+- `DataTable` follows a column whose `meta.pin` changes after mount. Before,
+  the pinning read when the table mounted was kept. Once the table pins a
+  column itself, or `columnPinning` is bound, that pinning wins over
+  `meta.pin`.
+
+### @vunset/ui
+
+- FormToggleGroup's `option-class` adds classes to each toggle drawn from
+  `options`.
+- AppTable is its own stacking context, so its sticky and pinned cells stay
+  below popups and headers outside the table.
+
+### @vunset/nuxt
+
+- `useInfinityFetch` drops a page still loading when the query changes or
+  `refresh()` runs. On a slow connection, the old page used to land in the new
+  list, duplicating items and skipping a page.
+- A page that fails to load sets `status` to `error`, and the next scroll
+  retries it. Before, the status stayed `pending` and nothing loaded again.
+
 ## 1.0.0-rc.10
 
 ### @vunset/vue

@@ -43,7 +43,7 @@ describe('useInfinityFetch', () => {
     const { api } = mountList({ query: { region: 'EU' } });
     await settle();
     expect(fetcher.calls).toEqual([
-      { url: '/api/items', options: { method: 'GET', query: { region: 'EU', page: 1 } } }
+      { url: '/api/items', options: { method: 'GET', signal: expect.any(AbortSignal), query: { region: 'EU', page: 1 } } }
     ]);
     expect(api().data.value).toEqual([1, 2]);
     expect(api().currentPage.value).toBe(2);
@@ -53,7 +53,7 @@ describe('useInfinityFetch', () => {
     fetcher.pages = [{ rows: [7] }];
     const { api } = mountList({ method: 'POST', dataKey: 'rows' });
     await settle();
-    expect(fetcher.calls[0]!.options).toEqual({ method: 'POST', body: { page: 1 } });
+    expect(fetcher.calls[0]!.options).toEqual({ method: 'POST', signal: expect.any(AbortSignal), body: { page: 1 } });
     expect(api().data.value).toEqual([7]);
   });
 
@@ -151,6 +151,36 @@ describe('useInfinityFetch', () => {
     await settle();
     expect(fetcher.calls.at(-1)!.options.query).toEqual({ region: 'US', page: 1 });
     expect(api().data.value).toEqual([9]);
+  });
+
+  it('drops a page still loading when the query changes, so it never lands in the new list', async () => {
+    const region = ref('EU');
+    let resolveStale!: (items: number[]) => void;
+    fetcher.pages = [new Promise((resolve) => (resolveStale = resolve)), [9]];
+    const { api } = mountList({ query: () => ({ region: region.value }) });
+    await settle();
+    expect(api().status.value).toBe('pending');
+
+    region.value = 'US';
+    await settle();
+    expect(fetcher.calls[0]!.options.signal.aborted).toBe(true);
+    resolveStale([1, 2]);
+    await settle();
+    expect(api().data.value).toEqual([9]);
+    expect(api().currentPage.value).toBe(2);
+    expect(api().status.value).toBe('idle');
+  });
+
+  it('marks a failed page as `error` and retries it on the next scroll', async () => {
+    fetcher.pages = [Promise.reject(new Error('offline')), [1]];
+    const { api } = mountList({}, 100);
+    await settle();
+    expect(api().status.value).toBe('error');
+
+    window.dispatchEvent(new Event('scroll'));
+    await settle();
+    expect(fetcher.calls.map((call) => call.options.query.page)).toEqual([1, 1, 2]);
+    expect(api().data.value).toEqual([1]);
   });
 
   it('stops listening once unmounted', async () => {

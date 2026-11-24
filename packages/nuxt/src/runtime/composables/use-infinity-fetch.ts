@@ -21,7 +21,7 @@ export interface UseInfinityFetchOptions {
 export interface UseInfinityFetchReturn<T> {
   /** Every page loaded so far, in order. */
   data: Ref<T[]>;
-  /** `end` once a page comes back empty. */
+  /** `end` once a page comes back empty; `error` when one failed, retried on the next scroll. */
   status: Ref<AsyncDataRequestStatus | 'end'>;
   /** Starts over from the first page. */
   refresh: () => void;
@@ -38,26 +38,42 @@ export function useInfinityFetch<T>(url: string, options: UseInfinityFetchOption
   const status = ref<AsyncDataRequestStatus | 'end'>('idle');
   const query = computed(() => toValue(options.query));
 
+  // The request in flight; one `refresh` replaced is aborted, and its response ignored if it lands anyway.
+  let controller: AbortController | undefined;
+
   async function fetchPage() {
     if (status.value === 'pending' || status.value === 'end') return;
+    const current = (controller = new AbortController());
     status.value = 'pending';
 
     const params = { ...query.value, page: page.value };
     const method = options.method ?? 'GET';
-    const response = await request(url, method === 'POST' ? { method, body: params } : { method, query: params });
-    const items = (options.dataKey ? (response as Record<string, unknown>)[options.dataKey] : response) as T[] | undefined;
+    try {
+      const response = await request(url, {
+        method,
+        signal: current.signal,
+        ...(method === 'POST' ? { body: params } : { query: params })
+      });
+      if (current !== controller) return;
+      const items = (options.dataKey ? (response as Record<string, unknown>)[options.dataKey] : response) as T[] | undefined;
 
-    if (!items || items.length === 0) {
-      status.value = 'end';
-      return;
+      if (!items || items.length === 0) {
+        status.value = 'end';
+        return;
+      }
+
+      data.value = [...data.value, ...items];
+      page.value += 1;
+      status.value = 'idle';
+    } catch {
+      // Not `pending` any more, so the next scroll retries the same page.
+      if (current === controller) status.value = 'error';
     }
-
-    data.value = [...data.value, ...items];
-    page.value += 1;
-    status.value = 'idle';
   }
 
   function refresh() {
+    controller?.abort();
+    controller = undefined;
     page.value = 1;
     data.value = [];
     status.value = 'idle';
@@ -94,6 +110,8 @@ export function useInfinityFetch<T>(url: string, options: UseInfinityFetchOption
       window.removeEventListener('resize', check);
     });
   });
+
+  onScopeDispose(() => controller?.abort());
 
   return { data, status, refresh, currentPage: page };
 }
